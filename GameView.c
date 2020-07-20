@@ -39,7 +39,6 @@ struct gameView {
 #define DRACULA 5
 
 	// TODO: ADD FIELDS HERE
-};
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
