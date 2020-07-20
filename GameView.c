@@ -20,12 +20,25 @@
 #include "Places.h"
 // add your own #includes here
 
+#include "PlayerRep.h"
+
 // TODO: ADD YOUR OWN STRUCTS HERE
 
 struct gameView {
 	// must include: #rounds, players ADT (must include health and location),
 	// current score and the map.
 	
+	PlayerRep *players;
+	int round; 
+	int score;
+	Map map;
+};
+
+// #defines here
+#define NUM_HUNTERS 4
+#define DRACULA 5
+
+=======
 	// TODO: ADD FIELDS HERE
 };
 
@@ -42,6 +55,26 @@ GameView GvNew(char *pastPlays, Message messages[])
 	}
 	
 	// initialise all variables inside gameview ADT
+	
+	new->score = GAME_START_SCORE;
+	new->round = 0;
+	new->map = MapNew();
+	// I believe that we don't need to handle adding connections to the map
+	// ourselves — see Map.c
+
+	// NOTE: Currently all players spawn in the same location, i.e. 
+	// AMSTERDAM. To be changed later (maybe with an enum)
+	new->players = malloc(NUM_PLAYERS * sizeof(PlayerRep));
+	for (int i = 0; i < NUM_HUNTERS; i++) {
+		new->players[i] = newPlayerRep(GAME_START_HUNTER_LIFE_POINTS, "AM\0");
+	}
+
+	new->players[PLAYER_DRACULA] = newPlayerRep(GAME_START_BLOOD_POINTS, 
+		"AM\0"
+	);
+
+======
+  
 	return new;
 }
 
