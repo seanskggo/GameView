@@ -19,7 +19,9 @@
 #include "Map.h"
 #include "Places.h"
 // add your own #includes here
+
 #include "PlayerRep.h"
+
 // TODO: ADD YOUR OWN STRUCTS HERE
 
 struct gameView {
@@ -35,6 +37,10 @@ struct gameView {
 // #defines here
 #define NUM_HUNTERS 4
 #define DRACULA 5
+
+=======
+	// TODO: ADD FIELDS HERE
+};
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -67,6 +73,8 @@ GameView GvNew(char *pastPlays, Message messages[])
 		"AM\0"
 	);
 
+======
+  
 	return new;
 }
 
