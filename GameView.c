@@ -38,7 +38,6 @@ struct gameView {
 #define NUM_HUNTERS 4
 #define DRACULA 5
 
-=======
 	// TODO: ADD FIELDS HERE
 };
 
@@ -72,9 +71,7 @@ GameView GvNew(char *pastPlays, Message messages[])
 	new->players[PLAYER_DRACULA] = newPlayerRep(GAME_START_BLOOD_POINTS, 
 		"AM\0"
 	);
-
-======
-  
+	
 	return new;
 }
 
