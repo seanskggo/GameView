@@ -40,7 +40,8 @@ GameView GvNew(char *pastPlays, Message messages[])
 		fprintf(stderr, "Couldn't allocate GameView!\n");
 		exit(EXIT_FAILURE);
 	}
-
+	
+	// initialise all variables inside gameview ADT
 	return new;
 }
 
