@@ -1,5 +1,8 @@
 # FuryOfDracula
 
-Hey team! This is the work branch where you create 'commits' (which is like a save-points) of your work. 
-Try to commit regularly so that progress is saved. If you think your code is ready to be 'pushed' to the master branch,
-create a 'pull request' (which means 'request to add to master branch') so that the code can be reviewed before being added.
+Hey team! This is the master branch for the Fury of Dracula Assignment (COMP2521).
+Finalised code will be pushed from the work branch to this master branch. Before you push, pull request so
+we can review the code before it is added to this master.
+
+
+Yes sirrrr
