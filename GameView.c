@@ -37,6 +37,8 @@ struct gameView {
 // #defines here
 #define NUM_HUNTERS 4
 
+// Local Function Declarations
+static int calcRound(char *pastPlays);
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -53,7 +55,10 @@ GameView GvNew(char *pastPlays, Message messages[])
 	// initialise all variables inside gameview ADT
 
 	new->score = GAME_START_SCORE;
-	new->round = 0;
+
+	int round = calcRound(pastPlays);
+	new->round = round;
+
 	new->map = MapNew();
 	// I believe that we don't need to handle adding connections to the map
 	// ourselves — see Map.c
@@ -232,4 +237,10 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
 
-// TODO
+////////////////////////////////////////////////////////////////////////
+// Local Helper Functions
+
+static int calcRound(char *pastPlays) {
+	// TO-DO: Write this
+	return 0;
+}
