@@ -27,18 +27,16 @@
 struct gameView {
 	// must include: #rounds, players ADT (must include health and location),
 	// current score and the map.
-	
+
 	PlayerRep *players;
-	int round; 
+	int round;
 	int score;
 	Map map;
 };
 
 // #defines here
 #define NUM_HUNTERS 4
-#define DRACULA 5
 
-	// TODO: ADD FIELDS HERE
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -51,33 +49,38 @@ GameView GvNew(char *pastPlays, Message messages[])
 		fprintf(stderr, "Couldn't allocate GameView!\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	// initialise all variables inside gameview ADT
-	
+
 	new->score = GAME_START_SCORE;
 	new->round = 0;
 	new->map = MapNew();
 	// I believe that we don't need to handle adding connections to the map
 	// ourselves — see Map.c
 
-	// NOTE: Currently all players spawn in the same location, i.e. 
+	// NOTE: Currently all players spawn in the same location, i.e.
 	// AMSTERDAM. To be changed later (maybe with an enum)
 	new->players = malloc(NUM_PLAYERS * sizeof(PlayerRep));
 	for (int i = 0; i < NUM_HUNTERS; i++) {
-		new->players[i] = newPlayerRep(GAME_START_HUNTER_LIFE_POINTS, "AM\0");
+		new->players[i] = PlayerRepNew(GAME_START_HUNTER_LIFE_POINTS, "AM\0");
 	}
 
-	new->players[PLAYER_DRACULA] = newPlayerRep(GAME_START_BLOOD_POINTS, 
+	new->players[PLAYER_DRACULA] = PlayerRepNew(GAME_START_BLOOD_POINTS,
 		"AM\0"
 	);
-	
+
 	return new;
 }
 
 void GvFree(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	for(int i = 0; i < NUM_PLAYERS; i++) {
+		PlayerRepFree(gv->players[i]);
+	}
+
+	MapFree(gv->map);
 	free(gv);
+	return;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -87,7 +90,7 @@ Round GvGetRound(GameView gv)
 {
 	// Input gv
 	// Output return struct Round with integer to #rounds
-	
+
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return 0;
 }
@@ -96,7 +99,7 @@ Player GvGetPlayer(GameView gv)
 {
 	// Input gv
 	// Output player enumerator value of the player currently playing
-	
+
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return PLAYER_LORD_GODALMING;
 }
@@ -105,7 +108,7 @@ int GvGetScore(GameView gv)
 {
 	// Input gv
 	// Output integer value of the current score
-	
+
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return 0;
 }
@@ -114,10 +117,10 @@ int GvGetHealth(GameView gv, Player player)
 {
 	// Input gv, player
 	// Output integer value of the current player's health
-	
+
 	// Player's health must not exceed 9 (0 to 9 inclusive)
 	// Dracula's health >= 0
-	
+
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return 0;
 }
@@ -126,12 +129,12 @@ PlaceId GvGetPlayerLocation(GameView gv, Player player)
 {
 	// Input gv, player
 	// Output the integer value assigned to the location (placeID)
-		// of where the player is currently at. Return "NOWHERE" if the player 
+		// of where the player is currently at. Return "NOWHERE" if the player
 		// selected has not made a turn yet (before their first turn). Return
-		// PlaceID if it is a hunter. Return PlaceID if it is Dracula AND his 
+		// PlaceID if it is a hunter. Return PlaceID if it is Dracula AND his
 		// current location is revealed in the play string. Return CITY_UNKNOWN
 		// or SEA_UNKNOWN if player is dracula and has not been revealed.
-	
+
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return NOWHERE;
 }
@@ -144,10 +147,10 @@ PlaceId GvGetVampireLocation(GameView gv)
 		// allocated array. order does not matter. Return PlaceId if
 		// location has been revealed. Return CITY_UNKNOWN if location
 		// has not been revealed. Return NOWHERE if no vampires exist
-	
+
 	// Traverse the map in gv and copy the placeID in the dynamically allocated
 		// array.
-	
+
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return NOWHERE;
 }
@@ -155,13 +158,13 @@ PlaceId GvGetVampireLocation(GameView gv)
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 {
 	// Input gv, numTraps
-	// Output the location of the traps currently on the map in a 
-		// dynamically allocated array. Including multiple copies if multiple 
-		// traps in a single location and order does not matter. 
-	
+	// Output the location of the traps currently on the map in a
+		// dynamically allocated array. Including multiple copies if multiple
+		// traps in a single location and order does not matter.
+
 	// Traverse the map in gv and copy the placeID in the dynamically allocated
 		// array.
-	
+
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	*numTraps = 0;
 	return NULL;
