@@ -107,13 +107,14 @@ void GvFree(GameView gv)
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
 
+// Modified by Sean
 Round GvGetRound(GameView gv)
 {
 	// Input gv
 	// Output return struct Round with integer to #rounds
 
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	return gv->round;
 }
 
 Player GvGetPlayer(GameView gv)
