@@ -89,6 +89,10 @@ GameView GvNew(char *pastPlays, Message messages[])
 		"AM\0"
 	);
 
+	// shouldn't need this anymore cos the PlayerADT makes use of
+	// strdup!
+	free(locations);
+
 	return new;
 }
 
