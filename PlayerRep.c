@@ -1,4 +1,4 @@
-// Implementation of the PlayerRep ADT. 
+// Implementation of the PlayerRep ADT.
 // For the 2020 COMP2521 T2 Assignment Fury OF Dracula.
 // File written by Sam Schreyer (add contributors names as they contribute)
 
@@ -8,29 +8,33 @@
 
 #include "PlayerRep.h"
 
-struct playerRep {
+struct playerRep
+{
     int health;
     char *location;
 };
 
-PlayerRep newPlayerRep(int health, char *location) {
+PlayerRep PlayerRepNew(int health, char *location)
+{
     PlayerRep new = malloc(sizeof(struct playerRep));
     new->health = health;
     new->location = strdup(location);
     return new;
 };
 
-void freePlayerRep(PlayerRep player) {
+void PlayerRepFree(PlayerRep player)
+{
     free(player->location);
     free(player);
     return;
 }
 
-int getPlayerHealth(PlayerRep player) {
+int PlayerRepGetHealth(PlayerRep player)
+{
     return player->health;
 }
 
-char *getPlayerLocation(PlayerRep player) {
+char *PlayerRepGetLocation(PlayerRep player)
+{
     return player->location;
 }
-

@@ -1,4 +1,4 @@
-// Interface for the PlayerRep ADT. 
+// Interface for the PlayerRep ADT.
 // For the 2020 COMP2521 T2 Assignment Fury OF Dracula.
 // File written by Sam Schreyer (add contributors names as they contribute)
 
@@ -6,13 +6,13 @@
 #define PLAYER_REP_H_
 
 typedef struct playerRep *PlayerRep;
-    
-PlayerRep newPlayerRep(int health, char *location);
 
-void freePlayerRep(PlayerRep player);
+PlayerRep PlayerRepNew(int health, char *location);
 
-int getPlayerHealth(PlayerRep player);
+void PlayerRepFree(PlayerRep player);
 
-char *getPlayerLocation(PlayerRep player);
+int PlayerRepGetHealth(PlayerRep player);
+
+char *PlayerRepGetLocation(PlayerRep player);
 
 #endif
