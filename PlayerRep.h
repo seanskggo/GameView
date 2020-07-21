@@ -11,8 +11,8 @@ PlayerRep PlayerRepNew(int health, char *location);
 
 void PlayerRepFree(PlayerRep player);
 
-int getPlayerHealth(PlayerRep player);
+int PlayerHealthGet(PlayerRep player);
 
-char *getPlayerLocation(PlayerRep player);
+char *PlayerLocationGet(PlayerRep player);
 
 #endif

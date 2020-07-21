@@ -36,6 +36,7 @@ struct gameView {
 
 // #defines here
 #define NUM_HUNTERS 4
+#define PLAY_LENGTH 8
 
 // Local Function Declarations
 static int calcRound(char *pastPlays);
@@ -241,6 +242,17 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // Local Helper Functions
 
 static int calcRound(char *pastPlays) {
-	// TO-DO: Write this
-	return 0;
+	// I think we start at round one...not zero...?
+	int round = 1;
+	for (int i = 0; pastPlays[i] != '\0'; i++) {
+		// Round increments after all players have made their move
+		if (i % NUM_PLAYERS * PLAY_LENGTH == 0) {
+			round++;
+		}
+	}
+	// PLAY_LENGTH takes into account spaces, yet the very last play doesn't
+	// have a space (I THINK). So increment round.
+	round++;
+
+	return round;
 }
