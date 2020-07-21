@@ -29,16 +29,24 @@ struct gameView {
 	// current score and the map.
 
 	PlayerRep *players;
+	int encounterLocations[NUM_REAL_PLACES];
 	int round;
 	int score;
 	Map map;
 };
 
 // #defines here
-#define NUM_HUNTERS 4
-#define PLAY_LENGTH 8
+#define NUM_HUNTERS 	4
+#define PLAY_LENGTH 	8
+#define ONE_TRAP		1
+#define TWO_TRAPS		2
+#define IM_VAMP			3
+#define TRAP_IM_VAMP	4
+#define TWO_IM_VAMP		5
 
 // Local Function Declarations
+static int calcGameScore(char *pastPlays);
+static void calcEncounterLocations(char *pastPlays);
 static int calcRound(char *pastPlays);
 
 ////////////////////////////////////////////////////////////////////////
@@ -55,10 +63,9 @@ GameView GvNew(char *pastPlays, Message messages[])
 
 	// initialise all variables inside gameview ADT
 
-	new->score = GAME_START_SCORE;
-
-	int round = calcRound(pastPlays);
-	new->round = round;
+	new->score = calcGameScore(pastPlays);
+	calcEncounterLocations(pastPlays);
+	new->round = calcRound(pastPlays);
 
 	new->map = MapNew();
 	// I believe that we don't need to handle adding connections to the map
@@ -66,6 +73,7 @@ GameView GvNew(char *pastPlays, Message messages[])
 
 	// NOTE: Currently all players spawn in the same location, i.e.
 	// AMSTERDAM. To be changed later (maybe with an enum)
+	// NOTE: this should probably be chucked in a function too
 	new->players = malloc(NUM_PLAYERS * sizeof(PlayerRep));
 	for (int i = 0; i < NUM_HUNTERS; i++) {
 		new->players[i] = PlayerRepNew(GAME_START_HUNTER_LIFE_POINTS, "AM\0");
@@ -255,4 +263,14 @@ static int calcRound(char *pastPlays) {
 	round++;
 
 	return round;
+}
+
+static int calcGameScore(char *pastPlays) {
+	// TO-DO: write this!
+	return 0;
+}
+
+static void calcEncounterLocations(char *pastPlays) {
+	// TO-DO: write this!
+	return;
 }
