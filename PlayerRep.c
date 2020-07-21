@@ -29,12 +29,12 @@ void PlayerRepFree(PlayerRep player)
     return;
 }
 
-int PlayerHealthGet(PlayerRep player)
+int PlayerRepGetHealth(PlayerRep player)
 {
     return player->health;
 }
 
-char *PlayerLocationGet(PlayerRep player)
+char *PlayerRepGetLocation(PlayerRep player)
 {
     return player->location;
 }
