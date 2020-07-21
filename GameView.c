@@ -121,8 +121,25 @@ Player GvGetPlayer(GameView gv)
 	// Input gv
 	// Output player enumerator value of the player currently playing
 
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return PLAYER_LORD_GODALMING;
+	int player; // standard variable to use in GvGetPlayer
+	int current_player;  // variable to define each individual character
+    
+    // mod the number of round by number of players (5) to find out the player
+    player = gv->round % NUM_PLAYERS;
+
+    if (player == 1) {
+        current_player = PLAYER_LORD_GODALMING;
+    } else if (player == 2) {
+        current_player = PLAYER_DR_SEWARD;
+    } else if (player == 3) {
+        current_player = PLAYER_VAN_HELSING;
+    } else if (player == 4) {
+        current_player = PLAYER_MINA_HARKER;
+    } else {
+        current_player = PLAYER_DRACULA;
+    }
+	   
+	return current_player;
 }
 
 int GvGetScore(GameView gv)
