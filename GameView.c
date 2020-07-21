@@ -38,6 +38,7 @@ struct gameView {
 // #defines here
 #define NUM_HUNTERS 	4
 #define PLAY_LENGTH 	8
+
 #define ONE_TRAP		1
 #define TWO_TRAPS		2
 #define IM_VAMP			3
@@ -48,6 +49,7 @@ struct gameView {
 static int calcGameScore(char *pastPlays);
 static void calcEncounterLocations(char *pastPlays);
 static int calcRound(char *pastPlays);
+void findPlayerLocations(char *pastPlays, char **locations);
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -71,12 +73,16 @@ GameView GvNew(char *pastPlays, Message messages[])
 	// I believe that we don't need to handle adding connections to the map
 	// ourselves — see Map.c
 
-	// NOTE: Currently all players spawn in the same location, i.e.
-	// AMSTERDAM. To be changed later (maybe with an enum)
-	// NOTE: this should probably be chucked in a function too
+	// NOTE: need to get player locations instead of having them all
+	// be at Amsterdam
+	// NOTE: this should *probably* be chucked in a function too
+	char **locations = NULL;
+	findPlayerLocations(pastPlays, locations);
 	new->players = malloc(NUM_PLAYERS * sizeof(PlayerRep));
 	for (int i = 0; i < NUM_HUNTERS; i++) {
-		new->players[i] = PlayerRepNew(GAME_START_HUNTER_LIFE_POINTS, "AM\0");
+		new->players[i] = PlayerRepNew(GAME_START_HUNTER_LIFE_POINTS,
+			locations[i]
+		);
 	}
 
 	new->players[PLAYER_DRACULA] = PlayerRepNew(GAME_START_BLOOD_POINTS,
@@ -249,6 +255,16 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 ////////////////////////////////////////////////////////////////////////
 // Local Helper Functions
 
+static int calcGameScore(char *pastPlays) {
+	// TO-DO: write this!
+	return 0;
+}
+
+static void calcEncounterLocations(char *pastPlays) {
+	// TO-DO: write this!
+	return;
+}
+
 static int calcRound(char *pastPlays) {
 	// I think we start at round one...not zero...?
 	int round = 1;
@@ -265,12 +281,7 @@ static int calcRound(char *pastPlays) {
 	return round;
 }
 
-static int calcGameScore(char *pastPlays) {
-	// TO-DO: write this!
-	return 0;
-}
-
-static void calcEncounterLocations(char *pastPlays) {
-	// TO-DO: write this!
-	return;
+void findPlayerLocations(char *pastPlays, char **locations) {
+	 // TO-DO: write this!
+	 return;
 }
