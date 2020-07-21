@@ -49,7 +49,7 @@ struct gameView {
 static int calcGameScore(char *pastPlays);
 static void calcEncounterLocations(char *pastPlays);
 static int calcRound(char *pastPlays);
-void findPlayerLocations(char *pastPlays, char **locations);
+char **findPlayerLocations(char *pastPlays);
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -76,8 +76,7 @@ GameView GvNew(char *pastPlays, Message messages[])
 	// NOTE: need to get player locations instead of having them all
 	// be at Amsterdam
 	// NOTE: this should *probably* be chucked in a function too
-	char **locations = NULL;
-	findPlayerLocations(pastPlays, locations);
+	char **locations = findPlayerLocations(pastPlays);
 	new->players = malloc(NUM_PLAYERS * sizeof(PlayerRep));
 	for (int i = 0; i < NUM_HUNTERS; i++) {
 		new->players[i] = PlayerRepNew(GAME_START_HUNTER_LIFE_POINTS,
@@ -89,8 +88,6 @@ GameView GvNew(char *pastPlays, Message messages[])
 		"AM\0"
 	);
 
-	// shouldn't need this anymore cos the PlayerADT makes use of
-	// strdup!
 	free(locations);
 
 	return new;
@@ -285,7 +282,9 @@ static int calcRound(char *pastPlays) {
 	return round;
 }
 
-void findPlayerLocations(char *pastPlays, char **locations) {
+char **findPlayerLocations(char *pastPlays) {
 	 // TO-DO: write this!
-	 return;
+	 // Note that it will probably require malloc() — I've already
+	 // added the corresponding free in GvNew()
+	 return NULL;
 }
