@@ -46,12 +46,15 @@ struct gameView {
 #define TRAP_IM_VAMP	4
 #define TWO_IM_VAMP		5
 
-// Local Function Declarations
+//--------------------- Local Function Declarations --------------------
+
 static void calcGameState(GameView Gv, char *pastPlays);
-static void intialisePlayers(GameView);
+static void initialisePlayers(GameView Gv);
 static void calcCurrPlayer(GameView Gv, char *currPlay);
 static void updateScore(GameView Gv, char *currPlay);
 static void processEncounterLocations(GameView Gv, char *currPlay);
+
+//----------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
@@ -237,19 +240,20 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
 
-////////////////////////////////////////////////////////////////////////
-// Local Helper Functions
+
+
+//------------------------ Local Helper Functions ---------------------
 
 static void initialisePlayers(GameView Gv) {
 
-	new->players = malloc(NUM_PLAYERS * sizeof(PlayerRep));
+	Gv->players = malloc(NUM_PLAYERS * sizeof(PlayerRep));
 	for (int i = 0; i < NUM_HUNTERS; i++) {
-		new->players[i] = PlayerRepNew(GAME_START_HUNTER_LIFE_POINTS,
+		Gv->players[i] = PlayerRepNew(GAME_START_HUNTER_LIFE_POINTS,
 			NULL, NULL
 		);
 	}
 
-	new->players[PLAYER_DRACULA] = PlayerRepNew(GAME_START_BLOOD_POINTS,
+	Gv->players[PLAYER_DRACULA] = PlayerRepNew(GAME_START_BLOOD_POINTS,
 		NULL, NULL
 	);
 
