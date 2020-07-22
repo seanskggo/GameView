@@ -47,7 +47,8 @@ struct gameView {
 #define TWO_IM_VAMP		5
 
 // Local Function Declarations
-static void calcGameState(GameView new, char *pastPlays);
+static void calcGameState(GameView Gv, char *pastPlays);
+static void intialisePlayers(GameView);
 static void calcCurrPlayer(GameView Gv, char *currPlay);
 static void updateScore(GameView Gv, char *currPlay);
 static void processEncounterLocations(GameView Gv, char *currPlay);
@@ -64,40 +65,16 @@ GameView GvNew(char *pastPlays, Message messages[])
 		exit(EXIT_FAILURE);
 	}
 
-	calcGameState(new, pastPlays);
-	/*
-	// initialise all variables inside gameview ADT
+	initialisePlayers(new);
 
-	new->score = calcGameScore(pastPlays);
-	calcEncounterLocations(pastPlays);
-	new->round = calcRound(pastPlays);
+	calcGameState(new, pastPlays);
+
 
 	new->map = MapNew();
 	// I believe that we don't need to handle adding connections to the map
 	// ourselves — see Map.c
 
-	// NOTE: need to get player locations instead of having them all
-	// be at Amsterdam
-	// NOTE: this should *probably* be chucked in a function too
-	// NOTE: since I added an additional "trail" element to PlayerRep,
-	// that needs to be handled too. We will palm off the work of finding the
-	// trail to calcGameState()...
-	char **locations = findPlayerLocations(pastPlays);
-	new->players = malloc(NUM_PLAYERS * sizeof(PlayerRep));
-	for (int i = 0; i < NUM_HUNTERS; i++) {
-		new->players[i] = PlayerRepNew(GAME_START_HUNTER_LIFE_POINTS,
-			NULL, locations[i]
-		);
-	}
-
-	new->players[PLAYER_DRACULA] = PlayerRepNew(GAME_START_BLOOD_POINTS,
-		NULL, "AM\0"
-	);
-
-	free(locations);
-
-	return new; */
-	return NULL;
+	return new;
 }
 
 void GvFree(GameView gv)
@@ -262,6 +239,22 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 
 ////////////////////////////////////////////////////////////////////////
 // Local Helper Functions
+
+static void initialisePlayers(GameView Gv) {
+
+	new->players = malloc(NUM_PLAYERS * sizeof(PlayerRep));
+	for (int i = 0; i < NUM_HUNTERS; i++) {
+		new->players[i] = PlayerRepNew(GAME_START_HUNTER_LIFE_POINTS,
+			NULL, NULL
+		);
+	}
+
+	new->players[PLAYER_DRACULA] = PlayerRepNew(GAME_START_BLOOD_POINTS,
+		NULL, NULL
+	);
+
+	return;
+}
 
 static void calcGameState(GameView Gv, char *pastPlays) {
 	// TO-DO: write this function using the old helper functions below...
