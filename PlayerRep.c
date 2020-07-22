@@ -7,21 +7,22 @@
 #include <string.h>
 
 #include "PlayerRep.h"
+#include "Places.h"
 
 struct playerRep
 {
     int health;
-    char *trail[TRAIL_LENGTH];
-    char *location;
+    int trail[TRAIL_LENGTH];
+    int location;
 };
 
-PlayerRep PlayerRepNew(int health, char *trail[TRAIL_LENGTH], char *location)
+PlayerRep PlayerRepNew(int health, char *trail[TRAIL_LENGTH], int location)
 {
     PlayerRep new = malloc(sizeof(struct playerRep));
     new->health = health;
-    new->location = strdup(location);
+    new->location = location;
     for(int i = 0; i < TRAIL_LENGTH; i++) {
-        new->trail[i] = strdup(trail[i]);
+        new->trail[i] = trail[i];
     }
     return new;
 }
@@ -38,7 +39,7 @@ int PlayerRepGetHealth(PlayerRep player)
     return player->health;
 }
 
-char *PlayerRepGetLocation(PlayerRep player)
+int *PlayerRepGetLocation(PlayerRep player)
 {
     return player->location;
 }
@@ -46,7 +47,14 @@ char *PlayerRepGetLocation(PlayerRep player)
 // Update a player's trail AND current location
 void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currPlay)
 {
-
-    // TO-DO: write this
+    char *currentLocation;
+    strncpy(currentLocation, currPlay + 1, 2);
+    int LocationID = placeAbbrevToId(currentLocation);
+    for (int i = 6; i > 0; i--) 
+    {
+        player->trail[i] = player->trail[i-1];
+    }
+    player->trail[0] = LocationID;
+    player->location = LocationID;
     return;
 }
