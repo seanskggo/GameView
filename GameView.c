@@ -252,7 +252,7 @@ static void initialisePlayers(GameView Gv) {
 	}
 
 	Gv->players[PLAYER_DRACULA] = PlayerRepNew(GAME_START_BLOOD_POINTS, NULL, 
-	0
+		0
 	);
 
 	return;
