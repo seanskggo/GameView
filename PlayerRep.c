@@ -15,7 +15,7 @@ struct playerRep
     char *location;
 };
 
-PlayerRep PlayerRepNew(int health, char *trail[TRAIL_LENGTH], char *location) 
+PlayerRep PlayerRepNew(int health, char *trail[TRAIL_LENGTH], char *location)
 {
     PlayerRep new = malloc(sizeof(struct playerRep));
     new->health = health;
@@ -41,4 +41,10 @@ int PlayerRepGetHealth(PlayerRep player)
 char *PlayerRepGetLocation(PlayerRep player)
 {
     return player->location;
+}
+
+void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currPlay) {
+
+    // TO-DO: write this
+    return;
 }

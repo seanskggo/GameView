@@ -48,7 +48,10 @@ struct gameView {
 
 // Local Function Declarations
 static void calcGameState(GameView new, char *pastPlays);
-static int calcCurrplayer(GameView Gv);
+static void calcCurrPlayer(GameView Gv, char *currPlay);
+static void updateScore(GameView Gv, char *currPlay);
+static void processEncounterLocations(GameView Gv, char *currPlay);
+
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
 
@@ -268,6 +271,7 @@ static void calcGameState(GameView Gv, char *pastPlays) {
 	int round = 0;
 	char *currPlay = malloc(PLAY_LENGTH * sizeof(char));
 	int currPlayCounter;
+	int j = 0;
 	for (int i = 0; pastPlays[i] != '\0'; i++) {
 
 		currPlay[currPlayCounter] = pastPlays[i];
@@ -275,7 +279,7 @@ static void calcGameState(GameView Gv, char *pastPlays) {
 		if (i % PLAY_LENGTH == 0 && i != 0) {
 
 			// Last char in currentPlay should be a space in most cases?
-			currPlay[j] = '\0'
+			currPlay[j] = '\0';
 
 			// Process Round
 
@@ -284,31 +288,46 @@ static void calcGameState(GameView Gv, char *pastPlays) {
 				round++;
 			}
 
-			// Update score
-			updateScore(Gv);
+			// Update score based on the current play
+			updateScore(Gv, currPlay);
+
+			// Update current player based on the current play
+			calcCurrPlayer(Gv, currPlay);
+
+			// Update current player's trail
+			PlayerRepUpdatePlayerTrail(Gv->players[Gv->currentPlayer],
+				currPlay
+			);
+
+			processEncounterLocations(Gv, currPlay);
 
 			// Reset currPlayCounter cos we just processed a whole play
 			currPlayCounter = 0;
 		}
+		j++;
 	}
 	// Increment round as the last play doesn't have a space (I think)
 	round++;
 
 	Gv->round = round;
-	Gv->currentPlayer = calcCurrPlayer(Gv);
 
-	free(currentPlay);
+	free(currPlay);
 
 	return;
 }
 
-static int calcCurrplayer(GameView Gv) {
+static void calcCurrPlayer(GameView Gv, char *currPlay) {
 	// TO-DO: Write this
-	return 0;
+	return;
 }
 
-static void updateScore(GameView Gv) {
-	// TO-DO: WRITE THIS 
+static void updateScore(GameView Gv, char *currPlay) {
+	// TO-DO: WRITE THIS
+	return;
+}
+
+static void processEncounterLocations(GameView Gv, char *currPlay) {
+	// TO-DO: WRITE THIS
 	return;
 }
 
