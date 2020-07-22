@@ -320,7 +320,7 @@ static void calcCurrPlayer(GameView Gv, char *currPlay) {
 	if (a == 'G') Gv->currentPlayer = PLAYER_LORD_GODALMING;
 	else if (a == 'S') Gv->currentPlayer = PLAYER_DR_SEWARD;
 	else if (a == 'H') Gv->currentPlayer = PLAYER_VAN_HELSING;
-	else if (a == 'M') Gv->currentPlayer = PALYER_MINA_HARKER;
+	else if (a == 'M') Gv->currentPlayer = PLAYER_MINA_HARKER;
 	else Gv->currentPlayer = PLAYER_DRACULA;
 }
 
