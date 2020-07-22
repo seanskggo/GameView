@@ -43,7 +43,9 @@ char *PlayerRepGetLocation(PlayerRep player)
     return player->location;
 }
 
-void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currPlay) {
+// Update a player's trail AND current location
+void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currPlay)
+{
 
     // TO-DO: write this
     return;
