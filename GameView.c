@@ -311,7 +311,12 @@ static void calcGameState(GameView Gv, char *pastPlays) {
 
 static void calcCurrPlayer(GameView Gv, char *currPlay) {
 	// TO-DO: Write this
-	return;
+	char a = currPlay[0];
+	if (a == 'G') Gv->currentPlayer = PLAYER_LORD_GODALMING;
+	else if (a == 'S') Gv->currentPlayer = PLAYER_DR_SEWARD;
+	else if (a == 'H') Gv->currentPlayer = PLAYER_VAN_HELSING;
+	else if (a == 'M') Gv->currentPlayer = PALYER_MINA_HARKER;
+	else Gv->currentPlayer = PLAYER_DRACULA;
 }
 
 static void updateScore(GameView Gv, char *currPlay) {
