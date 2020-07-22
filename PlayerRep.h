@@ -9,13 +9,13 @@
 
 typedef struct playerRep *PlayerRep;
 
-PlayerRep PlayerRepNew(int health, char *trail[TRAIL_LENGTH], char *location);
+PlayerRep PlayerRepNew(int health, int trail[TRAIL_LENGTH], int location);
 
 void PlayerRepFree(PlayerRep player);
 
 int PlayerRepGetHealth(PlayerRep player);
 
-char *PlayerRepGetLocation(PlayerRep player);
+int PlayerRepGetLocation(PlayerRep player);
 
 // Update a player's trail AND current location
 void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currPlay);
