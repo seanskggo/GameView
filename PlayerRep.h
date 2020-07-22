@@ -5,7 +5,7 @@
 #ifndef PLAYER_REP_H_
 #define PLAYER_REP_H_
 
-#define TRAIL_LENGTH 6
+#define TRAIL_LENGTH 7
 
 typedef struct playerRep *PlayerRep;
 
