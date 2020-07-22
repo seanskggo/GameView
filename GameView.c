@@ -75,7 +75,7 @@ GameView GvNew(char *pastPlays, Message messages[])
 
 	new->map = MapNew();
 	// I believe that we don't need to handle adding connections to the map
-	// ourselves — see Map.c
+	// ourselves \u2014 see Map.c
 
 	return new;
 }
@@ -248,13 +248,11 @@ static void initialisePlayers(GameView Gv) {
 
 	Gv->players = malloc(NUM_PLAYERS * sizeof(PlayerRep));
 	for (int i = 0; i < NUM_HUNTERS; i++) {
-		Gv->players[i] = PlayerRepNew(GAME_START_HUNTER_LIFE_POINTS,
-			NULL, NULL
-		);
+		Gv->players[i] = PlayerRepNew(GAME_START_HUNTER_LIFE_POINTS, NULL, 0);
 	}
 
-	Gv->players[PLAYER_DRACULA] = PlayerRepNew(GAME_START_BLOOD_POINTS,
-		NULL, NULL
+	Gv->players[PLAYER_DRACULA] = PlayerRepNew(GAME_START_BLOOD_POINTS, NULL, 
+	0
 	);
 
 	return;
@@ -313,10 +311,15 @@ static void calcGameState(GameView Gv, char *pastPlays) {
 	return;
 }
 
+// Modified by Sean
 static void calcCurrPlayer(GameView Gv, char *currPlay) {
 	// TO-DO: Write this
-	
-	return;
+	char a = currPlay[0];
+	if (a == 'G') Gv->currentPlayer = PLAYER_LORD_GODALMING;
+	else if (a == 'S') Gv->currentPlayer = PLAYER_DR_SEWARD;
+	else if (a == 'H') Gv->currentPlayer = PLAYER_VAN_HELSING;
+	else if (a == 'M') Gv->currentPlayer = PLAYER_MINA_HARKER;
+	else Gv->currentPlayer = PLAYER_DRACULA;
 }
 
 static void updateScore(GameView Gv, char *currPlay) {
@@ -359,7 +362,7 @@ static int calcRound(char *pastPlays) {
 
 char **findPlayerLocations(char *pastPlays) {
 	 // TO-DO: write this!
-	 // Note that it will probably require malloc() — I've already
+	 // Note that it will probably require malloc() \u2014 I've already
 	 // added the corresponding free in GvNew()
 	 return NULL;
 } */
