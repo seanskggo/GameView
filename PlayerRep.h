@@ -5,9 +5,11 @@
 #ifndef PLAYER_REP_H_
 #define PLAYER_REP_H_
 
+#define TRAIL_LENGTH 6
+
 typedef struct playerRep *PlayerRep;
 
-PlayerRep PlayerRepNew(int health, char *location);
+PlayerRep PlayerRepNew(int health, char *trail[TRAIL_LENGTH], char *location);
 
 void PlayerRepFree(PlayerRep player);
 

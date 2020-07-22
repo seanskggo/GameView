@@ -30,6 +30,7 @@ struct gameView {
 
 	PlayerRep *players;
 	int encounterLocations[NUM_REAL_PLACES];
+	int currentPlayer;
 	int round;
 	int score;
 	Map map;
@@ -46,23 +47,21 @@ struct gameView {
 #define TWO_IM_VAMP		5
 
 // Local Function Declarations
-static int calcGameScore(char *pastPlays);
-static void calcEncounterLocations(char *pastPlays);
-static int calcRound(char *pastPlays);
-char **findPlayerLocations(char *pastPlays);
-
+static void calcGameState(GameView new, char *pastPlays);
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
 
 GameView GvNew(char *pastPlays, Message messages[])
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+
 	GameView new = malloc(sizeof(*new));
 	if (new == NULL) {
 		fprintf(stderr, "Couldn't allocate GameView!\n");
 		exit(EXIT_FAILURE);
 	}
 
+	calcGameState(new, pastPlays);
+	/*
 	// initialise all variables inside gameview ADT
 
 	new->score = calcGameScore(pastPlays);
@@ -76,21 +75,25 @@ GameView GvNew(char *pastPlays, Message messages[])
 	// NOTE: need to get player locations instead of having them all
 	// be at Amsterdam
 	// NOTE: this should *probably* be chucked in a function too
+	// NOTE: since I added an additional "trail" element to PlayerRep,
+	// that needs to be handled too. We will palm off the work of finding the
+	// trail to calcGameState()...
 	char **locations = findPlayerLocations(pastPlays);
 	new->players = malloc(NUM_PLAYERS * sizeof(PlayerRep));
 	for (int i = 0; i < NUM_HUNTERS; i++) {
 		new->players[i] = PlayerRepNew(GAME_START_HUNTER_LIFE_POINTS,
-			locations[i]
+			NULL, locations[i]
 		);
 	}
 
 	new->players[PLAYER_DRACULA] = PlayerRepNew(GAME_START_BLOOD_POINTS,
-		"AM\0"
+		NULL, "AM\0"
 	);
 
 	free(locations);
 
-	return new;
+	return new; */
+	return NULL;
 }
 
 void GvFree(GameView gv)
@@ -113,7 +116,6 @@ Round GvGetRound(GameView gv)
 	// Input gv
 	// Output return struct Round with integer to #rounds
 
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return gv->round;
 }
 
@@ -257,7 +259,15 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 ////////////////////////////////////////////////////////////////////////
 // Local Helper Functions
 
-static int calcGameScore(char *pastPlays) {
+static void calcGameState(GameView new, char *pastPlays) {
+	// TO-DO: write this function using the old helper functions below...
+	// and writing the code for the helper functions that were never written!
+	return;
+}
+
+// Old helper functions. They are no longer declared at the top of the file.
+
+/*static int calcGameScore(char *pastPlays) {
 	// TO-DO: write this!
 	return 0;
 }
@@ -288,4 +298,4 @@ char **findPlayerLocations(char *pastPlays) {
 	 // Note that it will probably require malloc() — I've already
 	 // added the corresponding free in GvNew()
 	 return NULL;
-}
+} */

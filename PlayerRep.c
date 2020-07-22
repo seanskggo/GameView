@@ -11,16 +11,20 @@
 struct playerRep
 {
     int health;
+    char *trail[TRAIL_LENGTH];
     char *location;
 };
 
-PlayerRep PlayerRepNew(int health, char *location)
+PlayerRep PlayerRepNew(int health, char *trail[TRAIL_LENGTH], char *location) 
 {
     PlayerRep new = malloc(sizeof(struct playerRep));
     new->health = health;
     new->location = strdup(location);
+    for(int i = 0; i < TRAIL_LENGTH; i++) {
+        new->trail[i] = strdup(trail[i]);
+    }
     return new;
-};
+}
 
 void PlayerRepFree(PlayerRep player)
 {
