@@ -17,4 +17,6 @@ int PlayerRepGetHealth(PlayerRep player);
 
 char *PlayerRepGetLocation(PlayerRep player);
 
+void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currPlay);
+
 #endif
