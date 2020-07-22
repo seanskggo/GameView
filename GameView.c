@@ -47,19 +47,21 @@ struct gameView {
 #define TWO_IM_VAMP		5
 
 // Local Function Declarations
-
+static void calcGameState(GameView new, char *pastPlays);
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
 
 GameView GvNew(char *pastPlays, Message messages[])
 {
-	/*
+
 	GameView new = malloc(sizeof(*new));
 	if (new == NULL) {
 		fprintf(stderr, "Couldn't allocate GameView!\n");
 		exit(EXIT_FAILURE);
 	}
 
+	calcGameState(new, pastPlays);
+	/*
 	// initialise all variables inside gameview ADT
 
 	new->score = calcGameScore(pastPlays);
@@ -257,13 +259,11 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 ////////////////////////////////////////////////////////////////////////
 // Local Helper Functions
 
-
-
-
-
-
-
-
+static void calcGameState(GameView new, char *pastPlays) {
+	// TO-DO: write this function using the old helper functions below...
+	// and writing the code for the helper functions that were never written!
+	return;
+}
 
 // Old helper functions. They are no longer declared at the top of the file.
 
