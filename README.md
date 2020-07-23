@@ -4,9 +4,9 @@
 Group Name: Codepocalypse
 
 /////////////////\
-Team Member Info:
-/////////////////\
-
+Team Member Info:\
+/////////////////
+\
 Samuel Schreyer:\
 \
 zID: z5309618\
@@ -23,13 +23,13 @@ Dabin Haam:\
 \
 zID: z5258354\
 GitHub username: dabinhaam\
-tutorial code: F09A\
-
+tutorial code: F09A \
+\
 Sean Go:\
 \
-zID: z5310199\
-Github username: seanskggo72\
-tutorial code: F09A\
+zID: z5310199 \
+Github username: seanskggo72 \
+tutorial code: F09A \
 \
 
 Hey team! This is the master branch for the Fury of Dracula Assignment (COMP2521).
