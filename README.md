@@ -7,26 +7,26 @@ Group Name: Codepocalypse
 Team Member Info:\
 ------------------------------ \
 \
-Samuel Schreyer:\
+<strong>Samuel Schreyer<\strong>:\
 \
 zID: z5309618 \
 GitHub username: sschreyer \
 tutorial code: H15A 
 
-Francis Nguyen:\
+<strong>Francis Nguyen<\strong>:\
 \
 zID: z5316596 \
 GitHub username: FuyuFrancisCS \
 tutorial code: W11B 
 
-Dabin Haam: \
+<strong>Dabin Haam<\strong>: \
 \
 zID: z5258354\
 GitHub username: dabinhaam \
 tutorial code: F09A 
 
 
-Sean Go:\
+<strong>Sean Go<\strong>:\
 \
 zID: z5310199 \
 Github username: seanskggo72 \
