@@ -8,16 +8,20 @@
 
 #include "PlayerRep.h"
 #include "Places.h"
+#include "Game.h"
 
 struct playerRep
 {
     int health;
-    PlaceId MoveHistory[MAX_ROUNDS];
-    PlaceId trail[TRAIL_LENGTH];
     PlaceId location;
+    char *MoveHistory[MAX_ROUNDS];
+    char *trail[TRAIL_LENGTH];
+    
+    char *HunterPOVTrail[TRAIL_LENGTH];
+    char *HunterPOVMoveHistory[MAX_ROUNDS];
 };
 
-PlayerRep PlayerRepNew(int health, PlaceId trail[TRAIL_LENGTH], PlaceId location)
+PlayerRep PlayerRepNew(int health, char *trail[TRAIL_LENGTH], PlaceId location)
 {
     PlayerRep new = malloc(sizeof(struct playerRep));
     new->health = health;
@@ -30,7 +34,7 @@ PlayerRep PlayerRepNew(int health, PlaceId trail[TRAIL_LENGTH], PlaceId location
     // Note: a player is physically incapable of being NOWHERE
     for (int i = 0; i < MAX_ROUNDS; i++) 
     {
-        new->MoveHistory[i] = NOWHERE;
+        new->MoveHistory[i] = "??";
     }
     return new;
 }
@@ -51,30 +55,89 @@ PlaceId PlayerRepGetLocation(PlayerRep player)
     return player->location;
 }
 
-// Update a player's trail AND current location
-void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currPlay)
+// Updates everything
+void PlayerRepUpdate(PlayerRep player, char *currPlay)
 {
-    char *currentLocation[2];
-    strncpy(currentLocation[2], currPlay + 1, 2);
-    PlaceId LocationID = placeAbbrevToId(currentLocation[2]);
+    char currentLocation[2];
+    strncpy(currentLocation, currPlay + 1, 2);
+    PlaceId LocationID = placeAbbrevToId(currentLocation);    
+    const char *LocationAbb = placeIdToAbbrev(LocationID);
+    PlaceType LocationType = placeIdToType(LocationID);
+    
+    // Update Trail
+    PlayerRepUpdatePlayerTrail(player, currentLocation);
+    // Update Location
+    PlayerRepUpdatePlayerLocation(player, LocationID);
+    // Update Move History
+    PlayerRepUpdateMoveHistory(player, LocationAbb);
+    // Update HunterPOV trail
+    PlayerRepUpdateHunterPOVTrail(player, LocationAbb, LocationType);
+    // Update HunterPOV move history
+    PlayerRepUpdateHunterPOVMoveHistory(player, LocationAbb, LocationType); 
+    return;
+}
+
+// Update a player's trail
+void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currentLocation)
+{
     for (int i = 6; i > 0; i--) 
     {
         player->trail[i] = player->trail[i-1];
     }
-    player->trail[0] = LocationID;
+    player->trail[0] = currentLocation;
+    return;
+}
+
+// Update a player's location
+void PlayerRepUpdatePlayerLocation(PlayerRep player, PlaceId LocationID)
+{
     player->location = LocationID;
     return;
 }
 
 // Updates a player's move history
-void PlayerRepUpdateMoveHistory(PlayerRep player, char *currPlay)
+void PlayerRepUpdateMoveHistory(PlayerRep player, const char *LocationAbb)
 {
-    char *currentLocation[2];
-    strncpy(currentLocation[2], currPlay + 1, 2);
-    PlaceId LocationID = placeAbbrevToId(currentLocation[2]);
     int i = 0;
-    for (int i = 0; player->MoveHistory[i] != NOWHERE && i < MAX_ROUNDS; i++)
+    for (; strcmp(player->MoveHistory[i], "??") == 0 && i < MAX_ROUNDS; i++)
     {
     }
-    player->MoveHistory[i] = LocationID;
+    player->MoveHistory[i] = strdup(LocationAbb);
+}
+
+// Update HunterPOV Trail
+void PlayerRepUpdateHunterPOVTrail(PlayerRep player, 
+    const char *LocationAbb, PlaceType LocationType)
+{
+    for (int i = 6; i > 0; i--) 
+    {
+        player->HunterPOVTrail[i] = player->HunterPOVTrail[i - 1];
+    }    
+    if (LocationType == LAND) {
+        player->HunterPOVTrail[0] = "C?";
+    } else if (LocationType == SEA) {
+        player->HunterPOVTrail[0] = "S?";
+    } else {
+        player->HunterPOVTrail[0] = strdup(LocationAbb);
+    }
+    return;
+}
+
+// Update HunterPOV Move History
+void PlayerRepUpdateHunterPOVMoveHistory(PlayerRep player, 
+    const char *LocationAbb, PlaceType LocationType) 
+{
+    int i = 0;
+    for (; strcmp(player->HunterPOVMoveHistory[i], "??") == 0 && 
+        i < MAX_ROUNDS; i++)
+    {
+    }
+    if (LocationType == LAND) {
+        player->HunterPOVTrail[i] = "C?";
+    } else if (LocationType == SEA) {
+        player->HunterPOVTrail[i] = "S?";
+    } else {
+        player->HunterPOVTrail[i] = strdup(LocationAbb);
+    }    
+    return;
 }
