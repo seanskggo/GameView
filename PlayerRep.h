@@ -21,4 +21,6 @@ PlaceId PlayerRepGetLocation(PlayerRep player);
 // Update a player's trail AND current location
 void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currPlay);
 
+// Updates a player's move history
+void PlayerRepUpdateMoveHistory(PlayerRep player, char *currPlay);
 #endif
