@@ -5,7 +5,7 @@
 #ifndef PLAYER_REP_H_
 #define PLAYER_REP_H_
 
-#define TRAIL_LENGTH 7
+#define TRAIL_LENGTH 6
 #define MAX_ROUNDS 366
 #include "Places.h"
 #include "Game.h"
