@@ -12,11 +12,11 @@
 struct playerRep
 {
     int health;
-    int trail[TRAIL_LENGTH];
-    int location;
+    PlaceId trail[TRAIL_LENGTH];
+    PlaceId location;
 };
 
-PlayerRep PlayerRepNew(int health, int trail[TRAIL_LENGTH], int location)
+PlayerRep PlayerRepNew(int health, PlaceId trail[TRAIL_LENGTH], PlaceId location)
 {
     PlayerRep new = malloc(sizeof(struct playerRep));
     new->health = health;
@@ -38,7 +38,7 @@ int PlayerRepGetHealth(PlayerRep player)
     return player->health;
 }
 
-int PlayerRepGetLocation(PlayerRep player)
+PlaceId PlayerRepGetLocation(PlayerRep player)
 {
     return player->location;
 }
@@ -48,7 +48,7 @@ void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currPlay)
 {
     char *currentLocation[2];
     strncpy(currentLocation[2], currPlay + 1, 2);
-    int LocationID = placeAbbrevToId(currentLocation[2]);
+    PlaceId LocationID = placeAbbrevToId(currentLocation[2]);
     for (int i = 6; i > 0; i--) 
     {
         player->trail[i] = player->trail[i-1];
