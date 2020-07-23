@@ -39,4 +39,7 @@ void PlayerRepUpdateHunterPOVTrail(PlayerRep player,
 // Update a player's HunterPOV Move History
 void PlayerRepUpdateHunterPOVMoveHistory (PlayerRep player, 
     const char *LocationAbb, PlaceType LocationType); 
+
+// Check if in Dracula's trail
+int PlayerRepCheckTrail(PlayerRep player, const char *LocationAbb);
 #endif
