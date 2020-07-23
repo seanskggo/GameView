@@ -5,19 +5,38 @@
 #ifndef PLAYER_REP_H_
 #define PLAYER_REP_H_
 
-#define TRAIL_LENGTH 6
+#define TRAIL_LENGTH 7
+#define MAX_ROUNDS 366
+#include "Places.h"
+#include "Game.h"
 
 typedef struct playerRep *PlayerRep;
 
-PlayerRep PlayerRepNew(int health, char *trail[TRAIL_LENGTH], char *location);
+PlayerRep PlayerRepNew(int health, char *trail[TRAIL_LENGTH], PlaceId location);
 
 void PlayerRepFree(PlayerRep player);
 
 int PlayerRepGetHealth(PlayerRep player);
 
-char *PlayerRepGetLocation(PlayerRep player);
+PlaceId PlayerRepGetLocation(PlayerRep player);
 
-// Update a player's trail AND current location
-void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currPlay);
+// Updates everything
+void PlayerRepUpdate(PlayerRep player, char *currPlay);
 
+// Update a player's trail
+void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currentLocation);
+
+// Update a player's location
+void PlayerRepUpdatePlayerLocation(PlayerRep player, PlaceId LocationID);
+
+// Updata a player's move history
+void PlayerRepUpdateMoveHistory(PlayerRep player, const char *LocationAbb);
+
+// Update a player's HunterPOV trail
+void PlayerRepUpdateHunterPOVTrail(PlayerRep player, 
+    const char *LocationAbb, PlaceType LocationType);
+
+// Update a player's HunterPOV Move History
+void PlayerRepUpdateHunterPOVMoveHistory (PlayerRep player, 
+    const char *LocationAbb, PlaceType LocationType); 
 #endif
