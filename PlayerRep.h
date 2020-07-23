@@ -6,16 +6,17 @@
 #define PLAYER_REP_H_
 
 #define TRAIL_LENGTH 7
+#include "Places.h"
 
 typedef struct playerRep *PlayerRep;
 
-PlayerRep PlayerRepNew(int health, int trail[TRAIL_LENGTH], int location);
+PlayerRep PlayerRepNew(int health, PlaceId trail[TRAIL_LENGTH], PlaceId location);
 
 void PlayerRepFree(PlayerRep player);
 
 int PlayerRepGetHealth(PlayerRep player);
 
-int PlayerRepGetLocation(PlayerRep player);
+PlaceId PlayerRepGetLocation(PlayerRep player);
 
 // Update a player's trail AND current location
 void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currPlay);
