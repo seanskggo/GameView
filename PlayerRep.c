@@ -141,3 +141,17 @@ void PlayerRepUpdateHunterPOVMoveHistory(PlayerRep player,
     }    
     return;
 }
+
+// Check if in Dracula's Trail
+int PlayerRepCheckTrail(PlayerRep player, const char *LocationAbb)
+{
+    int i = 0;
+    while (i < TRAIL_LENGTH) {
+        if (strcmp(player->trail[i], LocationAbb)) {
+            return true;
+        } else {
+            i++;
+        }
+    }
+    return false;
+}
