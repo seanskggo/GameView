@@ -80,7 +80,7 @@ void PlayerRepUpdate(PlayerRep player, char *currPlay)
 // Update a player's trail
 void PlayerRepUpdatePlayerTrail(PlayerRep player, char *currentLocation)
 {
-    for (int i = 6; i > 0; i--) 
+    for (int i = TRAIL_LENGTH - 1; i > 0; i--) 
     {
         player->trail[i] = player->trail[i-1];
     }
@@ -109,7 +109,7 @@ void PlayerRepUpdateMoveHistory(PlayerRep player, const char *LocationAbb)
 void PlayerRepUpdateHunterPOVTrail(PlayerRep player, 
     const char *LocationAbb, PlaceType LocationType)
 {
-    for (int i = 6; i > 0; i--) 
+    for (int i = TRAIL_LENGTH - 1; i > 0; i--) 
     {
         player->HunterPOVTrail[i] = player->HunterPOVTrail[i - 1];
     }    
