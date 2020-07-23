@@ -293,7 +293,10 @@ static void calcGameState(GameView Gv, char *pastPlays) {
 			PlayerRepUpdatePlayerTrail(Gv->players[Gv->currentPlayer],
 				currPlay
 			);
-
+			
+			PlayerRepUpdateMoveHistory(Gv->players[Gv->currentPlayer],
+				currPlay
+			);
 			processEncounterLocations(Gv, currPlay);
 
 			// Reset currPlayCounter cos we just processed a whole play
