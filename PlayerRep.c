@@ -106,15 +106,35 @@ void PlayerRepUpdatePlayerLocation(PlayerRep player, PlaceId LocationID)
     return;
 }
 
-// Update a player's location
-// Input: player, location id
-void PlayerRepUpdatePlayerLocation(PlayerRep player, PlaceId LocationID)
+// Updates a player's move history
+// Input: player, abbreviated location
+void PlayerRepUpdateMoveHistory(PlayerRep player, const char *LocationAbb, 
+    int RoundNumber)
 {
-    player->location = LocationID;
+    player->MoveHistory[RoundNumber] = strdup(LocationAbb);
     return;
 }
 
 // Update HunterPOV Trail
+// Input: player, abbreviated location, type of location
+void PlayerRepUpdateHunterPOVTrail(PlayerRep player, 
+    const char *LocationAbb, PlaceType LocationType)
+{
+    for (int i = TRAIL_LENGTH - 1; i > 0; i--) 
+    {
+        player->HunterPOVTrail[i] = player->HunterPOVTrail[i - 1];
+    }    
+    if (LocationType == LAND) {
+        player->HunterPOVTrail[0] = "C?";
+    } else if (LocationType == SEA) {
+        player->HunterPOVTrail[0] = "S?";
+    } else {
+        player->HunterPOVTrail[0] = strdup(LocationAbb);
+    }
+    return;
+}
+
+// Update HunterPOV Move History
 // Input: player, abbreviated location, type of location
 void PlayerRepUpdateHunterPOVMoveHistory(PlayerRep player, 
     const char *LocationAbb, PlaceType LocationType, int RoundNumber) 
@@ -126,26 +146,6 @@ void PlayerRepUpdateHunterPOVMoveHistory(PlayerRep player,
     } else {
         player->HunterPOVTrail[RoundNumber] = strdup(LocationAbb);
     }    
-    return;
-}
-
-// Update HunterPOV Move History
-// Input: player, abbreviated location, type of location
-void PlayerRepUpdateHunterPOVMoveHistory(PlayerRep player,
-    const char *LocationAbb, PlaceType LocationType)
-{
-    int i = 0;
-    for (; strcmp(player->HunterPOVMoveHistory[i], "??") == 0 &&
-        i < MAX_ROUNDS; i++)
-    {
-    }
-    if (LocationType == LAND) {
-        player->HunterPOVTrail[i] = "C?";
-    } else if (LocationType == SEA) {
-        player->HunterPOVTrail[i] = "S?";
-    } else {
-        player->HunterPOVTrail[i] = strdup(LocationAbb);
-    }
     return;
 }
 
