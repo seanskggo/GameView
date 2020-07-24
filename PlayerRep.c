@@ -183,15 +183,17 @@ PlaceId PlayerRepCheckTrail(PlayerRep player, const char *LocationAbb)
         if (strcmp(player->trail[i], LocationAbb)) {
             if (checkDouble == 0) {
                 // a double back move was done at this location
+                player->HunterPOVTrail[i] = strdup(player->trail[i]);
                 return placeAbbrevToId(tempDoub); 
             } else if (checkHide == 0) {
                 // a hide move was done at this location
+                player->HunterPOVTrail[i] = strdup(player->trail[i]);
                 return placeAbbrevToId(tempHide);
             } else {
                 // Otherwise
+                player->HunterPOVTrail[i] = strdup(player->trail[i]);
                 return placeAbbrevToId(tempChar);            
             }
-            player->HunterPOVTrail[i] = strdup(player->trail[i]);
         } else {
             i++;
             checkDouble--;
