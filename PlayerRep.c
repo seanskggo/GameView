@@ -241,3 +241,13 @@ char **PlayerRepGameMoveHistory(PlayerRep player1, PlayerRep player2,
     }
     return HunterPOVMoveHistory;
 }
+
+// Get a player's full HunterPOV move history
+char **PlayerRepMoveHistory(PlayerRep player) {
+    return player->HunterPOVMoveHistory;
+}
+
+// Get a player's full HunterPOV trail
+char **PlayerRepGetTrail(PlayerRep player) {
+    return player->HunterPOVTrail;
+}
