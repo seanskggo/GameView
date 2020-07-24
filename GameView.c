@@ -138,7 +138,7 @@ int GvGetHealth(GameView gv, Player player)
 
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
 {
-/*
+
 	// Input gv, player
 	// Output the integer value assigned to the location (placeID)
 		// of where the player is currently at. Return "NOWHERE" if the player
@@ -149,16 +149,17 @@ PlaceId GvGetPlayerLocation(GameView gv, Player player)
 
 		// NOTE: VERY MUCH INCOMPLETE — see GameView.h
 
-		switch(Gv->currentPlayer) {
-			Case PLAYER_LORD_GODALMING:
-			Case PLAYER_DR_SEWARD:
-			Case PLAYER_VAN_HELSING:
-			Case PLAYER_MINA_HARKER:
-				PlayerRepGetLocation(gv->players[player])
+		switch(gv->currentPlayer) {
+			case PLAYER_LORD_GODALMING:
+			case PLAYER_DR_SEWARD:
+			case PLAYER_VAN_HELSING:
+			case PLAYER_MINA_HARKER:
+				PlayerRepGetLocation(gv->players[player]);
 				break;
 
 			// Drac
 			default:
+
 				// if: Drac's current location is revealed to the hunter's
 					// print the loc, unless it it a hide or double_back
 
@@ -171,7 +172,7 @@ PlaceId GvGetPlayerLocation(GameView gv, Player player)
 				// else: Dracula is NOWHERE
 				break;
 		}
-*/
+
 	return PlayerRepGetLocation(gv->players[player]);
 
 }
@@ -181,7 +182,7 @@ PlaceId GvGetPlayerLocation(GameView gv, Player player)
 
 PlaceId GvGetVampireLocation(GameView gv)
 {
-/*
+
 	// Input gv
 	// Output the integer value assigned to the location (placeID)
 		// of where the immature vampire are currently at in a dynamically
@@ -197,22 +198,20 @@ PlaceId GvGetVampireLocation(GameView gv)
 
 	// NOTE: could be made more efficient by storing the vamp's
 	// location?
-
-	switch(Gv->currentPlayer) {
+	PlaceId vampLoc = NOWHERE;
+	switch(gv->currentPlayer) {
 		// if the round is in a certain mod range...there can NEVER
 		// be an immature vamp...
 
 		// if: (above but in code)
 			// return NOWHERE;
 
-		Case PLAYER_LORD_GODALMING:
-		Case PLAYER_DR_SEWARD:
-		Case PLAYER_VAN_HELSING:
-		Case PLAYER_MINA_HARKER:
-			// code here
+		case PLAYER_LORD_GODALMING:
+		case PLAYER_DR_SEWARD:
+		case PLAYER_VAN_HELSING:
+		case PLAYER_MINA_HARKER:
 
 			// for: find immature vamp location
-			PlaceID vampLoc = NOWHERE;
 			for(int i = 0; i < NUM_REAL_PLACES; i++) {
 				if (gv->encounterLocations[i] == IM_VAMP ||
 					gv->encounterLocations[i] == TRAP_IM_VAMP ||
@@ -249,7 +248,7 @@ PlaceId GvGetVampireLocation(GameView gv)
 			}
 			break;
 	}
-*/
+
 	return NOWHERE;
 }
 
@@ -257,7 +256,6 @@ PlaceId GvGetVampireLocation(GameView gv)
 
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 {
-/*
 	// Input gv, numTraps
 	// Output the location of the traps currently on the map in a
 		// dynamically allocated array. Including multiple copies if multiple
@@ -270,21 +268,21 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 	// If player is not Dracula, just return. May add additional functionality
 	// for players later, but the spec doesn't require it.
 
-	if (Gv->currentPlayer != PLAYER_DRACULA) {
-		return NOWHERE;
+	if (gv->currentPlayer != PLAYER_DRACULA) {
+		return NULL;
 	}
 
 	// could maybe be made more efficient...but it might cost elsewhere??
 
 	for(int i = 0; i < NUM_REAL_PLACES; i++) {
-		if (gv->encounterLocations[i] == ONE_TRAP
+		if (gv->encounterLocations[i] == ONE_TRAP ||
 			gv->encounterLocations[i] == TRAP_IM_VAMP
 		) {
-			*numTraps++;
+			*numTraps += 1;
 		}
 
 		else if (gv->encounterLocations[i] == TWO_TRAPS ||
-			gvgv->encounterLocations[i] == TWO_TRAPS_IM_VAMP
+			gv->encounterLocations[i] == TWO_TRAPS_IM_VAMP
 		) {
 			*numTraps += 2;
 		}
@@ -293,7 +291,6 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 			*numTraps += 3;
 		}
 	}
-*/
 	// *numTraps = 0;
 	return NULL;
 }
@@ -345,21 +342,18 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 PlaceId *GvGetReachable(GameView gv, Player player, Round round,
                         PlaceId from, int *numReturnedLocs)
 {
-/*
-	switch(Gv->currentPlayer) {
-		Case PLAYER_LORD_GODALMING:
-		Case PLAYER_DR_SEWARD:
-		Case PLAYER_VAN_HELSING:
-		Case PLAYER_MINA_HARKER:
-
-			ConnList curr = MapGetConnections(gv->map, from);
-			ConnList reachableLocs = NULL;
-			for(; curr != NULL; curr = curr->next) {
+	ConnList curr = MapGetConnections(gv->map, from);
+	ConnList reachableLocs = NULL;
+	switch(gv->currentPlayer) {
+		case PLAYER_LORD_GODALMING:
+		case PLAYER_DR_SEWARD:
+		case PLAYER_VAN_HELSING:
+		case PLAYER_MINA_HARKER:for(; curr != NULL; curr = curr->next) {
 
 				if (curr->type == ROAD ||
 					curr->type == BOAT
 				) {
-					*numReturnedLocs++;
+					*numReturnedLocs += 1;
 					reachableLocs = connListInsert(reachableLocs,
 						curr->p, curr->type
 					);
@@ -370,10 +364,10 @@ PlaceId *GvGetReachable(GameView gv, Player player, Round round,
 					// need to check if curr is within canTravelDist
 					// from "from"
 					// we'll see if it needs to be < or <=...
-					if (MapGetRAILDistance(gv->m, from, curr->p) <=
+					if (MapGetRailDistance(gv->map, from, curr->p) <=
 						canTravelDist
 					) {
-						*numReturnedLocs++;
+						*numReturnedLocs += 1;
 						reachableLocs = connListInsert(reachableLocs,
 							curr->p, curr->type
 						);
@@ -386,10 +380,10 @@ PlaceId *GvGetReachable(GameView gv, Player player, Round round,
 			// will be malloced
 			int rLocsLength = MapConnListLength(reachableLocs);
 
-			PlaceId reachableLocsArray = malloc(rLocsLength * sizeof(PlaceID));
+			PlaceId *reachableLocsArray = malloc(rLocsLength * sizeof(PlaceId));
 
 			// populate the reachableLocsArray
-			ConnList curr = reachableLocs
+			ConnList curr = reachableLocs;
 			for (int i = 0; i < rLocsLength; i++) {
 				reachableLocsArray[i] = curr->p;
 				curr = curr->next;
@@ -401,12 +395,13 @@ PlaceId *GvGetReachable(GameView gv, Player player, Round round,
 
 		// Drac
 		default:
-			// TO-DO: write this part
+			// he can go anywhere nearby...unless a double back or hide
+			// was done recetnly
 			break;
 	}
 
 	*numReturnedLocs = 0;
-	*/
+
 	return NULL;
 }
 
@@ -479,9 +474,10 @@ static void calcGameState(GameView Gv, char *pastPlays) {
 			// Update current player based on the current play
 			calcCurrPlayer(Gv, currPlay);
 
-			// Update current player's trail/move history
-			PlayerRepUpdate(Gv->players[Gv->currentPlayer], currPlay, 
-			    Gv->round);
+			// Update current player's trail
+			PlayerRepUpdatePlayerTrail(Gv->players[Gv->currentPlayer],
+				currPlay
+			);
 
 
 			// Reset currPlayCounter cos we just processed a whole play
@@ -550,38 +546,3 @@ static void updateScore(GameView Gv, char *currPlay) {
 			Gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
 	}
 }
-
-// Old helper functions. They are no longer declared at the top of the file.
-
-/*static int calcGameScore(char *pastPlays) {
-	// TO-DO: write this!
-	return 0;
-}
-
-static void calcEncounterLocations(char *pastPlays) {
-	// TO-DO: write this!
-	return;
-}
-
-static int calcRound(char *pastPlays) {
-	// I think we start at round one...not zero...?
-	int round = 1;
-	for (int i = 0; pastPlays[i] != '\0'; i++) {
-		// Round increments after all players have made their move
-		if (i % NUM_PLAYERS * PLAY_LENGTH == 0) {
-			round++;
-		}
-	}
-	// PLAY_LENGTH takes into account spaces, yet the very last play doesn't
-	// have a space (I THINK). So increment round.
-	round++;
-
-	return round;
-}
-
-char **findPlayerLocations(char *pastPlays) {
-	 // TO-DO: write this!
-	 // Note that it will probably require malloc() — I've already
-	 // added the corresponding free in GvNew()
-	 return NULL;
-} */

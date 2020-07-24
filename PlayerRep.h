@@ -21,6 +21,8 @@ int PlayerRepGetHealth(PlayerRep player);
 
 PlaceId PlayerRepGetLocation(PlayerRep player);
 
+void PlayerRepHealthUpdate(PlayerRep player, int health);
+
 // Updates everything
 void PlayerRepUpdate(PlayerRep player, char *currPlay, int RoundNumber);
 
@@ -35,23 +37,23 @@ void PlayerRepUpdateMoveHistory(PlayerRep player, const char *LocationAbb,
     int RoundNumber);
 
 // Update a player's HunterPOV trail
-void PlayerRepUpdateHunterPOVTrail(PlayerRep player, 
+void PlayerRepUpdateHunterPOVTrail(PlayerRep player,
     const char *LocationAbb, PlaceType LocationType);
 
 // Update a player's HunterPOV Move History
-void PlayerRepUpdateHunterPOVMoveHistory (PlayerRep player, 
-    const char *LocationAbb, PlaceType LocationType, int RoundNumber); 
+void PlayerRepUpdateHunterPOVMoveHistory (PlayerRep player,
+    const char *LocationAbb, PlaceType LocationType, int RoundNumber);
 
 // Check if in Dracula's Trail
 PlaceId PlayerRepCheckTrail(PlayerRep player, const char *LocationAbb,
     int roundNumber);
-    
+
 // Reveal Dracula's trail and move history
-void PlayerRepRevealDracula(PlayerRep player, int TrailNumber, 
+void PlayerRepRevealDracula(PlayerRep player, int TrailNumber,
     int RoundNumber);
 
 // Makes an array with entire move History
-char **PlayerRepGameMoveHistory(PlayerRep player1, PlayerRep player2, 
+char **PlayerRepGameMoveHistory(PlayerRep player1, PlayerRep player2,
     PlayerRep player3, PlayerRep player4, PlayerRep player5, int Turns);
 
 // Get a player's HunterPOV MoveHistory
@@ -59,7 +61,4 @@ char **PlayerRepMoveHistory(PlayerRep player);
 
 // Get a player's HunterPOV trail
 char **PlayerRepGetTrail(PlayerRep player);
-
-// Checks if player is in same location as Dracula
-int PlayerRepSameLocation(PlayerRep player1, PlayerRep Dracula);
 #endif
