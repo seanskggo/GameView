@@ -479,10 +479,9 @@ static void calcGameState(GameView Gv, char *pastPlays) {
 			// Update current player based on the current play
 			calcCurrPlayer(Gv, currPlay);
 
-			// Update current player's trail
-			PlayerRepUpdatePlayerTrail(Gv->players[Gv->currentPlayer],
-				currPlay
-			);
+			// Update current player's trail/move history
+			PlayerRepUpdate(Gv->players[Gv->currentPlayer], currPlay, 
+			    Gv->round);
 
 
 			// Reset currPlayCounter cos we just processed a whole play

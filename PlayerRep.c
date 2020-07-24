@@ -64,24 +64,25 @@ void PlayerRepHealthUpdate(PlayerRep player, int health) {
 
 
 // Updates everything
-void PlayerRepUpdate(PlayerRep player, char *currPlay)
+void PlayerRepUpdate(PlayerRep player, char *currPlay, int RoundNumber)
 {
     char currentLocation[2];
     strncpy(currentLocation, currPlay + 1, 2);
-    PlaceId LocationID = placeAbbrevToId(currentLocation);
+    PlaceId LocationID = placeAbbrevToId(currentLocation);    
     const char *LocationAbb = placeIdToAbbrev(LocationID);
     PlaceType LocationType = placeIdToType(LocationID);
-
+    
     // Update Trail
     PlayerRepUpdatePlayerTrail(player, LocationAbb);
     // Update Location
     PlayerRepUpdatePlayerLocation(player, LocationID);
     // Update Move History
-    PlayerRepUpdateMoveHistory(player, LocationAbb);
+    PlayerRepUpdateMoveHistory(player, LocationAbb, RoundNumber);
     // Update HunterPOV trail
     PlayerRepUpdateHunterPOVTrail(player, LocationAbb, LocationType);
     // Update HunterPOV move history
-    PlayerRepUpdateHunterPOVMoveHistory(player, LocationAbb, LocationType);
+    PlayerRepUpdateHunterPOVMoveHistory(player, LocationAbb, LocationType, 
+        RoundNumber); 
     return;
 }
 
@@ -107,24 +108,22 @@ void PlayerRepUpdatePlayerLocation(PlayerRep player, PlaceId LocationID)
 
 // Updates a player's move history
 // Input: player, abbreviated location
-void PlayerRepUpdateMoveHistory(PlayerRep player, const char *LocationAbb)
+void PlayerRepUpdateMoveHistory(PlayerRep player, const char *LocationAbb, 
+    int RoundNumber)
 {
-    int i = 0;
-    for (; strcmp(player->MoveHistory[i], "??") == 0 && i < MAX_ROUNDS; i++)
-    {
-    }
-    player->MoveHistory[i] = strdup(LocationAbb);
+    player->MoveHistory[RoundNumber] = strdup(LocationAbb);
+    return;
 }
 
 // Update HunterPOV Trail
 // Input: player, abbreviated location, type of location
-void PlayerRepUpdateHunterPOVTrail(PlayerRep player,
+void PlayerRepUpdateHunterPOVTrail(PlayerRep player, 
     const char *LocationAbb, PlaceType LocationType)
 {
-    for (int i = TRAIL_LENGTH - 1; i > 0; i--)
+    for (int i = TRAIL_LENGTH - 1; i > 0; i--) 
     {
         player->HunterPOVTrail[i] = player->HunterPOVTrail[i - 1];
-    }
+    }    
     if (LocationType == LAND) {
         player->HunterPOVTrail[0] = "C?";
     } else if (LocationType == SEA) {
@@ -137,21 +136,16 @@ void PlayerRepUpdateHunterPOVTrail(PlayerRep player,
 
 // Update HunterPOV Move History
 // Input: player, abbreviated location, type of location
-void PlayerRepUpdateHunterPOVMoveHistory(PlayerRep player,
-    const char *LocationAbb, PlaceType LocationType)
+void PlayerRepUpdateHunterPOVMoveHistory(PlayerRep player, 
+    const char *LocationAbb, PlaceType LocationType, int RoundNumber) 
 {
-    int i = 0;
-    for (; strcmp(player->HunterPOVMoveHistory[i], "??") == 0 &&
-        i < MAX_ROUNDS; i++)
-    {
-    }
     if (LocationType == LAND) {
-        player->HunterPOVTrail[i] = "C?";
+        player->HunterPOVTrail[RoundNumber] = "C?";
     } else if (LocationType == SEA) {
-        player->HunterPOVTrail[i] = "S?";
+        player->HunterPOVTrail[RoundNumber] = "S?";
     } else {
-        player->HunterPOVTrail[i] = strdup(LocationAbb);
-    }
+        player->HunterPOVTrail[RoundNumber] = strdup(LocationAbb);
+    }    
     return;
 }
 
@@ -160,11 +154,13 @@ void PlayerRepUpdateHunterPOVMoveHistory(PlayerRep player,
 // Output: NOWHERE if not on the trail, DoubleBack ID if double back was
     // done at that location, Hide location if done at that location, PlaceId
     // otherwise.
-PlaceId PlayerRepCheckTrail(PlayerRep player, const char *LocationAbb)
+PlaceId PlayerRepCheckTrail(PlayerRep player, const char *LocationAbb, 
+    int roundNumber)
 {
     int i = 0;
     int checkDouble = -1;
     int checkHide = -1;
+    int tempRoundNumber = roundNumber;
     char *tempChar = strdup(LocationAbb);
     char *tempDoub = strdup(LocationAbb);
     char *tempHide = strdup(LocationAbb);
@@ -189,19 +185,18 @@ PlaceId PlayerRepCheckTrail(PlayerRep player, const char *LocationAbb)
             checkHide = 1;
         }
         if (strcmp(player->trail[i], LocationAbb)) {
+            PlayerRepRevealDracula(player, i, tempRoundNumber);
             if (checkDouble == 0) {
                 // a double back move was done at this location
-                player->HunterPOVTrail[i] = strdup(player->trail[i]);
-                return placeAbbrevToId(tempDoub);
+                return placeAbbrevToId(tempDoub); 
             } else if (checkHide == 0) {
                 // a hide move was done at this location
-                player->HunterPOVTrail[i] = strdup(player->trail[i]);
                 return placeAbbrevToId(tempHide);
             } else {
                 // Otherwise
-                player->HunterPOVTrail[i] = strdup(player->trail[i]);
-                return placeAbbrevToId(tempChar);
+                return placeAbbrevToId(tempChar);            
             }
+            
         } else {
             i++;
             checkDouble--;
@@ -209,4 +204,40 @@ PlaceId PlayerRepCheckTrail(PlayerRep player, const char *LocationAbb)
         }
     }
     return NOWHERE;
+}
+
+// Reveal Dracula's trail and move History
+// Input: player (Dracula), int trail (where in the trail, 0-5) and #round
+void PlayerRepRevealDracula(PlayerRep player, int TrailNumber, 
+    int RoundNumber) {
+    // Reveal Trail
+    player->HunterPOVTrail[TrailNumber] = strdup(player->trail[TrailNumber]); 
+    // Reveal Move History
+    int revealMH = RoundNumber + TRAIL_LENGTH - 1 - TrailNumber;
+    player->HunterPOVMoveHistory[revealMH] = 
+        strdup(player->MoveHistory[revealMH]);
+    return;
+}
+
+// Makes an array with entire move History from Hunter POV
+char **PlayerRepGameMoveHistory(PlayerRep player1, PlayerRep player2, 
+    PlayerRep player3, PlayerRep player4, PlayerRep player5, int Turns) {
+    int i = 0;
+    int j = 0;
+    char **HunterPOVMoveHistory = (char**)malloc((Turns)*sizeof(char));
+    
+    while (j < Turns) {
+        strcpy(HunterPOVMoveHistory[j], player1->HunterPOVMoveHistory[i]);
+        j++;
+        strcpy(HunterPOVMoveHistory[j], player2->HunterPOVMoveHistory[i]);
+        j++;
+        strcpy(HunterPOVMoveHistory[j], player3->HunterPOVMoveHistory[i]);
+        j++;
+        strcpy(HunterPOVMoveHistory[j], player4->HunterPOVMoveHistory[i]);
+        j++;
+        strcpy(HunterPOVMoveHistory[j], player5->HunterPOVMoveHistory[i]);
+        j++;
+        i++;
+    }
+    return HunterPOVMoveHistory;
 }
