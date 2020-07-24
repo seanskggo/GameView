@@ -53,4 +53,10 @@ void PlayerRepRevealDracula(PlayerRep player, int TrailNumber,
 // Makes an array with entire move History
 char **PlayerRepGameMoveHistory(PlayerRep player1, PlayerRep player2, 
     PlayerRep player3, PlayerRep player4, PlayerRep player5, int Turns);
+
+// Get a player's HunterPOV MoveHistory
+char **PlayerRepMoveHistory(PlayerRep player);
+
+// Get a player's HunterPOV trail
+char **PlayerRepGetTrail(PlayerRep player);
 #endif
