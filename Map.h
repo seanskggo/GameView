@@ -49,4 +49,26 @@ int MapNumConnections(Map m, TransportType type);
  */
 ConnList MapGetConnections(Map m, PlaceId p);
 
+
+/** Create a new, empty connList. */
+ConnList MapNewEmptyConnList(void);
+
+/**
+ *  Inserts a new connNode * into a "connList".
+ *	Used to be a static function provided by "Team Dracula" in Map.c,
+ *  But is useful as an interface function
+ */
+ConnList connListInsert(ConnList l, PlaceId p, TransportType type);
+
+/** Return the length of a connList. */
+int MapConnListLength(ConnList l);
+
+/**
+ *  Finds the distance between two RAIL locations
+ *  Locations are assumed to be RAIL locations
+ *	Code adapated from Sam Schreyer's code from the
+ *  week 7 COMP2521 lab.
+ */
+int MapGetRailDistance(Map m, PlaceId src, PlaceId dest);
+
 #endif // !defined(FOD__MAP_H_)
