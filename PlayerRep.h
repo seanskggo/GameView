@@ -5,7 +5,7 @@
 #ifndef PLAYER_REP_H_
 #define PLAYER_REP_H_
 
-#define TRAIL_LENGTH 7
+#define TRAIL_LENGTH 6
 #define MAX_ROUNDS 366
 
 #include "Places.h"
@@ -42,5 +42,10 @@ void PlayerRepUpdateHunterPOVMoveHistory (PlayerRep player,
     const char *LocationAbb, PlaceType LocationType); 
 
 // Check if in Dracula's Trail
-PlaceId PlayerRepCheckTrail(PlayerRep player, const char *LocationAbb);
+PlaceId PlayerRepCheckTrail(PlayerRep player, const char *LocationAbb,
+    int roundNumber);
+    
+// Reveal Dracula's trail and move history
+void PlayerRepRevealDracula(PlayerRep player, int TrailNumber, 
+    int RoundNumber);
 #endif
