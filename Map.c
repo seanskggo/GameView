@@ -18,6 +18,7 @@
 #include <sysexits.h>
 
 #include "Map.h"
+#include "Queue.h"
 #include "Places.h"
 
 struct map {
@@ -218,12 +219,12 @@ int MapConnListLength(ConnList l) {
 	return length;
 }
 
+// Note: John Shepherd wrote the Queue ADT and Item ADT
+// that this function relies on. More info in Map.h
 int MapGetRailDistance(Map m, PlaceId src, PlaceId dest) {
-/*	// change asserts to be relevant
+	// change asserts to be relevant?
 	//assert (g != NULL && validV (g, src) && validV (g, dest));
 	//assert (g->nV > 0);
-
-	// Would have to add and credit the queue from lab 7!
 
 	// Deal with the case where we don't go anywhere
 	if (src == dest) {
@@ -233,7 +234,7 @@ int MapGetRailDistance(Map m, PlaceId src, PlaceId dest) {
 	int *visited = malloc(NUM_REAL_PLACES * sizeof(int));
 
 	// initialise visited
-	for(int i = 0; i < g->nV; i++) {
+	for(int i = 0; i < NUM_REAL_PLACES; i++) {
 		visited[i] = -1;
 	}
 
@@ -244,14 +245,14 @@ int MapGetRailDistance(Map m, PlaceId src, PlaceId dest) {
 	QueueJoin(Q, src);
 
 	while (!found && !QueueIsEmpty(Q)) {
-		Vertex v = QueueLeave(Q);
+		PlaceId p = QueueLeave(Q);
 
-		if (v == dest) {
+		if (p == dest) {
 			found = true;
 		} else {
 			for (int i = 0; i < NUM_REAL_PLACES; i++) {
 				if (visited[i] == -1 &&
-					 m->connections[i]->TransportType == rail
+					 m->connections[i]->type == RAIL
 				) {
 					// incomplete: need to check the type of the connection
 					// may require some kind of search function
@@ -261,7 +262,7 @@ int MapGetRailDistance(Map m, PlaceId src, PlaceId dest) {
 					// and you get a
 					// wait can you just do m->connections[i]->TransportType???
 					// I added it...we'll see if it works
-					visited[i] = v;
+					visited[i] = p;
 					QueueJoin(Q, i);
 				}
 			}
@@ -284,7 +285,7 @@ int MapGetRailDistance(Map m, PlaceId src, PlaceId dest) {
 	}
 
 	free(visited);
-	*/
+
 	//return pathDistance;
 	return 0;
 }
