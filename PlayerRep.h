@@ -59,4 +59,7 @@ char **PlayerRepMoveHistory(PlayerRep player);
 
 // Get a player's HunterPOV trail
 char **PlayerRepGetTrail(PlayerRep player);
+
+// Checks if player is in same location as Dracula
+int PlayerRepSameLocation(PlayerRep player1, PlayerRep Dracula);
 #endif
