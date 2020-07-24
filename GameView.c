@@ -27,11 +27,21 @@
 
 // TODO: ADD YOUR OWN STRUCTS HERE
 
+// Linked list for storing history. NOTE: When storing history,
+// the most recent history is added to the front of the list
+typedef struct history {
+	char *play;
+	struct history *next;
+} History;
+
+// Character struct for storing character information
 typedef struct character {
 	int health;
+	History *moves;
 	// Queue trail;
 } Character;
 
+// Gameview struct
 struct gameView {
 	// TODO: ADD FIELDS HERE
 	int round;
@@ -44,6 +54,7 @@ struct gameView {
 // Updates the gameview struct with the information from past plays
 static void gameUpdate(GameView gv, char *plays);
 static void updateScores(GameView gv, char *now);
+static void convertPlay(GameView gv, char *currPlay);
 
 //----------------------------------------------------------------------
 
@@ -62,12 +73,13 @@ GameView GvNew(char *pastPlays, Message messages[])
 	new->score = GAME_START_SCORE;
 	new->player = malloc(5*sizeof(*new->player));
 	
-	// initialise player health
-	new->player[PLAYER_LORD_GODALMING].health = GAME_START_HUNTER_LIFE_POINTS;
-	new->player[PLAYER_DR_SEWARD].health = GAME_START_HUNTER_LIFE_POINTS;
-	new->player[PLAYER_VAN_HELSING].health = GAME_START_HUNTER_LIFE_POINTS;
-	new->player[PLAYER_MINA_HARKER].health = GAME_START_HUNTER_LIFE_POINTS;
+	// initialise players
+	for (int i = 0; i < 4; i++) {
+		new->player[i].health = GAME_START_HUNTER_LIFE_POINTS;
+		new->player[i].moves = NULL;
+	}
 	new->player[PLAYER_DRACULA].health = GAME_START_BLOOD_POINTS;
+	new->player[PLAYER_DRACULA].moves = NULL;
 
 	// Update game state
 	gameUpdate(new, pastPlays);
@@ -194,6 +206,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 
 // TODO
 
+// Updates the status of game state
 static void gameUpdate(GameView gv, char *plays) {
 
 	// Tokenise past plays to single plays
@@ -212,11 +225,54 @@ static void gameUpdate(GameView gv, char *plays) {
 	}
 }
 
-static void updateScores(GameView gv, char *now) {
+// Update health and scores of players and game
+static void updateScores(GameView gv, char *currPlay) {
+	
 	char place[2];
-	place[0] = now[1];
-	place[1] = now[2];
-	if (now[0] == 'D') {
-		
+	place[0] = currPlay[1];
+	place[1] = currPlay[2];
+	// Create ID number for location
+	PlaceId location = placeAbbrevToId(place);
+	assert(placeIsReal(location));
+	
+	
+	
+	
+	
+	
+	
+	
+	if (currPlay[0] == 'D') {
+		// If in sea, lose lifepoints
+		if (placeIsSea(location)) 
+			// Check if double back works
+			gv->player[PLAYER_DRACULA].health -= LIFE_LOSS_SEA;
+		// If in Castle Dracula, regain 10 lifepoints
+		//else if ()
 	}
+}
+
+// Converts Dracula's play. If the string contains special moves,
+// this function modifies the string with the relevant place. 
+// THIS FUNCTION IS ONLY USEFUL FOR DRACULA
+static void convertPlay(GameView gv, char *currPlay) {
+	char place[2];
+	place[0] = currPlay[1];
+	place[1] = currPlay[2];
+	if (strcmp(place, "TP") == 0) {
+		currPlay[1] = 'C';
+		currPlay[2] = 'D';
+	} else if (strcmp(place, "HI") == 0) {
+		
+	} else if (strcmp(place, "D1") == 0) {
+
+	} else if (strcmp(place, "D2") == 0) {
+
+	} else if (strcmp(place, "D3") == 0) {
+
+	} else if (strcmp(place, "D4") == 0) {
+
+	} else if (strcmp(place, "D5") == 0) {
+
+	} 
 }
