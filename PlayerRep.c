@@ -251,12 +251,3 @@ char **PlayerRepMoveHistory(PlayerRep player) {
 char **PlayerRepGetTrail(PlayerRep player) {
     return player->HunterPOVTrail;
 }
-
-// Checks if a player is in the same location as Dracula 
-int PlayerRepSameLocation(PlayerRep player1, PlayerRep Dracula) {
-    if (player1->location == Dracula->location) {
-        return Dracula->location;
-    } else {
-        return NOWHERE;
-    }
-}
