@@ -55,6 +55,7 @@ struct gameView {
 static void gameUpdate(GameView gv, char *plays);
 static void updateScores(GameView gv, char *now);
 static void convertPlay(GameView gv, char *currPlay);
+static void updateHistory(GameView gv, Player player, char *currPlay);
 
 //----------------------------------------------------------------------
 
@@ -218,7 +219,7 @@ static void gameUpdate(GameView gv, char *plays) {
 			counter++;
 		} else {
 			currPlay[8] = '\0';
-			printf("%s\n", currPlay);
+			convertPlay(gv, currPlay);
 			updateScores(gv, currPlay);
 			counter = 0;
 		}
@@ -227,21 +228,14 @@ static void gameUpdate(GameView gv, char *plays) {
 
 // Update health and scores of players and game
 static void updateScores(GameView gv, char *currPlay) {
-	
+
+
 	char place[2];
 	place[0] = currPlay[1];
 	place[1] = currPlay[2];
 	// Create ID number for location
 	PlaceId location = placeAbbrevToId(place);
 	assert(placeIsReal(location));
-	
-	
-	
-	
-	
-	
-	
-	
 	if (currPlay[0] == 'D') {
 		// If in sea, lose lifepoints
 		if (placeIsSea(location)) 
@@ -254,7 +248,7 @@ static void updateScores(GameView gv, char *currPlay) {
 
 // Converts Dracula's play. If the string contains special moves,
 // this function modifies the string with the relevant place. 
-// THIS FUNCTION IS ONLY USEFUL FOR DRACULA
+// THIS FUNCTION ONLY CHANGES PLAY FOR DRACULA
 static void convertPlay(GameView gv, char *currPlay) {
 	char place[2];
 	place[0] = currPlay[1];
@@ -275,4 +269,20 @@ static void convertPlay(GameView gv, char *currPlay) {
 	} else if (strcmp(place, "D5") == 0) {
 
 	} 
+}
+
+// Dont forget to free this memeory
+// I don't know why pointer doesnt update the array here...
+// This function is tested and works
+static void updateHistory(GameView gv, Player player, char *currPlay) {
+	History *new = malloc(sizeof(*new));
+	new->play = currPlay;
+	new->next = NULL;
+	if (gv->player[player].moves == NULL) {
+		gv->player[player].moves = new;
+	} else {
+		History *temp = gv->player[player].moves;
+		gv->player[player].moves = new;
+		new->next = temp;
+	}
 }
