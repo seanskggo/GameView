@@ -49,4 +49,8 @@ PlaceId PlayerRepCheckTrail(PlayerRep player, const char *LocationAbb,
 // Reveal Dracula's trail and move history
 void PlayerRepRevealDracula(PlayerRep player, int TrailNumber, 
     int RoundNumber);
+
+// Makes an array with entire move History
+char **PlayerRepGameMoveHistory(PlayerRep player1, PlayerRep player2, 
+    PlayerRep player3, PlayerRep player4, PlayerRep player5, int Turns);
 #endif
