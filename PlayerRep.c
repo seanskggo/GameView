@@ -218,3 +218,26 @@ void PlayerRepRevealDracula(PlayerRep player, int TrailNumber,
         strdup(player->MoveHistory[revealMH]);
     return;
 }
+
+// Makes an array with entire move History from Hunter POV
+char **PlayerRepGameMoveHistory(PlayerRep player1, PlayerRep player2, 
+    PlayerRep player3, PlayerRep player4, PlayerRep player5, int Turns) {
+    int i = 0;
+    int j = 0;
+    char **HunterPOVMoveHistory = (char**)malloc((Turns)*sizeof(char));
+    
+    while (j < Turns) {
+        strcpy(HunterPOVMoveHistory[j], player1->HunterPOVMoveHistory[i]);
+        j++;
+        strcpy(HunterPOVMoveHistory[j], player2->HunterPOVMoveHistory[i]);
+        j++;
+        strcpy(HunterPOVMoveHistory[j], player3->HunterPOVMoveHistory[i]);
+        j++;
+        strcpy(HunterPOVMoveHistory[j], player4->HunterPOVMoveHistory[i]);
+        j++;
+        strcpy(HunterPOVMoveHistory[j], player5->HunterPOVMoveHistory[i]);
+        j++;
+        i++;
+    }
+    return HunterPOVMoveHistory;
+}
