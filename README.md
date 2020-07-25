@@ -39,4 +39,8 @@ Finalised code will be pushed from the work branch to this master branch. Before
 we can review the code before it is added to this master.
 
 Note to marker: \
-We have deleted and replaced this repository with a restructured and optimised verison. Previous commit history is retained with a rebase. Thank you!
+We have deleted and replaced this repository with a restructured and optimised verison. Previous commit history is retained with a rebase. 
+\
+The back up repository where this restructuring happened is available here: https://github.com/seanskggo72/Backup-Dracula.git
+
+Thank you!
