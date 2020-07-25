@@ -222,30 +222,26 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // This function is tested and works
 static void gameUpdate(GameView gv, char *plays) {
 
-	gv->current = PLAYER_LORD_GODALMING;
-	Player test = updateCurrent(gv);
-	printf("%d", test);
-	
-	updateHistory(GameView gv, Player player, char *currPlay);
-	updateScores(GameView gv, char *currPlay);
-	convertPlay(GameView gv, char *currPlay);
-
-	// // Tokenise past plays to single plays
-	// char currPlay[8];
-	// int counter = 0;
-	// for (int i = 0; plays[i] != '\0'; i++) {
-	// 	if (plays[i] != ' ') {
-	// 		currPlay[counter] = plays[i];
-	// 		counter++;
-	// 	} else {
-	// 		currPlay[8] = '\0';
-	// 		// Update current charater
-			
-	// 		convertPlay(gv, currPlay);
-	// 		updateScores(gv, currPlay);
-	// 		counter = 0;
-	// 	}
-	// }
+	// Tokenise past plays to single plays
+	char currPlay[8];
+	int counter = 0;
+	for (int i = 0; plays[i] != '\0'; i++) {
+		if (plays[i] != ' ') {
+			currPlay[counter] = plays[i];
+			counter++;
+		} else {
+			currPlay[8] = '\0';
+			// Update current charater
+			convertPlay(gv, currPlay);
+			// Update history of the immediate player with tokenised string
+			updateHistory(gv, gv->current, currPlay);
+			// Update Gamescores
+			updateScores(gv, currPlay);
+			// Update current player as the next in line
+			updateCurrent(gv);
+			counter = 0;
+		}
+	}
 }
 
 // Update health and scores of players and game
@@ -260,10 +256,8 @@ static void updateScores(GameView gv, char *currPlay) {
 	PlaceId location = placeAbbrevToId(place);
 	assert(placeIsReal(location));
 	if (currPlay[0] == 'D') {
-		
 		// If in sea, lose lifepoints
 		if (placeIsSea(location)) 
-			
 			// Check if double back works
 			gv->player[PLAYER_DRACULA].health -= LIFE_LOSS_SEA;
 		
@@ -290,9 +284,8 @@ static void convertPlay(GameView gv, char *currPlay) {
 		currPlay[1] = tmp[1];
 		currPlay[2] = tmp[2];
 	} else if (strcmp(place, "D1") == 0) {
-		History *ptr = gv->player[PLAYER_DRACULA].moves;
-		ptr = loop(ptr, 1);
-		char *tmp = ptr->play;
+		if (gv->player[PLAYER_DRACULA].moves == NULL) exit(EXIT_FAILURE);
+		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
 		currPlay[1] = tmp[1];
 		currPlay[2] = tmp[2];
 	} else if (strcmp(place, "D2") == 0) {
@@ -304,19 +297,19 @@ static void convertPlay(GameView gv, char *currPlay) {
 	} else if (strcmp(place, "D3") == 0) {
 		History *ptr = gv->player[PLAYER_DRACULA].moves;
 		ptr = loop(ptr, 3);
-		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
+		char *tmp = ptr->play;
 		currPlay[1] = tmp[1];
 		currPlay[2] = tmp[2];
 	} else if (strcmp(place, "D4") == 0) {
 		History *ptr = gv->player[PLAYER_DRACULA].moves;
 		ptr = loop(ptr, 4);
-		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
+		char *tmp = ptr->play;
 		currPlay[1] = tmp[1];
 		currPlay[2] = tmp[2];
 	} else if (strcmp(place, "D5") == 0) {
 		History *ptr = gv->player[PLAYER_DRACULA].moves;
 		ptr = loop(ptr, 5);
-		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
+		char *tmp = ptr->play;
 		currPlay[1] = tmp[1];
 		currPlay[2] = tmp[2];
 	} 
@@ -340,7 +333,7 @@ static void updateHistory(GameView gv, Player player, char *currPlay) {
 
 //Tested and works
 static History *loop(History *ptr, int counter) {
-	for (int i = 0; i < counter; i++) {
+	for (int i = 0; i < counter - 1; i++) {
 		if (ptr->next == NULL) {
 			printf("Not enough history\n");
 			exit(EXIT_FAILURE);
@@ -352,7 +345,7 @@ static History *loop(History *ptr, int counter) {
 
 static Player updateCurrent(GameView gv) {
 	Player past = gv->current;
-	if (past < PLAYER_DRACULA) return past++;
+	if (past < PLAYER_DRACULA) return past + 1;
 	else return PLAYER_LORD_GODALMING;
 }
 
@@ -367,5 +360,16 @@ static Player updateCurrent(GameView gv) {
 	updateHistory(gv, PLAYER_DRACULA, "DPP....");
 	convertPlay(gv, currPlay);
 	printf("%s\n", currPlay);
+
+	//Test for updatecurrent
+
+	gv->current = PLAYER_VAN_HELSING;
+	Player test = updateCurrent(gv);
+	printf("%d\n", test);
+	
+	// Place holders
+	updateHistory(gv, PLAYER_DRACULA, "test");
+	updateScores(gv, "test");
+	convertPlay(gv, "test");
 
 */
