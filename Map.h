@@ -67,7 +67,11 @@ int MapConnListLength(ConnList l);
  *  Finds the distance between two RAIL locations
  *  Locations are assumed to be RAIL locations
  *	Code adapated from Sam Schreyer's code from the
- *  week 7 COMP2521 lab.
+ *  week 7 COMP2521 T2 2020 lab. Uses a Queue ADT written by
+ *	John Shepherd, March 2013, that was supplied
+ * 	with the week 7 COMP2521 T2 2020 lab. The Queue ADT
+ *  relies on a slightly altered version of
+ *  Item.h, also written by John Shepherd, March 2013.
  */
 int MapGetRailDistance(Map m, PlaceId src, PlaceId dest);
 
