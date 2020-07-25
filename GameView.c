@@ -60,10 +60,18 @@ struct gameView {
 
 // Updates the gameview struct with the information from past plays
 static void gameUpdate(GameView gv, char *plays);
+// Updates the scores of the Gameview e.g. health and scores of players 
+// as well as the locations of traps
 static void updateScores(GameView gv, char *now);
+// Converts special moves. E.g. if double back (D1) is played, this function
+// checks relevant history to determine the place and thus modifies the
+// input string accordingly
 static void convertPlay(GameView gv, char *currPlay);
+// Updates the history of moves for the specified player
 static void updateHistory(GameView gv, Player player, char *currPlay);
+// Helper function for updateHistory
 static History *loop(History *ptr, int counter);
+// Update the current player i.e. the next player after the past play
 static Player updateCurrent(GameView gv);
 
 //----------------------------------------------------------------------
@@ -235,7 +243,7 @@ static void gameUpdate(GameView gv, char *plays) {
 			convertPlay(gv, currPlay);
 			// Update history of the immediate player with tokenised string
 			updateHistory(gv, gv->current, currPlay);
-			// Update Gamescores
+			// Update Gamescores and encounter history.
 			updateScores(gv, currPlay);
 			// Update current player as the next in line
 			gv->current = updateCurrent(gv);
@@ -244,10 +252,10 @@ static void gameUpdate(GameView gv, char *plays) {
 	}
 }
 
-// Update health and scores of players and game
+// Currently still under develpment. This function updates the location of traps
 static void updateScores(GameView gv, char *currPlay) {
+	
 	// Create ID number for location
-
 	char place[2];
 	place[0] = currPlay[1];
 	place[1] = currPlay[2];
@@ -257,13 +265,36 @@ static void updateScores(GameView gv, char *currPlay) {
 	if (gv->current == PLAYER_DRACULA) {
 		// If in sea, lose lifepoints
 		if (placeIsSea(location)) 
-			// Check if double back works
 			gv->player[PLAYER_DRACULA].health -= LIFE_LOSS_SEA;
-		
-		// If in Castle Dracula, regain 10 lifepoints
-		//else if ()
+		// If in Castle Dracula, gain 10 lifepoints
+		else if (strcmp(place, "TP") == 0 || location == CASTLE_DRACULA) 
+			gv->player[PLAYER_DRACULA].health += LIFE_GAIN_CASTLE_DRACULA;
+		// We assume that the vampire is on land since T is transcribed in the play
+		else if (currPlay[3] == 'T')
+			gv->places[location].traps++;
+		else if (currPlay[4] == 'V') {
+			gv->places[location].traps++;
+			gv->places[location].vamp = true;
+		// If immature vampire matures, lose 13 points	
+		} else if (currPlay[5] == 'V') {
+			gv->score -= SCORE_LOSS_VAMPIRE_MATURES;
+			gv->places[location].vamp = false;
+			gv->places[location].traps--;
+		// If a trap leaves the trail, adjust trap count
+		// This scenario is not understood perfectly at this stage
+		// Waiting for answers from jaz
+		} else if (currPlay[5] == 'M') {
+			// Loop to the last in trail and find the location 
+			//gv->places[location].traps--;
+		}
+		// Decrease score
+		gv->score--;
+		// Increase round
+		gv->round++;
+	// For Hunters
+	} else {
+
 	}
-	// Update history at the end?
 }
 
 // Converts Dracula's play. If the string contains special moves,
@@ -349,6 +380,7 @@ static History *loop(History *ptr, int counter) {
 	return ptr;
 }
 
+//Tested and works
 static Player updateCurrent(GameView gv) {
 	Player past = gv->current;
 	if (past < PLAYER_DRACULA) return past + 1;
