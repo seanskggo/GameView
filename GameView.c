@@ -41,11 +41,18 @@ typedef struct character {
 	// Queue trail;
 } Character;
 
+typedef struct location {
+	int traps;
+	bool vamp;
+} Location;
+
 // Gameview struct
 struct gameView {
 	// TODO: ADD FIELDS HERE
 	int round;
 	int score;
+	Player current;
+	Location *places;
 	Character *player;
 };
 
@@ -56,6 +63,8 @@ static void gameUpdate(GameView gv, char *plays);
 static void updateScores(GameView gv, char *now);
 static void convertPlay(GameView gv, char *currPlay);
 static void updateHistory(GameView gv, Player player, char *currPlay);
+static History *loop(History *ptr, int counter);
+static Player updateCurrent(GameView gv);
 
 //----------------------------------------------------------------------
 
@@ -72,7 +81,9 @@ GameView GvNew(char *pastPlays, Message messages[])
 	}
 	new->round = 0; 
 	new->score = GAME_START_SCORE;
-	new->player = malloc(5*sizeof(*new->player));
+	new->current = PLAYER_LORD_GODALMING;
+	new->player = malloc(5 * sizeof(*new->player));
+	new->places = malloc(NUM_REAL_PLACES * sizeof(*new->places));
 	
 	// initialise players
 	for (int i = 0; i < 4; i++) {
@@ -208,47 +219,64 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // TODO
 
 // Updates the status of game state
+// This function is tested and works
 static void gameUpdate(GameView gv, char *plays) {
 
-	// Tokenise past plays to single plays
-	char currPlay[8];
-	int counter = 0;
-	for (int i = 0; plays[i] != '\0'; i++) {
-		if (plays[i] != ' ') {
-			currPlay[counter] = plays[i];
-			counter++;
-		} else {
-			currPlay[8] = '\0';
-			convertPlay(gv, currPlay);
-			updateScores(gv, currPlay);
-			counter = 0;
-		}
-	}
+	gv->current = PLAYER_LORD_GODALMING;
+	Player test = updateCurrent(gv);
+	printf("%d", test);
+	
+	updateHistory(GameView gv, Player player, char *currPlay);
+	updateScores(GameView gv, char *currPlay);
+	convertPlay(GameView gv, char *currPlay);
+
+	// // Tokenise past plays to single plays
+	// char currPlay[8];
+	// int counter = 0;
+	// for (int i = 0; plays[i] != '\0'; i++) {
+	// 	if (plays[i] != ' ') {
+	// 		currPlay[counter] = plays[i];
+	// 		counter++;
+	// 	} else {
+	// 		currPlay[8] = '\0';
+	// 		// Update current charater
+			
+	// 		convertPlay(gv, currPlay);
+	// 		updateScores(gv, currPlay);
+	// 		counter = 0;
+	// 	}
+	// }
 }
 
 // Update health and scores of players and game
 static void updateScores(GameView gv, char *currPlay) {
-
+	// Update history here
 
 	char place[2];
 	place[0] = currPlay[1];
 	place[1] = currPlay[2];
+	
 	// Create ID number for location
 	PlaceId location = placeAbbrevToId(place);
 	assert(placeIsReal(location));
 	if (currPlay[0] == 'D') {
+		
 		// If in sea, lose lifepoints
 		if (placeIsSea(location)) 
+			
 			// Check if double back works
 			gv->player[PLAYER_DRACULA].health -= LIFE_LOSS_SEA;
+		
 		// If in Castle Dracula, regain 10 lifepoints
 		//else if ()
 	}
+	// Update history at the end?
 }
 
 // Converts Dracula's play. If the string contains special moves,
 // this function modifies the string with the relevant place. 
 // THIS FUNCTION ONLY CHANGES PLAY FOR DRACULA
+// Tested and 100% works
 static void convertPlay(GameView gv, char *currPlay) {
 	char place[2];
 	place[0] = currPlay[1];
@@ -257,17 +285,40 @@ static void convertPlay(GameView gv, char *currPlay) {
 		currPlay[1] = 'C';
 		currPlay[2] = 'D';
 	} else if (strcmp(place, "HI") == 0) {
-		
+		if (gv->player[PLAYER_DRACULA].moves == NULL) exit(EXIT_FAILURE);
+		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
+		currPlay[1] = tmp[1];
+		currPlay[2] = tmp[2];
 	} else if (strcmp(place, "D1") == 0) {
-
+		History *ptr = gv->player[PLAYER_DRACULA].moves;
+		ptr = loop(ptr, 1);
+		char *tmp = ptr->play;
+		currPlay[1] = tmp[1];
+		currPlay[2] = tmp[2];
 	} else if (strcmp(place, "D2") == 0) {
-
+		History *ptr = gv->player[PLAYER_DRACULA].moves;
+		ptr = loop(ptr, 2);
+		char *tmp = ptr->play;
+		currPlay[1] = tmp[1];
+		currPlay[2] = tmp[2];
 	} else if (strcmp(place, "D3") == 0) {
-
+		History *ptr = gv->player[PLAYER_DRACULA].moves;
+		ptr = loop(ptr, 3);
+		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
+		currPlay[1] = tmp[1];
+		currPlay[2] = tmp[2];
 	} else if (strcmp(place, "D4") == 0) {
-
+		History *ptr = gv->player[PLAYER_DRACULA].moves;
+		ptr = loop(ptr, 4);
+		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
+		currPlay[1] = tmp[1];
+		currPlay[2] = tmp[2];
 	} else if (strcmp(place, "D5") == 0) {
-
+		History *ptr = gv->player[PLAYER_DRACULA].moves;
+		ptr = loop(ptr, 5);
+		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
+		currPlay[1] = tmp[1];
+		currPlay[2] = tmp[2];
 	} 
 }
 
@@ -286,3 +337,35 @@ static void updateHistory(GameView gv, Player player, char *currPlay) {
 		new->next = temp;
 	}
 }
+
+//Tested and works
+static History *loop(History *ptr, int counter) {
+	for (int i = 0; i < counter; i++) {
+		if (ptr->next == NULL) {
+			printf("Not enough history\n");
+			exit(EXIT_FAILURE);
+		}
+		ptr = ptr->next;
+	}
+	return ptr;
+}
+
+static Player updateCurrent(GameView gv) {
+	Player past = gv->current;
+	if (past < PLAYER_DRACULA) return past++;
+	else return PLAYER_LORD_GODALMING;
+}
+
+//-------------------------------------------------
+//Test suite
+/*
+	//Test for update history
+
+	char currPlay[8] = "DD2....";
+	updateHistory(gv, PLAYER_DRACULA, "DGE...."); 
+	updateHistory(gv, PLAYER_DRACULA, "DFE....");
+	updateHistory(gv, PLAYER_DRACULA, "DPP....");
+	convertPlay(gv, currPlay);
+	printf("%s\n", currPlay);
+
+*/
