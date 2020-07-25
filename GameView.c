@@ -30,7 +30,7 @@
 // Linked list for storing history. NOTE: When storing history,
 // the most recent history is added to the front of the list
 typedef struct history {
-	char *play;
+	char play[8];
 	struct history *next;
 } History;
 
@@ -238,7 +238,7 @@ static void gameUpdate(GameView gv, char *plays) {
 			// Update Gamescores
 			updateScores(gv, currPlay);
 			// Update current player as the next in line
-			updateCurrent(gv);
+			gv->current = updateCurrent(gv);
 			counter = 0;
 		}
 	}
@@ -246,16 +246,15 @@ static void gameUpdate(GameView gv, char *plays) {
 
 // Update health and scores of players and game
 static void updateScores(GameView gv, char *currPlay) {
-	// Update history here
+	// Create ID number for location
 
 	char place[2];
 	place[0] = currPlay[1];
 	place[1] = currPlay[2];
-	
-	// Create ID number for location
 	PlaceId location = placeAbbrevToId(place);
 	assert(placeIsReal(location));
-	if (currPlay[0] == 'D') {
+
+	if (gv->current == PLAYER_DRACULA) {
 		// If in sea, lose lifepoints
 		if (placeIsSea(location)) 
 			// Check if double back works
@@ -272,19 +271,27 @@ static void updateScores(GameView gv, char *currPlay) {
 // THIS FUNCTION ONLY CHANGES PLAY FOR DRACULA
 // Tested and 100% works
 static void convertPlay(GameView gv, char *currPlay) {
-	char place[2];
+	if (gv->current != PLAYER_DRACULA) return;
+	char place[3];
 	place[0] = currPlay[1];
 	place[1] = currPlay[2];
+	place[2] = '\0';
 	if (strcmp(place, "TP") == 0) {
 		currPlay[1] = 'C';
 		currPlay[2] = 'D';
 	} else if (strcmp(place, "HI") == 0) {
-		if (gv->player[PLAYER_DRACULA].moves == NULL) exit(EXIT_FAILURE);
+		if (gv->player[PLAYER_DRACULA].moves == NULL) {
+			printf("No recorded history of player %d\n", gv->current);
+			exit(EXIT_FAILURE);
+		}
 		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
 		currPlay[1] = tmp[1];
 		currPlay[2] = tmp[2];
 	} else if (strcmp(place, "D1") == 0) {
-		if (gv->player[PLAYER_DRACULA].moves == NULL) exit(EXIT_FAILURE);
+		if (gv->player[PLAYER_DRACULA].moves == NULL) {
+				printf("No recorded history of player %d\n", gv->current);
+			exit(EXIT_FAILURE);
+		}
 		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
 		currPlay[1] = tmp[1];
 		currPlay[2] = tmp[2];
@@ -320,14 +327,13 @@ static void convertPlay(GameView gv, char *currPlay) {
 // This function is tested and works
 static void updateHistory(GameView gv, Player player, char *currPlay) {
 	History *new = malloc(sizeof(*new));
-	new->play = currPlay;
+	strcpy(new->play, currPlay);
 	new->next = NULL;
 	if (gv->player[player].moves == NULL) {
 		gv->player[player].moves = new;
 	} else {
-		History *temp = gv->player[player].moves;
+		new->next = gv->player[player].moves;
 		gv->player[player].moves = new;
-		new->next = temp;
 	}
 }
 
@@ -354,12 +360,6 @@ static Player updateCurrent(GameView gv) {
 /*
 	//Test for update history
 
-	char currPlay[8] = "DD2....";
-	updateHistory(gv, PLAYER_DRACULA, "DGE...."); 
-	updateHistory(gv, PLAYER_DRACULA, "DFE....");
-	updateHistory(gv, PLAYER_DRACULA, "DPP....");
-	convertPlay(gv, currPlay);
-	printf("%s\n", currPlay);
 
 	//Test for updatecurrent
 
@@ -372,4 +372,39 @@ static Player updateCurrent(GameView gv) {
 	updateScores(gv, "test");
 	convertPlay(gv, "test");
 
+	char currPlay[8] = "DD2....";
+	updateHistory(gv, PLAYER_DRACULA, "DGE...."); 
+	updateHistory(gv, PLAYER_DRACULA, "DFE....");
+	updateHistory(gv, PLAYER_DRACULA, "DPP....");
+	convertPlay(gv, currPlay);
+	printf("%s\n", currPlay);
+
+	History *ptr = gv->player[PLAYER_MINA_HARKER].moves;
+	while (ptr != NULL) {
+		printf("%s\n", ptr->play);
+		ptr = ptr->next;
+	}
+
+	SUPER BUG test
+			currPlay[8] = '\0';
+			// Update current charater
+			printf("*** %d ***\n", gv->current);
+			printf("before: %s\n", currPlay);
+			convertPlay(gv, currPlay);
+			printf("after: %s\n", currPlay);
+			// Update history of the immediate player with tokenised string
+			updateHistory(gv, gv->current, currPlay);
+				History *ptr = gv->player[gv->current].moves;
+				printf("In memory: ");
+				while (ptr != NULL) {
+					printf("%s ", ptr->play);
+					ptr = ptr->next;
+				}
+				printf("\n");
+			// Update Gamescores
+			updateScores(gv, currPlay);
+			// Update current player as the next in line
+			gv->current = updateCurrent(gv);
+			counter = 0;
+			printf("***********\n");
 */

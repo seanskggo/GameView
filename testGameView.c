@@ -32,7 +32,7 @@ int main(void)
 		char *trail = 
 			"GGE.... SGE.... HGE.... MGE.... DEC.... "
 			"GST.... SST.... HST.... MST.... DD1.... "
-			"GFR.... SFR.... HFR.... MFR....";;
+			"GFR.... SFR.... HFR.... MFR....";
 		Message messages[] = {};
 		GameView gv = GvNew(trail, messages);
 
