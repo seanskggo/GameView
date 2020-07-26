@@ -23,27 +23,95 @@
 #include "Places.h"
 #include "testUtils.h"
 
-// Notes: test for when trap leaves the trail
-
 int main(void)
 {
-	{///////////////////////////////////////////////////////////////////
+	{
+		printf("Testing GvGetReachable() No1.\n");
 
-		// printf("Test trap out of trail\n");
-
-		// char *trail = 
-		// 	;
+		char *trail = 
+			"GGE.... SGE.... HGE.... MGE.... DEC.... "
+			"GST.... SST.... HST.... MST.... DD1.... "
+			"GFR.... SFR.... HFR.... MFR....";
+		Message messages[] = {};
+		GameView gv = GvNew(trail, messages);
 		
-		// Message messages[] = {};
-		// GameView gv = GvNew(trail, messages);
+		int round = 0;
+		int returnedLocs = 0;
+		PlaceId *reachable = GvGetReachable(gv, PLAYER_DR_SEWARD, round, 
+			CONSTANTA, &returnedLocs);
+		int reachableLength = 0;
+		
+		for (int i = 0; i < returnedLocs; i++) {
+			reachableLength++;
+			fputs(placeIdToName(reachable[i]), stdout);
+			printf("\n");
+		}
+ 		assert(returnedLocs == 4 && reachableLength == 4);
 
-		// assert(GvGetRound(gv) == 2);
-
-		// GvFree(gv);
-		// printf("Test passed!\n");
-	
+		GvFree(gv);
+		printf("Test passed!\n");
+		
 	}
+	
+	{
+		printf("Testing GvGetReachable() No.2\n");
 
+		char *trail = 
+			"GGE.... SGE.... HGE.... MGE.... DEC.... "
+			"GST.... SST.... HST.... MST.... DD1.... "
+			"GFR.... SFR.... HFR.... MFR....";
+		Message messages[] = {};
+		GameView gv = GvNew(trail, messages);
+		
+		int round = 0;
+		int returnedLocs = 0;
+		PlaceId *reachable = GvGetReachable(gv, PLAYER_DR_SEWARD, round, 
+			CLERMONT_FERRAND, &returnedLocs);
+		int reachableLength = 0;
+		
+		for (int i = 0; i < returnedLocs; i++) {
+			reachableLength++;
+			fputs(placeIdToName(reachable[i]), stdout);
+			printf("\n");
+		}
+ 		assert(returnedLocs == 6 && reachableLength == 6);
+
+		GvFree(gv);
+		printf("Test passed!\n");
+		
+	}
+	
+	{
+		// this test currently not rly working!!!
+		printf("Testing GvGetReachable() No.3\n");
+
+		char *trail = 
+			"GGE.... SGE.... HGE.... MGE.... DEC.... "
+			"GST.... SST.... HST.... MST.... DD1.... "
+			"GFR.... SFR.... HFR.... MFR....";
+		Message messages[] = {};
+		GameView gv = GvNew(trail, messages);
+		
+		int round = 1;
+		int returnedLocs = 0;
+		PlaceId *reachable = GvGetReachable(gv, PLAYER_DR_SEWARD, round, 
+			VIENNA, &returnedLocs);
+		int reachableLength = 0;
+		
+		for (int i = 0; i < returnedLocs; i++) {
+			reachableLength++;
+			fputs(placeIdToName(reachable[i]), stdout);
+			printf("\n");
+		}
+ 		assert(returnedLocs == 7 && reachableLength == 7);
+
+		GvFree(gv);
+		printf("Test passed!\n");
+	}
+				
+	
+				
+	
 	{///////////////////////////////////////////////////////////////////
 
 		printf("Individual Testing\n");

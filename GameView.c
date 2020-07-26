@@ -32,6 +32,7 @@
 typedef struct history {
 	char play[8];
 	struct history *next;
+	bool revealed;
 } History;
 
 // Character struct for storing character information
@@ -156,19 +157,20 @@ int GvGetHealth(GameView gv, Player player)
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-		if (gv->player[player].moves == NULL) return NOWHERE;
+	if (gv->round == 0) return NOWHERE;
+	else {
 		char *tmp = gv->player[player].moves->play;
-		char where[3];
+		char where[2];
 		where[0] = tmp[1];
 		where[1] = tmp[2];
-		where[2] = '\0';
 		return placeAbbrevToId(where);
+	}
 }
 
 PlaceId GvGetVampireLocation(GameView gv)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	if (gv->player[PLAYER_DRACULA].moves == NULL) return NOWHERE;
+	if (gv->round == 0) return NOWHERE;
 	else {
 		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
 		char where[2];
@@ -238,8 +240,36 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 PlaceId *GvGetReachable(GameView gv, Player player, Round round,
                         PlaceId from, int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	PlaceId *reachableLocs = NULL;
+	switch(player) {
+		case PLAYER_LORD_GODALMING:
+		case PLAYER_DR_SEWARD:
+		case PLAYER_VAN_HELSING:
+		case PLAYER_MINA_HARKER:
+
+			reachableLocs = GvGetReachableByType(gv, player, round, from,
+				true, true, true, numReturnedLocs);
+
+			return reachableLocs;
+
+			//break;
+
+
+		case PLAYER_DRACULA:
+			// he can go anywhere nearby...unless a double back or hide
+			// was done recetnly
+			reachableLocs = GvGetReachableByType(gv, player, round, from,
+				true, false, true, numReturnedLocs);
+			break;
+
+			// not sure if we need this
+		default:
+			break;
+
+	}
+
 	*numReturnedLocs = 0;
+
 	return NULL;
 }
 
@@ -247,8 +277,129 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
                               PlaceId from, bool road, bool rail,
                               bool boat, int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	ConnList reachableLocs = NULL;
+	ConnList curr = MapGetConnections(gv->map, from);
+	ConnList temp = curr;
+	// we have an added array to check if we've already realised
+	// we can access that location
+	int *added = malloc(NUM_REAL_PLACES * sizeof(int));
+
+	// initialise added
+	for(int i = 0; i < NUM_REAL_PLACES; i++) {
+		added[i] = -1;
+	}
+	
+	// we say that we have "added" from...
+	// THIS MAY NEED TO CHANGE DEPENDING ON SPEC
+	added[from] = 1;
+	
+	switch(player) {
+		case PLAYER_LORD_GODALMING:
+		case PLAYER_DR_SEWARD:
+		case PLAYER_VAN_HELSING:
+		case PLAYER_MINA_HARKER:
+
+			if (road == 1) {
+				for(; curr != NULL; curr = curr->next) {
+					if (curr->type == ROAD && added[curr->p] != 1) {
+						reachableLocs = connListInsert(reachableLocs,
+							curr->p, curr->type
+						);
+						added[curr->p] = 1;
+						*numReturnedLocs += 1;
+					}
+				}
+			}
+
+			curr = temp;
+			if (boat == 1) {
+				for(; curr != NULL; curr = curr->next) {
+					if (curr->type == BOAT && added[curr->p] != 1) {
+						reachableLocs = connListInsert(reachableLocs,
+							curr->p, curr->type
+						);
+						added[curr->p] = 1;
+						*numReturnedLocs += 1;
+					}
+				}
+			}
+			
+			// MapGetRailReachable works PERFECTLY...
+			// any issues will be to do w this function
+			if (rail == 1) {
+				int canTravelDist = round + player % 4;
+				reachableLocs = MapGetRailReachable(gv->map, from,
+					canTravelDist, reachableLocs, numReturnedLocs, added);
+			}
+			
+
+			// put our found locations into an array and return it
+
+			int rLocsLength = MapConnListLength(reachableLocs);
+
+			PlaceId *reachableLocsArray = malloc(rLocsLength * sizeof(PlaceId));
+
+			// populate the reachableLocsArray
+			ConnList curr = reachableLocs;
+			for (int i = 0; i < rLocsLength; i++) {
+				reachableLocsArray[i] = curr->p;
+				curr = curr->next;
+			}
+
+			return reachableLocsArray;
+
+			break;
+
+		case PLAYER_DRACULA:
+			// he can go anywhere nearby...unless a double back or hide
+			// was done recetnly
+
+			// loop through the linked list of drac history for the first 5 moves.
+			// add these to the list of moves we CANNOT make
+			// if we find a doubleBack or a Hide, we add
+			// the loc. that doubleBack refers to/the current loc.,
+			// respectively.
+
+			// maybe for doubleBacks we could...store the doubleBack loc
+			// as a pointer, then use that pointer in the if statement below...
+			// it makes things more efficient!
+			if (reachableLocs) {
+				printf("Jazz\n");
+			}
+
+			//int foundDoubleBack;
+			//int foundHide;
+
+			// loop here
+
+			// if foundDoubleBack:
+
+			// if: foundHide
+
+			// now we get all of the ROAD and BOAT moves that are available,
+			// depending on input
+
+			// if: road
+
+			// if: boat
+
+			// combine the returned arrays...
+
+			// remove any moves that are invalid!
+
+			// finally return!
+
+			break;
+
+		// not sure if we need this case but it here
+		default:
+
+
+			break;
+	}
+
 	*numReturnedLocs = 0;
+
 	return NULL;
 }
 
@@ -257,15 +408,10 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 
 // TODO
 
-// Explanation of this function: First, the past play is tokenised.
-// The tokenised, unmodified play is processed. Then the unmodified history
-// is also added to the history of the player
-
 // Updates the status of game state
-// This function is tested and works 100%
+// This function is tested and works
 static void gameUpdate(GameView gv, char *plays) {
-	
-	if (strcmp(plays, "") == 0) return;
+
 	// Tokenise past plays to single plays
 	char currPlay[8];
 	int counter = 0;
@@ -275,48 +421,26 @@ static void gameUpdate(GameView gv, char *plays) {
 			counter++;
 		} else {
 			currPlay[7] = '\0';
-			char tempor[8];
-			strcpy(tempor, currPlay);
+			// Update history of the immediate player with tokenised string
+			updateHistory(gv, gv->current, currPlay);
 			// Update Gamescores and encounter history.
 			updateScores(gv, currPlay);
-			// Update history of the immediate player with tokenised string
-			updateHistory(gv, gv->current, tempor);
 			// Update current player as the next in line
 			gv->current = updateCurrent(gv);
 			counter = 0;
 		}
 	}
-	currPlay[7] = '\0';
-	char tempor[8];
-	strcpy(tempor, currPlay);
-	// Update Gamescores and encounter history.
-	updateScores(gv, currPlay);
-	// Update history of the immediate player with tokenised string
-	updateHistory(gv, gv->current, tempor);
-	// Update current player as the next in line
-	gv->current = updateCurrent(gv);
-	counter = 0;
 }
 
 // Currently still under develpment. This function updates the location of traps
 static void updateScores(GameView gv, char *currPlay) {
 	
-	// If player health is >= 0 at the start of turn, set back to max health
-	if (gv->player[gv->current].health == 0) 
-		gv->player[gv->current].health = GAME_START_HUNTER_LIFE_POINTS;
-	
-	// Convert Dracula special moves with specified location
-	if (gv->current == PLAYER_DRACULA) convertPlay(gv, currPlay);
-	
 	// Create ID number for location
-	char place[3];
+	char place[2];
 	place[0] = currPlay[1];
 	place[1] = currPlay[2];
-	place[2] = '\0';
 	PlaceId location = placeAbbrevToId(place);
-	// Assert only if place is not C? or S?
-	if (strcmp(place, "C?") != 0 && strcmp(place, "S?") != 0)
-		assert(placeIsReal(location));
+	// assert(placeIsReal(location));
 
 	if (gv->current == PLAYER_DRACULA) {
 		// If in sea, lose lifepoints
@@ -332,24 +456,16 @@ static void updateScores(GameView gv, char *currPlay) {
 			gv->places[location].traps++;
 			gv->places[location].vamp = true;
 		// If immature vampire matures, lose 13 points	
-		} 
-		if (currPlay[5] == 'V') {
+		} else if (currPlay[5] == 'V') {
 			gv->score -= SCORE_LOSS_VAMPIRE_MATURES;
 			gv->places[location].vamp = false;
 			gv->places[location].traps--;
 		// If a trap leaves the trail, adjust trap count
+		// This scenario is not understood perfectly at this stage
+		// Waiting for answers from jaz
 		} else if (currPlay[5] == 'M') {
-			History *ptr = gv->player[gv->current].moves;
-			for (int i = 0; i < 6; i++) {
-				ptr = ptr->next;
-			}
-			char *tmp = ptr->play;
-			char where[3];
-			where[0] = tmp[1];
-			where[1] = tmp[2];
-			where[2] = '\0';
-			PlaceId name = placeAbbrevToId(where);
-			gv->places[name].traps--;
+			// Loop to the last in trail and find the location 
+			//gv->places[location].traps--;
 		}
 		// Decrease score
 		gv->score--;
@@ -358,112 +474,41 @@ static void updateScores(GameView gv, char *currPlay) {
 	// For Hunters
 	} else {
 		// If trap is encountered, minus life points. If hunter life is 0 or
-		// below,  
+		// below, 
+		Player name;
+		if (currPlay[0] == 'G') name = PLAYER_LORD_GODALMING;
+		else if (currPlay[0] == 'S') name = PLAYER_DR_SEWARD;
+		else if (currPlay[0] == 'H') name = PLAYER_VAN_HELSING;
+		else if (currPlay[0] == 'M') name = PLAYER_MINA_HARKER; 
+
+
+
+
 		if (currPlay[3] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[3] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[3] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-		
-		// Terminates the calculation of hunter once the health is depleted
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-			return;
+			hunterEncounter(gv, 'T', location, name);
 		}
-
-		if (currPlay[3] == '.') return;
-		
-		if (currPlay[4] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[4] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[4] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-		
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-			return;
-		}
-
-		if (currPlay[4] == '.') return;
-
-		if (currPlay[5] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[5] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[5] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-		
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-			return;
-		}
-
-		if (currPlay[5] == '.') return;
-
-		if (currPlay[6] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[6] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[6] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-		}
-
-		if (currPlay[6] == '.') return;
 	}
 }
 
 // Helper function for hunter trap encounters
-// TESTED AND WORKS 100%
 static void hunterEncounter(GameView gv, char a, PlaceId location, Player name) {
 	if (a == 'T') {
-		gv->player[name].health -= LIFE_LOSS_TRAP_ENCOUNTER;
-		gv->places[location].traps--;
+	
 	} else if (a == 'V') {
-		gv->places[location].traps--;
-		gv->places[location].vamp = false;
-	} else if (a == 'D') {
-		// Hunter encounter Dracula
-		gv->player[name].health -= LIFE_LOSS_DRACULA_ENCOUNTER;
-		gv->player[PLAYER_DRACULA].health -= LIFE_LOSS_HUNTER_ENCOUNTER;
-		if (gv->player[PLAYER_DRACULA].health <= 0) {
-			printf("Dracula has been vanquished\n");
-			exit(EXIT_SUCCESS);
-		}
+
 	}
 }
 
 // Converts Dracula's play. If the string contains special moves,
 // this function modifies the string with the relevant place. 
 // THIS FUNCTION ONLY CHANGES PLAY FOR DRACULA
-// Tested and Works 100%
+// Tested and 100% works
 static void convertPlay(GameView gv, char *currPlay) {
+	if (gv->current != PLAYER_DRACULA) return;
 	char place[3];
 	place[0] = currPlay[1];
 	place[1] = currPlay[2];
 	place[2] = '\0';
-
-	// If player health is zero, convert the string with the hospital
-	if (gv->current != PLAYER_DRACULA) { 
-		if (gv->player[gv->current].health == 0) {
-			currPlay[1] = 'J';
-			currPlay[2] = 'M';
-		}
-	}
-
-	// Else, the following applies to Dracula conversion
 	if (strcmp(place, "TP") == 0) {
 		currPlay[1] = 'C';
 		currPlay[2] = 'D';
@@ -596,26 +641,4 @@ static Player updateCurrent(GameView gv) {
 			gv->current = updateCurrent(gv);
 			counter = 0;
 			printf("***********\n");
-
-	UpdateScore Tests!
-	// testing
-	printf("*** TESTING ***\n");
-
-	gv->current = PLAYER_LORD_GODALMING;
-	updateHistory(gv, PLAYER_LORD_GODALMING, "GAMTTTD");
-	updateScores(gv, "GAMTTTD");
-
-	printf("%d\n", gv->places[AMSTERDAM].traps);
-	printf("%d\n", gv->player[PLAYER_LORD_GODALMING].health);
-	printf("*** END TEST ***\n");
-	char currPlay[8] = "GAMTTTD";
-	convertPlay(gv, currPlay);
-	printf("%s\n", currPlay);
-
-	gv->current = PLAYER_LORD_GODALMING;
-	updateHistory(gv, PLAYER_LORD_GODALMING, "GAM....");
-	updateScores(gv, "GAMVVVV");
-	printf("%d\n", gv->places[AMSTERDAM].traps);
-	printf("%d\n", gv->score);
-	printf("%d\n", gv->player[PLAYER_LORD_GODALMING].health);
 */
