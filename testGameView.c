@@ -82,7 +82,6 @@ int main(void)
 	}
 	
 	{
-		// this test currently not rly working!!!
 		printf("Testing GvGetReachable() No.3\n");
 
 		char *trail = 
