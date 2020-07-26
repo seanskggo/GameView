@@ -54,6 +54,7 @@ struct gameView {
 	Player current;
 	Location *places;
 	Character *player;
+	Map map;
 };
 
 //------------------------- Local Functions ----------------------------
@@ -92,6 +93,7 @@ GameView GvNew(char *pastPlays, Message messages[])
 	new->current = PLAYER_LORD_GODALMING;
 	new->player = malloc(5 * sizeof(*new->player));
 	new->places = malloc(NUM_REAL_PLACES * sizeof(*new->places));
+	new->map = MapNew();
 	
 	// initialise players
 	for (int i = 0; i < 4; i++) {
@@ -293,7 +295,11 @@ static void updateScores(GameView gv, char *currPlay) {
 		gv->round++;
 	// For Hunters
 	} else {
+		// If trap is encountered, minus life points. If hunter life is 0 or
+		// below, 
+		if (currPlay[3] == 'T') {
 
+		}
 	}
 }
 
