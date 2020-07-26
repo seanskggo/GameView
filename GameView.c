@@ -32,7 +32,6 @@
 typedef struct history {
 	char play[8];
 	struct history *next;
-	bool revealed;
 } History;
 
 // Character struct for storing character information
@@ -157,20 +156,19 @@ int GvGetHealth(GameView gv, Player player)
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	if (gv->round == 0) return NOWHERE;
-	else {
+		if (gv->player[player].moves == NULL) return NOWHERE;
 		char *tmp = gv->player[player].moves->play;
-		char where[2];
+		char where[3];
 		where[0] = tmp[1];
 		where[1] = tmp[2];
+		where[2] = '\0';
 		return placeAbbrevToId(where);
-	}
 }
 
 PlaceId GvGetVampireLocation(GameView gv)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	if (gv->round == 0) return NOWHERE;
+	if (gv->player[PLAYER_DRACULA].moves == NULL) return NOWHERE;
 	else {
 		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
 		char where[2];
@@ -316,7 +314,9 @@ static void updateScores(GameView gv, char *currPlay) {
 	place[1] = currPlay[2];
 	place[2] = '\0';
 	PlaceId location = placeAbbrevToId(place);
-	assert(placeIsReal(location));
+	// Assert only if place is not C? or S?
+	if (strcmp(place, "C?") != 0 && strcmp(place, "S?") != 0)
+		assert(placeIsReal(location));
 
 	if (gv->current == PLAYER_DRACULA) {
 		// If in sea, lose lifepoints
@@ -365,7 +365,16 @@ static void updateScores(GameView gv, char *currPlay) {
 			hunterEncounter(gv, 'V', location, gv->current);
 		} else if (currPlay[3] == 'D') {
 			hunterEncounter(gv, 'D', location, gv->current);
-		} else if (currPlay[3] == '.') return;
+		} 
+		
+		// Terminates the calculation of hunter once the health is depleted
+		if (gv->player[gv->current].health <= 0) {
+			gv->player[gv->current].health = 0;
+			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
+			return;
+		}
+
+		if (currPlay[3] == '.') return;
 		
 		if (currPlay[4] == 'T') {
 			hunterEncounter(gv, 'T', location, gv->current);
@@ -373,23 +382,46 @@ static void updateScores(GameView gv, char *currPlay) {
 			hunterEncounter(gv, 'V', location, gv->current);
 		} else if (currPlay[4] == 'D') {
 			hunterEncounter(gv, 'D', location, gv->current);
-		} else if (currPlay[4] == '.') return;
+		} 
 		
+		if (gv->player[gv->current].health <= 0) {
+			gv->player[gv->current].health = 0;
+			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
+			return;
+		}
+
+		if (currPlay[4] == '.') return;
+
 		if (currPlay[5] == 'T') {
 			hunterEncounter(gv, 'T', location, gv->current);
 		} else if (currPlay[5] == 'V') {
 			hunterEncounter(gv, 'V', location, gv->current);
 		} else if (currPlay[5] == 'D') {
 			hunterEncounter(gv, 'D', location, gv->current);
-		} else if (currPlay[5] == '.') return;
+		} 
 		
+		if (gv->player[gv->current].health <= 0) {
+			gv->player[gv->current].health = 0;
+			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
+			return;
+		}
+
+		if (currPlay[5] == '.') return;
+
 		if (currPlay[6] == 'T') {
 			hunterEncounter(gv, 'T', location, gv->current);
 		} else if (currPlay[6] == 'V') {
 			hunterEncounter(gv, 'V', location, gv->current);
 		} else if (currPlay[6] == 'D') {
 			hunterEncounter(gv, 'D', location, gv->current);
-		} else if (currPlay[6] == '.') return;
+		} 
+
+		if (gv->player[gv->current].health <= 0) {
+			gv->player[gv->current].health = 0;
+			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
+		}
+
+		if (currPlay[6] == '.') return;
 	}
 }
 
@@ -405,10 +437,6 @@ static void hunterEncounter(GameView gv, char a, PlaceId location, Player name) 
 	} else if (a == 'D') {
 		// Hunter encounter Dracula
 		gv->player[name].health -= LIFE_LOSS_DRACULA_ENCOUNTER;
-		if (gv->player[name].health <= 0) {
-			gv->player[name].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-		}
 		gv->player[PLAYER_DRACULA].health -= LIFE_LOSS_HUNTER_ENCOUNTER;
 		if (gv->player[PLAYER_DRACULA].health <= 0) {
 			printf("Dracula has been vanquished\n");
