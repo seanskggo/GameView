@@ -270,7 +270,7 @@ static void updateScores(GameView gv, char *currPlay) {
 	place[0] = currPlay[1];
 	place[1] = currPlay[2];
 	PlaceId location = placeAbbrevToId(place);
-	assert(placeIsReal(location));
+	// assert(placeIsReal(location));
 
 	if (gv->current == PLAYER_DRACULA) {
 		// If in sea, lose lifepoints
