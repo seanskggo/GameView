@@ -23,8 +23,27 @@
 #include "Places.h"
 #include "testUtils.h"
 
+// Notes: test for when trap leaves the trail
+
 int main(void)
 {
+	{///////////////////////////////////////////////////////////////////
+
+		// printf("Test trap out of trail\n");
+
+		// char *trail = 
+		// 	;
+		
+		// Message messages[] = {};
+		// GameView gv = GvNew(trail, messages);
+
+		// assert(GvGetRound(gv) == 2);
+
+		// GvFree(gv);
+		// printf("Test passed!\n");
+	
+	}
+
 	{///////////////////////////////////////////////////////////////////
 
 		printf("Individual Testing\n");
