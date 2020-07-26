@@ -74,6 +74,8 @@ static void updateHistory(GameView gv, Player player, char *currPlay);
 static History *loop(History *ptr, int counter);
 // Update the current player i.e. the next player after the past play
 static Player updateCurrent(GameView gv);
+// Helper function for updateScores. Used for calculating hunter encounters
+static void hunterEncounter(GameView gv, char a, PlaceId location, Player name);
 
 //----------------------------------------------------------------------
 
@@ -171,6 +173,14 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
                           int *numReturnedMoves, bool *canFree)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+
+	// Hey Francis, so if you give the below function a current play, it
+	// will convert to the real location by looking at the player's history
+
+	// Update current charater. Currently currPlay is unintilaised
+	char currPlay[8];
+	convertPlay(gv, currPlay);
+
 	*numReturnedMoves = 0;
 	*canFree = false;
 	return NULL;
@@ -241,8 +251,6 @@ static void gameUpdate(GameView gv, char *plays) {
 			counter++;
 		} else {
 			currPlay[8] = '\0';
-			// Update current charater
-			convertPlay(gv, currPlay);
 			// Update history of the immediate player with tokenised string
 			updateHistory(gv, gv->current, currPlay);
 			// Update Gamescores and encounter history.
@@ -297,9 +305,27 @@ static void updateScores(GameView gv, char *currPlay) {
 	} else {
 		// If trap is encountered, minus life points. If hunter life is 0 or
 		// below, 
-		if (currPlay[3] == 'T') {
+		Player name;
+		if (currPlay[0] == 'G') name = PLAYER_LORD_GODALMING;
+		else if (currPlay[0] == 'S') name = PLAYER_DR_SEWARD;
+		else if (currPlay[0] == 'H') name = PLAYER_VAN_HELSING;
+		else if (currPlay[0] == 'M') name = PLAYER_MINA_HARKER; 
 
+
+
+
+		if (currPlay[3] == 'T') {
+			hunterEncounter(gv, 'T', location, name);
 		}
+	}
+}
+
+// Helper function for hunter trap encounters
+static void hunterEncounter(GameView gv, char a, PlaceId location, Player name) {
+	if (a == 'T') {
+	
+	} else if (a == 'V') {
+
 	}
 }
 
