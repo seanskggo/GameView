@@ -250,7 +250,7 @@ static void gameUpdate(GameView gv, char *plays) {
 			currPlay[counter] = plays[i];
 			counter++;
 		} else {
-			currPlay[8] = '\0';
+			currPlay[7] = '\0';
 			// Update history of the immediate player with tokenised string
 			updateHistory(gv, gv->current, currPlay);
 			// Update Gamescores and encounter history.
@@ -265,12 +265,15 @@ static void gameUpdate(GameView gv, char *plays) {
 // Currently still under develpment. This function updates the location of traps
 static void updateScores(GameView gv, char *currPlay) {
 	
+	// Convert Dracula special moves with specified location
+	if (gv->current == PLAYER_DRACULA) convertPlay(gv, currPlay);
+	
 	// Create ID number for location
 	char place[2];
 	place[0] = currPlay[1];
 	place[1] = currPlay[2];
 	PlaceId location = placeAbbrevToId(place);
-	// assert(placeIsReal(location));
+	assert(placeIsReal(location));
 
 	if (gv->current == PLAYER_DRACULA) {
 		// If in sea, lose lifepoints
@@ -291,8 +294,6 @@ static void updateScores(GameView gv, char *currPlay) {
 			gv->places[location].vamp = false;
 			gv->places[location].traps--;
 		// If a trap leaves the trail, adjust trap count
-		// This scenario is not understood perfectly at this stage
-		// Waiting for answers from jaz
 		} else if (currPlay[5] == 'M') {
 			// Loop to the last in trail and find the location 
 			//gv->places[location].traps--;
@@ -304,28 +305,59 @@ static void updateScores(GameView gv, char *currPlay) {
 	// For Hunters
 	} else {
 		// If trap is encountered, minus life points. If hunter life is 0 or
-		// below, 
-		Player name;
-		if (currPlay[0] == 'G') name = PLAYER_LORD_GODALMING;
-		else if (currPlay[0] == 'S') name = PLAYER_DR_SEWARD;
-		else if (currPlay[0] == 'H') name = PLAYER_VAN_HELSING;
-		else if (currPlay[0] == 'M') name = PLAYER_MINA_HARKER; 
-
-
-
-
+		// below,  
 		if (currPlay[3] == 'T') {
-			hunterEncounter(gv, 'T', location, name);
-		}
+			hunterEncounter(gv, 'T', location, gv->current);
+		} else if (currPlay[3] == 'V') {
+			hunterEncounter(gv, 'V', location, gv->current);
+		} else if (currPlay[3] == 'D') {
+			hunterEncounter(gv, 'D', location, gv->current);
+		} else if (currPlay[3] == '.') return;
+		
+		if (currPlay[4] == 'T') {
+			hunterEncounter(gv, 'T', location, gv->current);
+		} else if (currPlay[4] == 'V') {
+			hunterEncounter(gv, 'V', location, gv->current);
+		} else if (currPlay[4] == 'D') {
+			hunterEncounter(gv, 'D', location, gv->current);
+		} else if (currPlay[4] == '.') return;
+		
+		if (currPlay[5] == 'T') {
+			hunterEncounter(gv, 'T', location, gv->current);
+		} else if (currPlay[5] == 'V') {
+			hunterEncounter(gv, 'V', location, gv->current);
+		} else if (currPlay[5] == 'D') {
+			hunterEncounter(gv, 'D', location, gv->current);
+		} else if (currPlay[5] == '.') return;
+		
+		if (currPlay[6] == 'T') {
+			hunterEncounter(gv, 'T', location, gv->current);
+		} else if (currPlay[6] == 'V') {
+			hunterEncounter(gv, 'V', location, gv->current);
+		} else if (currPlay[6] == 'D') {
+			hunterEncounter(gv, 'D', location, gv->current);
+		} else if (currPlay[6] == '.') return;
 	}
 }
 
 // Helper function for hunter trap encounters
 static void hunterEncounter(GameView gv, char a, PlaceId location, Player name) {
 	if (a == 'T') {
-	
+		gv->player[name].health -= LIFE_LOSS_TRAP_ENCOUNTER;
+		gv->places[location].traps--;
 	} else if (a == 'V') {
-
+		gv->places[location].traps--;
+		gv->places[location].vamp = false;
+	} else if (a == 'D') {
+		// TODO after lunch, if hunter life is zero, lost score and 
+		// revive health? maybe if at the start of turn, the hunter health
+		// 0 or below, we rest to normal health?
+		gv->player[name].health -= LIFE_LOSS_DRACULA_ENCOUNTER;
+		gv->player[PLAYER_DRACULA].health -= LIFE_LOSS_HUNTER_ENCOUNTER;
+		if (gv->player[PLAYER_DRACULA].health <= 0) {
+			printf("Dracula has been vanquished\n");
+			exit(EXIT_SUCCESS);
+		}
 	}
 }
 
