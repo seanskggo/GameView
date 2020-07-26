@@ -156,26 +156,31 @@ int GvGetHealth(GameView gv, Player player)
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-		if (gv->player[player].moves == NULL) return NOWHERE;
-		char *tmp = gv->player[player].moves->play;
-		char where[3];
-		where[0] = tmp[1];
-		where[1] = tmp[2];
-		where[2] = '\0';
-		return placeAbbrevToId(where);
+	if (gv->player[player].moves == NULL) return NOWHERE;
+	char currPlay[8];
+	strcpy(currPlay, gv->player[player].moves->play);
+	// Temporarily convert current player to function convertPaly
+	Player temp = gv->current;
+	gv->current = player;
+	convertPlay(gv, currPlay);
+	gv->current = temp;
+	char where[3];
+	where[0] = currPlay[1];
+	where[1] = currPlay[2];
+	where[2] = '\0';
+	return placeAbbrevToId(where);
 }
 
 PlaceId GvGetVampireLocation(GameView gv)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	if (gv->player[PLAYER_DRACULA].moves == NULL) return NOWHERE;
-	else {
-		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
-		char where[2];
-		where[0] = tmp[1];
-		where[1] = tmp[2];
-		return placeAbbrevToId(where);
+	for (int i = 0; i < NUM_REAL_PLACES; i++) {
+		if (gv->places[i].vamp == true) return i;
 	}
+	return NOWHERE;
+
+	// make the city unknown with an extra slot at the end. 
+	// when adding vamp, if it is city unkonwn then add to last slot
 }
 
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
@@ -454,7 +459,6 @@ static void convertPlay(GameView gv, char *currPlay) {
 	place[0] = currPlay[1];
 	place[1] = currPlay[2];
 	place[2] = '\0';
-
 	// If player health is zero, convert the string with the hospital
 	if (gv->current != PLAYER_DRACULA) { 
 		if (gv->player[gv->current].health == 0) {

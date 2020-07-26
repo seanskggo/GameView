@@ -29,6 +29,27 @@ int main(void)
 {
 	{///////////////////////////////////////////////////////////////////
 
+		printf("Test for GvGetPlayerLocation\n");
+
+		char *trail = 
+			"GGE.... SGE.... HGE.... MGE.... DEC.... "
+			"GST.... SST.... HST.... MST.... DTP.... "
+			"GFR.... SFR.... HFR.... MFRTTTD";
+		Message messages[] = {};
+		GameView gv = GvNew(trail, messages);
+
+		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == CASTLE_DRACULA);
+		assert(GvGetPlayerLocation(gv, PLAYER_MINA_HARKER) == ST_JOSEPH_AND_ST_MARY);
+		
+
+
+		GvFree(gv);
+		printf("Test passed!\n");
+	
+	}
+	
+	{///////////////////////////////////////////////////////////////////
+
 		// printf("Test trap out of trail\n");
 
 		// char *trail = 
