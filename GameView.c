@@ -86,6 +86,7 @@ static void updateRevealedHistory(GameView gv, Player player, char *currPlay);
 // Helper function for updateScores
 static void hunterUpdateScores(GameView gv, PlaceId location, char a);
 
+
 //----------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
@@ -217,45 +218,146 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 PlaceId *GvGetMoveHistory(GameView gv, Player player,
                           int *numReturnedMoves, bool *canFree)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-
-	// Hey Francis, so if you give the below function a current play, it
-	// will convert to the real location by looking at the player's history
-
-	// Update current charater. Currently currPlay is unintilaised
-	char currPlay[8];
-	convertPlay(gv, currPlay);
-
-	*numReturnedMoves = 0;
-	*canFree = false;
-	return NULL;
+	// Count num of moves
+	int total = 0;
+	History *current = gv->player[player].moves;
+	while (current != NULL) {
+	    total++;
+	    current = current->next;
+	}
+	// if there are 0 moves, it should return an empty array
+	if (total == 0) {
+	    PlaceId *MoveHistory = malloc(sizeof(*MoveHistory)*1);
+	    MoveHistory = NULL;
+	    *canFree = true;
+	    *numReturnedMoves = total;
+	    return MoveHistory;
+	} else {
+	    // create dynamically allocated array where there are more than 1 moves
+	    PlaceId *MoveHistory = malloc((total)*sizeof(*MoveHistory));
+	
+	    History *curr = gv->player[player].moves;
+	    for (int i = total - 1; i >= 0; i--) {
+	        char currMove[3];
+	        currMove[0] = curr->play[1];
+	        currMove[1] = curr->play[2];
+	        currMove[2] = '\0';
+	        PlaceId currPlace = placeAbbrevToId(currMove);
+	        MoveHistory[i] = currPlace;
+	        curr = curr->next;
+	    }
+	    *numReturnedMoves = total;
+	    *canFree = true;
+	    return MoveHistory;
+	}
+    
 }
 
 PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
                         int *numReturnedMoves, bool *canFree)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numReturnedMoves = 0;
-	*canFree = false;
-	return NULL;
+	int total = 0;
+	History *current = gv->player[player].moves;
+	while (total < numMoves && current != NULL) {
+	    total++;
+	    current = current->next;
+	}
+	
+	if (total == 0) {
+	    PlaceId *MoveHistory = malloc(sizeof(*MoveHistory)*1);
+	    MoveHistory = NULL;
+	    *canFree = true;
+	    *numReturnedMoves = total;
+	    return MoveHistory;	
+	} else {
+	    PlaceId *MoveHistory = malloc((total)*sizeof(*MoveHistory));
+
+	    History *curr = gv->player[player].moves;
+	    for (int i = total - 1; i >= 0; i--) {
+	        char currMove[3];
+	        currMove[0] = curr->play[1];
+	        currMove[1] = curr->play[2];
+	        currMove[2] = '\0';
+	        PlaceId currPlace = placeAbbrevToId(currMove);
+	        MoveHistory[i] = currPlace;
+	        curr = curr->next;
+	    }
+	    *numReturnedMoves = total;
+	    *canFree = true;
+	    return MoveHistory;    	    
+	}
 }
 
 PlaceId *GvGetLocationHistory(GameView gv, Player player,
                               int *numReturnedLocs, bool *canFree)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numReturnedLocs = 0;
-	*canFree = false;
-	return NULL;
+	int total = 0;
+	*numReturnedLocs = total;
+	*canFree = true;
+	History *current = gv->player[player].revealedMoves;
+	while (current != NULL) {
+	    total++;
+	    current = current->next;
+	}
+    if (total == 0) {
+        PlaceId *LocsHistory = malloc(sizeof(*LocsHistory)*1);
+        LocsHistory = NULL;
+        *canFree = true;
+        *numReturnedLocs = total;
+        return LocsHistory;
+    } else {
+        // create dynamically allocated array where there are more than 1 moves
+        PlaceId *LocsHistory = malloc((total)*sizeof(*LocsHistory));
+        History *curr = gv->player[player].revealedMoves;
+        for (int i = total - 1; i >= 0; i--) {
+            char currMove[3];
+            currMove[0] = curr->play[1];
+            currMove[1] = curr->play[2];
+            currMove[2] = '\0';
+            PlaceId currPlace = placeAbbrevToId(currMove);
+            LocsHistory[i] = currPlace;
+            curr = curr->next;
+        }
+        *numReturnedLocs = total;
+        *canFree = true;
+        return LocsHistory;        
+    }	 
 }
 
 PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
                             int *numReturnedLocs, bool *canFree)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numReturnedLocs = 0;
-	*canFree = false;
-	return 0;
+	int total = 0;
+	*numReturnedLocs = total;
+	*canFree = true;
+	History *current = gv->player[player].revealedMoves;
+	while (total < numLocs && current != NULL) {
+	    total++;
+	    current = current->next;
+	}
+    if (total == 0) {
+        PlaceId *LocsHistory = malloc(sizeof(*LocsHistory)*1);
+        LocsHistory = NULL;
+        *canFree = true;
+        *numReturnedLocs = total;
+        return LocsHistory;
+    } else {
+        // create dynamically allocated array where there are more than 1 moves
+        PlaceId *LocsHistory = malloc((total)*sizeof(*LocsHistory));
+        History *curr = gv->player[player].revealedMoves;
+        for (int i = total - 1; i >= 0; i--) {
+            char currMove[3];
+            currMove[0] = curr->play[1];
+            currMove[1] = curr->play[2];
+            currMove[2] = '\0';
+            PlaceId currPlace = placeAbbrevToId(currMove);
+            LocsHistory[i] = currPlace;
+            curr = curr->next;
+        }
+        *numReturnedLocs = total;
+        *canFree = true;
+        return LocsHistory;        
+    }	 
 }
 
 ////////////////////////////////////////////////////////////////////////
