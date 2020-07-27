@@ -38,7 +38,7 @@ typedef struct history {
 typedef struct character {
 	int health;
 	History *moves;
-	// Queue trail;
+	History *revealedMoves;
 } Character;
 
 typedef struct location {
@@ -76,6 +76,14 @@ static History *loop(History *ptr, int counter);
 static Player updateCurrent(GameView gv);
 // Helper function for updateScores. Used for calculating hunter encounters
 static void hunterEncounter(GameView gv, char a, PlaceId location, Player name);
+// Helper function for gameUpdate
+static void helperGameUpdate(GameView gv, char *currPlay);
+// Helper for convertPlay function
+static void helperConvertPlay(GameView gv, char *currPlay, int counter);
+// Updates the revealed version of history
+static void updateRevealedHistory(GameView gv, Player player, char *currPlay);
+// Helper function for updateScores
+static void hunterUpdateScores(GameView gv, PlaceId location, char a);
 
 //----------------------------------------------------------------------
 
@@ -94,7 +102,8 @@ GameView GvNew(char *pastPlays, Message messages[])
 	new->score = GAME_START_SCORE;
 	new->current = PLAYER_LORD_GODALMING;
 	new->player = malloc(5 * sizeof(*new->player));
-	new->places = malloc(NUM_REAL_PLACES * sizeof(*new->places));
+	// Extra slot for CITY_UNKNOWN
+	new->places = malloc((NUM_REAL_PLACES + 1) * sizeof(*new->places));
 	new->map = MapNew();
 
 	//intialise places don't know if this is neccessary
@@ -107,9 +116,11 @@ GameView GvNew(char *pastPlays, Message messages[])
 	for (int i = 0; i < 4; i++) {
 		new->player[i].health = GAME_START_HUNTER_LIFE_POINTS;
 		new->player[i].moves = NULL;
+		new->player[i].revealedMoves = NULL;
 	}
 	new->player[PLAYER_DRACULA].health = GAME_START_BLOOD_POINTS;
 	new->player[PLAYER_DRACULA].moves = NULL;
+	new->player[PLAYER_DRACULA].revealedMoves = NULL;
 
 	// Update game state
 	gameUpdate(new, pastPlays);
@@ -159,10 +170,18 @@ PlaceId GvGetPlayerLocation(GameView gv, Player player)
 	if (gv->player[player].moves == NULL) return NOWHERE;
 	char currPlay[8];
 	strcpy(currPlay, gv->player[player].moves->play);
-	// Temporarily convert current player to function convertPaly
+	// Temporarily convert current player to function convertPlay
 	Player temp = gv->current;
 	gv->current = player;
 	convertPlay(gv, currPlay);
+	// When this function is called, the turn is over and the history is
+	// updated hence a special case for dracula is needed
+	if (player == PLAYER_DRACULA) {
+		History *tmp = gv->player[PLAYER_DRACULA].moves;
+		gv->player[PLAYER_DRACULA].moves = tmp->next;
+		convertPlay(gv, currPlay);
+		gv->player[PLAYER_DRACULA].moves = tmp;
+	}
 	gv->current = temp;
 	char where[3];
 	where[0] = currPlay[1];
@@ -177,10 +196,8 @@ PlaceId GvGetVampireLocation(GameView gv)
 	for (int i = 0; i < NUM_REAL_PLACES; i++) {
 		if (gv->places[i].vamp == true) return i;
 	}
+	if (gv->places[NUM_REAL_PLACES].vamp == true) return CITY_UNKNOWN;
 	return NOWHERE;
-
-	// make the city unknown with an extra slot at the end. 
-	// when adding vamp, if it is city unkonwn then add to last slot
 }
 
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
@@ -289,28 +306,23 @@ static void gameUpdate(GameView gv, char *plays) {
 			currPlay[counter] = plays[i];
 			counter++;
 		} else {
-			currPlay[7] = '\0';
-			char tempor[8];
-			strcpy(tempor, currPlay);
-			// Update Gamescores and encounter history.
-			updateScores(gv, currPlay);
-			// Update history of the immediate player with tokenised string
-			updateHistory(gv, gv->current, tempor);
-			// Update current player as the next in line
-			gv->current = updateCurrent(gv);
+			helperGameUpdate(gv, currPlay);
 			counter = 0;
 		}
 	}
+	helperGameUpdate(gv, currPlay);
+}
+
+static void helperGameUpdate(GameView gv, char *currPlay) {
 	currPlay[7] = '\0';
-	char tempor[8];
-	strcpy(tempor, currPlay);
+	// Update history of the immediate player with tokenised string
+	updateHistory(gv, gv->current, currPlay);
 	// Update Gamescores and encounter history.
 	updateScores(gv, currPlay);
-	// Update history of the immediate player with tokenised string
-	updateHistory(gv, gv->current, tempor);
+	// Update revealed history
+	updateRevealedHistory(gv, gv->current, currPlay);
 	// Update current player as the next in line
 	gv->current = updateCurrent(gv);
-	counter = 0;
 }
 
 // Currently still under develpment. This function updates the location of traps
@@ -329,27 +341,34 @@ static void updateScores(GameView gv, char *currPlay) {
 	place[1] = currPlay[2];
 	place[2] = '\0';
 	PlaceId location = placeAbbrevToId(place);
+	// If C?, make the location equal to CITY_UNKNOWN array index
+	if (strcmp(place, "C?") == 0) location = NUM_REAL_PLACES;
 	// Assert only if place is not C? or S?
 	if (strcmp(place, "C?") != 0 && strcmp(place, "S?") != 0)
 		assert(placeIsReal(location));
 
 	if (gv->current == PLAYER_DRACULA) {
+		// If in Castle Dracula, gain 10 lifepoints
+		// Change depending on spec. Can castle dracula have traps? apparently yes
+		if (strcmp(place, "TP") == 0 || location == CASTLE_DRACULA) 
+			gv->player[PLAYER_DRACULA].health += LIFE_GAIN_CASTLE_DRACULA;
+		
 		// If in sea, lose lifepoints
 		if (placeIsSea(location)) 
 			gv->player[PLAYER_DRACULA].health -= LIFE_LOSS_SEA;
-		// If in Castle Dracula, gain 10 lifepoints
-		else if (strcmp(place, "TP") == 0 || location == CASTLE_DRACULA) 
-			gv->player[PLAYER_DRACULA].health += LIFE_GAIN_CASTLE_DRACULA;
 		// We assume that the vampire is on land since T is transcribed in the play
 		else if (currPlay[3] == 'T')
 			gv->places[location].traps++;
 		else if (currPlay[4] == 'V') {
 			gv->places[location].traps++;
 			gv->places[location].vamp = true;
-		// If immature vampire matures, lose 13 points	
 		} 
+		// If immature vampire matures, lose 13 points	
 		if (currPlay[5] == 'V') {
 			gv->score -= SCORE_LOSS_VAMPIRE_MATURES;
+			for (int i = 0; i <= NUM_REAL_PLACES; i++) {
+				if (gv->places[i].vamp == true) location = i;
+			}
 			gv->places[location].vamp = false;
 			gv->places[location].traps--;
 		// If a trap leaves the trail, adjust trap count
@@ -374,70 +393,28 @@ static void updateScores(GameView gv, char *currPlay) {
 	} else {
 		// If trap is encountered, minus life points. If hunter life is 0 or
 		// below,  
-		if (currPlay[3] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[3] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[3] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-		
-		// Terminates the calculation of hunter once the health is depleted
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-			return;
-		}
-
-		if (currPlay[3] == '.') return;
-		
-		if (currPlay[4] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[4] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[4] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-		
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-			return;
-		}
-
-		if (currPlay[4] == '.') return;
-
-		if (currPlay[5] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[5] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[5] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-		
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-			return;
-		}
-
-		if (currPlay[5] == '.') return;
-
-		if (currPlay[6] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[6] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[6] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-		}
-
-		if (currPlay[6] == '.') return;
+		hunterUpdateScores(gv, location, currPlay[3]);
+		hunterUpdateScores(gv, location, currPlay[4]);
+		hunterUpdateScores(gv, location, currPlay[5]);
+		hunterUpdateScores(gv, location, currPlay[6]);
 	}
+}
+
+// Helper function for updateScores. This function calculates hunter and
+// and Dracula scores when there is an encounter as well as trap count
+static void hunterUpdateScores(GameView gv, PlaceId location, char a) {
+	if (a == 'T') {
+			hunterEncounter(gv, 'T', location, gv->current);
+		} else if (a == 'V') {
+			hunterEncounter(gv, 'V', location, gv->current);
+		} else if (a == 'D') {
+			hunterEncounter(gv, 'D', location, gv->current);
+		} 
+		if (gv->player[gv->current].health <= 0) {
+			gv->player[gv->current].health = 0;
+			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
+		}
+		if (a == '.') return;
 }
 
 // Helper function for hunter trap encounters
@@ -476,52 +453,35 @@ static void convertPlay(GameView gv, char *currPlay) {
 			currPlay[2] = 'M';
 		}
 	}
-
 	// Else, the following applies to Dracula conversion
 	if (strcmp(place, "TP") == 0) {
 		currPlay[1] = 'C';
 		currPlay[2] = 'D';
 	} else if (strcmp(place, "HI") == 0) {
-		if (gv->player[PLAYER_DRACULA].moves == NULL) {
-			printf("No recorded history of player %d\n", gv->current);
-			exit(EXIT_FAILURE);
-		}
-		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
-		currPlay[1] = tmp[1];
-		currPlay[2] = tmp[2];
+		helperConvertPlay(gv, currPlay, 1);
 	} else if (strcmp(place, "D1") == 0) {
-		if (gv->player[PLAYER_DRACULA].moves == NULL) {
-				printf("No recorded history of player %d\n", gv->current);
-			exit(EXIT_FAILURE);
-		}
-		char *tmp = gv->player[PLAYER_DRACULA].moves->play;
-		currPlay[1] = tmp[1];
-		currPlay[2] = tmp[2];
+		helperConvertPlay(gv, currPlay, 1);
 	} else if (strcmp(place, "D2") == 0) {
-		History *ptr = gv->player[PLAYER_DRACULA].moves;
-		ptr = loop(ptr, 2);
-		char *tmp = ptr->play;
-		currPlay[1] = tmp[1];
-		currPlay[2] = tmp[2];
+		helperConvertPlay(gv, currPlay, 2);
 	} else if (strcmp(place, "D3") == 0) {
-		History *ptr = gv->player[PLAYER_DRACULA].moves;
-		ptr = loop(ptr, 3);
-		char *tmp = ptr->play;
-		currPlay[1] = tmp[1];
-		currPlay[2] = tmp[2];
+		helperConvertPlay(gv, currPlay, 3);
 	} else if (strcmp(place, "D4") == 0) {
-		History *ptr = gv->player[PLAYER_DRACULA].moves;
-		ptr = loop(ptr, 4);
-		char *tmp = ptr->play;
-		currPlay[1] = tmp[1];
-		currPlay[2] = tmp[2];
+		helperConvertPlay(gv, currPlay, 4);
 	} else if (strcmp(place, "D5") == 0) {
-		History *ptr = gv->player[PLAYER_DRACULA].moves;
-		ptr = loop(ptr, 5);
-		char *tmp = ptr->play;
-		currPlay[1] = tmp[1];
-		currPlay[2] = tmp[2];
+		helperConvertPlay(gv, currPlay, 5);
 	} 
+}
+
+static void helperConvertPlay(GameView gv, char *currPlay, int counter) {
+	if (gv->player[PLAYER_DRACULA].moves == NULL) {
+		printf("No recorded history of player %d\n", gv->current);
+		exit(EXIT_FAILURE);
+	}
+	History *ptr = gv->player[PLAYER_DRACULA].revealedMoves;
+	ptr = loop(ptr, counter);
+	char *tmp = ptr->play;
+	currPlay[1] = tmp[1];
+	currPlay[2] = tmp[2];
 }
 
 // Dont forget to free this memeory
@@ -536,6 +496,20 @@ static void updateHistory(GameView gv, Player player, char *currPlay) {
 	} else {
 		new->next = gv->player[player].moves;
 		gv->player[player].moves = new;
+	}
+}
+
+// This function is tested and works
+static void updateRevealedHistory(GameView gv, Player player, char *currPlay) {
+	convertPlay(gv, currPlay);
+	History *new = malloc(sizeof(*new));
+	strcpy(new->play, currPlay);
+	new->next = NULL;
+	if (gv->player[player].revealedMoves == NULL) {
+		gv->player[player].revealedMoves = new;
+	} else {
+		new->next = gv->player[player].revealedMoves;
+		gv->player[player].revealedMoves = new;
 	}
 }
 
@@ -559,8 +533,21 @@ static Player updateCurrent(GameView gv) {
 }
 
 //-------------------------------------------------
-//Test suite
 /*
+
+// Neglected functions
+static bool isSpecial(char *tmp) {
+	if (tmp[1] == 'H' && tmp[2] == 'I') return true;
+	else if (tmp[1] == 'D' && tmp[2] == '1') return true;
+	else if (tmp[1] == 'D' && tmp[2] == '2') return true;
+	else if (tmp[1] == 'D' && tmp[2] == '3') return true;
+	else if (tmp[1] == 'D' && tmp[2] == '4') return true;
+	else if (tmp[1] == 'D' && tmp[2] == '5') return true;
+	else return false;
+}
+
+//Test suite
+
 	//Test for update history
 
 
