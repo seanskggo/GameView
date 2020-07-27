@@ -90,10 +90,6 @@ static void hunterUpdateScores(GameView gv, PlaceId location, char a);
 static void convertPlay2(GameView gv, char *currMove, History *curr);
 // Checks whether or not a given PlaceId refers to a DOUBLE_BACK move
 static bool isDoubleBack(PlaceId p);
-// Compares two PlaceIds. Returns one is the first PlaceId is
-// numerically/alabetically first, -1 if it is second,
-// and 0 if they are the same
-static  int comparePlaceIds(const void *a, const void *b);
 
 
 //----------------------------------------------------------------------
@@ -411,7 +407,8 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
                               PlaceId from, bool road, bool rail,
                               bool boat, int *numReturnedLocs)
 {
-	ConnList reachableLocs = NULL;
+    *numReturnedLocs = 0;
+    ConnList reachableLocs = NULL;
 	ConnList curr = MapGetConnections(gv->map, from);
 	ConnList temp = curr;
 	// we have an added array to check if we've already realised
@@ -557,9 +554,6 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 		reachableLocs = reachableLocs->next;
 	}
 
-	// We sort the reachableLocsArray before returning
-	qsort(reachableLocsArray, rLocsLength, sizeof(PlaceId), comparePlaceIds);
-    
     free(added);
 	return reachableLocsArray;
 }
@@ -816,23 +810,6 @@ static Player updateCurrent(GameView gv) {
 static bool isDoubleBack(PlaceId p)
 {
 	return (p >= DOUBLE_BACK_1 && p <= DOUBLE_BACK_5) ? true : false;
-}
-
-// Compares two PlaceIds. Returns one is the first PlaceId is
-// numerically/alabetically second, -1 if it is first,
-// and 0 if they are the same
-static  int comparePlaceIds(const void *a, const void *b)
-{
-	const PlaceId *place1 = a;
-	const PlaceId *place2 = b;
-
-	if (*place1 > *place2) {
-		return 1;
-	} else if (*place1 < *place2) {
-		return -1;
-	} else {
-		return 0;
-	}
 }
 
 // this version of convertPlay takes in a string with only two characters
