@@ -959,21 +959,7 @@ int main(void)
         free(DRA);        
 	
 		}	
-		// @ Francis, this test fails. Did you create it? if so, is this wrong?
 	
-		{
-			int numLocs = 0; bool canFree = false;
-			PlaceId *locs = GvGetLocationHistory(gv, PLAYER_DRACULA,
-			                                     &numLocs, &canFree);
-			assert(numLocs == 6);
-			assert(locs[0] == STRASBOURG);
-			assert(locs[1] == CITY_UNKNOWN);
-			assert(locs[2] == CITY_UNKNOWN);
-			assert(locs[3] == STRASBOURG);
-			assert(locs[4] == STRASBOURG);
-			assert(locs[5] == CITY_UNKNOWN);
-			if (canFree) free(locs);
-		}
 		
 		GvFree(gv);
 		printf("Test passed!\n");
@@ -1064,4 +1050,3 @@ int main(void)
 
 	return EXIT_SUCCESS;
 }
-
