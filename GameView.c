@@ -38,7 +38,7 @@ typedef struct history {
 typedef struct character {
 	int health;
 	History *moves;
-	// Queue trail;
+	History *revealedMoves;
 } Character;
 
 typedef struct location {
@@ -80,8 +80,8 @@ static void hunterEncounter(GameView gv, char a, PlaceId location, Player name);
 static void helperGameUpdate(GameView gv, char *currPlay);
 // Helper for convertPlay function
 static void helperConvertPlay(GameView gv, char *currPlay, int counter);
-// Checks if a string contains special move.
-static bool isSpecial(char *tmp);
+// Updates the revealed version of history
+static void updateReveledHistory(GameView gv, Player player, char *currPlay);
 
 //----------------------------------------------------------------------
 
@@ -114,9 +114,11 @@ GameView GvNew(char *pastPlays, Message messages[])
 	for (int i = 0; i < 4; i++) {
 		new->player[i].health = GAME_START_HUNTER_LIFE_POINTS;
 		new->player[i].moves = NULL;
+		new->player[i].revealedMoves = NULL;
 	}
 	new->player[PLAYER_DRACULA].health = GAME_START_BLOOD_POINTS;
 	new->player[PLAYER_DRACULA].moves = NULL;
+	new->player[PLAYER_DRACULA].revealedMoves = NULL;
 
 	// Update game state
 	gameUpdate(new, pastPlays);
@@ -282,9 +284,6 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // Updates the status of game state
 // This function is tested and works 100%
 static void gameUpdate(GameView gv, char *plays) {
-
-	char temp[8] = "DHI....";
-	if (isSpecial(temp)) printf("YEET\n");
  
 	if (strcmp(plays, "") == 0) return;
 	// Tokenise past plays to single plays
@@ -304,12 +303,12 @@ static void gameUpdate(GameView gv, char *plays) {
 
 static void helperGameUpdate(GameView gv, char *currPlay) {
 	currPlay[7] = '\0';
-	char tempor[8];
-	strcpy(tempor, currPlay);
 	// Update Gamescores and encounter history.
 	updateScores(gv, currPlay);
 	// Update history of the immediate player with tokenised string
-	updateHistory(gv, gv->current, tempor);
+	updateHistory(gv, gv->current, currPlay);
+	// Update revealed history
+	updateReveledHistory(gv, gv->current, currPlay);
 	// Update current player as the next in line
 	gv->current = updateCurrent(gv);
 }
@@ -508,23 +507,11 @@ static void helperConvertPlay(GameView gv, char *currPlay, int counter) {
 		printf("No recorded history of player %d\n", gv->current);
 		exit(EXIT_FAILURE);
 	}
-	History *ptr = gv->player[PLAYER_DRACULA].moves;
+	History *ptr = gv->player[PLAYER_DRACULA].revealedMoves;
 	ptr = loop(ptr, counter);
 	char *tmp = ptr->play;
-	// Special case where two history moves are special moves. Use recursion
-	// if ()
 	currPlay[1] = tmp[1];
 	currPlay[2] = tmp[2];
-}
-
-static bool isSpecial(char *tmp) {
-	if (tmp[1] == 'H' && tmp[2] == 'I') return true;
-	else if (tmp[1] == 'D' && tmp[2] == '1') return true;
-	else if (tmp[1] == 'D' && tmp[2] == '2') return true;
-	else if (tmp[1] == 'D' && tmp[2] == '3') return true;
-	else if (tmp[1] == 'D' && tmp[2] == '4') return true;
-	else if (tmp[1] == 'D' && tmp[2] == '5') return true;
-	else return false;
 }
 
 // Dont forget to free this memeory
@@ -539,6 +526,20 @@ static void updateHistory(GameView gv, Player player, char *currPlay) {
 	} else {
 		new->next = gv->player[player].moves;
 		gv->player[player].moves = new;
+	}
+}
+
+// This function is tested and works
+static void updateReveledHistory(GameView gv, Player player, char *currPlay) {
+	convertPlay(gv, currPlay);
+	History *new = malloc(sizeof(*new));
+	strcpy(new->play, currPlay);
+	new->next = NULL;
+	if (gv->player[player].revealedMoves == NULL) {
+		gv->player[player].revealedMoves = new;
+	} else {
+		new->next = gv->player[player].revealedMoves;
+		gv->player[player].revealedMoves = new;
 	}
 }
 
@@ -562,8 +563,21 @@ static Player updateCurrent(GameView gv) {
 }
 
 //-------------------------------------------------
-//Test suite
 /*
+
+// Neglected functions
+static bool isSpecial(char *tmp) {
+	if (tmp[1] == 'H' && tmp[2] == 'I') return true;
+	else if (tmp[1] == 'D' && tmp[2] == '1') return true;
+	else if (tmp[1] == 'D' && tmp[2] == '2') return true;
+	else if (tmp[1] == 'D' && tmp[2] == '3') return true;
+	else if (tmp[1] == 'D' && tmp[2] == '4') return true;
+	else if (tmp[1] == 'D' && tmp[2] == '5') return true;
+	else return false;
+}
+
+//Test suite
+
 	//Test for update history
 
 
