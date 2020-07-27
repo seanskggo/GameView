@@ -470,7 +470,457 @@ int main(void)
 		GvFree(gv);
 		printf("Test passed!\n");
 	}
+	{///////////////////////////////////////////////////////////////////
 
+		printf("Test for GvGetMoveHistory\n");
+
+		char *trail = 
+			"GGE.... SBR.... HMA.... MVE.... DC?.... "
+			"GST.... SPR.... HGR.... MMI.... DC?.... "
+			"GFR.... SVI.... HMA.... MZU.... DD1.... "
+			"GCO.... SBD.... HSR.... MST.... DC?....";
+		Message messages[] = {};
+		GameView gv = GvNew(trail, messages);
+		bool HLGcanFree = false;
+		int HLGtotal = 0;
+        PlaceId *HLG = GvGetMoveHistory(gv, PLAYER_LORD_GODALMING, &HLGtotal, &HLGcanFree);
+        assert(HLGtotal == 4);
+        assert(HLGcanFree == true);
+        assert(HLG[0] == GENEVA);
+        assert(HLG[1] == STRASBOURG);
+        assert(HLG[2] == FRANKFURT);
+        assert(HLG[3] == COLOGNE);
+        free(HLG);
+ 
+		bool HDScanFree = false;
+		int HDStotal = 0;        
+        PlaceId *HDS = GvGetMoveHistory(gv, PLAYER_DR_SEWARD, &HDStotal, &HDScanFree);
+        assert(HDStotal == 4);
+        assert(HDScanFree == true);
+        assert(HDS[0] == BERLIN);
+        assert(HDS[1] == PRAGUE);
+        assert(HDS[2] == VIENNA);
+        assert(HDS[3] == BUDAPEST);
+        free(HDS);
+
+		bool HVHcanFree = false;
+		int HVHtotal = 0;         
+        PlaceId *HVH = GvGetMoveHistory(gv, PLAYER_VAN_HELSING, &HVHtotal, &HVHcanFree);
+        assert(HVHtotal == 4);
+        assert(HVHcanFree == true);
+        assert(HVH[0] == MADRID);
+        assert(HVH[1] == GRANADA);
+        assert(HVH[2] == MADRID);
+        assert(HVH[3] == SARAGOSSA);
+        free(HVH);
+
+		bool HMHcanFree = false;
+		int HMHtotal = 0;         
+        PlaceId *HMH = GvGetMoveHistory(gv, PLAYER_MINA_HARKER, &HMHtotal, &HMHcanFree);
+        assert(HMHtotal == 4);
+        assert(HMHcanFree == true);
+        assert(HMH[0] == VENICE);
+        assert(HMH[1] == MILAN);
+        assert(HMH[2] == ZURICH);
+        assert(HMH[3] == STRASBOURG);
+        free(HMH);
+
+		bool DRAcanFree = false;
+		int DRAtotal = 0;         
+        PlaceId *DRA = GvGetMoveHistory(gv, PLAYER_DRACULA, &DRAtotal, &DRAcanFree);
+        assert(DRAtotal == 4);
+        assert(DRAcanFree == true);
+        assert(DRA[0] == CITY_UNKNOWN);
+        assert(DRA[1] == CITY_UNKNOWN);
+        assert(DRA[2] == DOUBLE_BACK_1);
+        assert(DRA[3] == CITY_UNKNOWN);
+        free(DRA);        
+
+		GvFree(gv);
+		printf("Test passed!\n");
+	
+	}
+	{///////////////////////////////////////////////////////////////////
+
+		printf("Test for GvGetLastMoves where numMoves < total moves\n");
+
+		char *trail = 
+			"GGE.... SBR.... HMA.... MVE.... DC?.... "
+			"GST.... SPR.... HGR.... MMI.... DC?.... "
+			"GFR.... SVI.... HMA.... MZU.... DD1.... "
+			"GCO.... SBD.... HSR.... MST.... DC?....";
+		Message messages[] = {};
+		GameView gv = GvNew(trail, messages);
+		bool HLGcanFree = false;
+		int HLGtotal = 0;
+		int HLGnumMoves = 3;
+        PlaceId *HLG = GvGetLastMoves(gv, PLAYER_LORD_GODALMING, 
+            HLGnumMoves, &HLGtotal, &HLGcanFree);
+        assert(HLGtotal == 3);
+        assert(HLGcanFree == true);
+        assert(HLG[0] == STRASBOURG);
+        assert(HLG[1] == FRANKFURT);
+        assert(HLG[2] == COLOGNE);
+        free(HLG);
+ 
+		bool HDScanFree = false;
+		int HDStotal = 0;     
+		int HDSnumMoves = 2;   
+        PlaceId *HDS = GvGetLastMoves(gv, PLAYER_DR_SEWARD, 
+            HDSnumMoves, &HDStotal, &HDScanFree);
+        assert(HDStotal == 2);
+        assert(HDScanFree == true);
+        assert(HDS[0] == VIENNA);
+        assert(HDS[1] == BUDAPEST);
+        free(HDS);
+
+		bool HVHcanFree = false;
+		int HVHtotal = 0;    
+		int HVHnumMoves = 4;     
+        PlaceId *HVH = GvGetLastMoves(gv, PLAYER_VAN_HELSING, 
+            HVHnumMoves, &HVHtotal, &HVHcanFree);
+        assert(HVHtotal == 4);
+        assert(HVHcanFree == true);
+        assert(HVH[0] == MADRID);
+        assert(HVH[1] == GRANADA);
+        assert(HVH[2] == MADRID);
+        assert(HVH[3] == SARAGOSSA);
+        free(HVH);
+
+		bool HMHcanFree = false;
+		int HMHtotal = 0;  
+		int HMHnumMoves = 0;       
+        PlaceId *HMH = GvGetLastMoves(gv, PLAYER_MINA_HARKER,
+            HMHnumMoves, &HMHtotal, &HMHcanFree);
+        assert(HMHtotal == 0);
+        assert(HMHcanFree == true);
+        assert(HMH == NULL);
+        free(HMH);
+
+		bool DRAcanFree = false;
+		int DRAtotal = 0; 
+		int DRAnumMoves = 3;        
+        PlaceId *DRA = GvGetLastMoves(gv, PLAYER_DRACULA, 
+            DRAnumMoves, &DRAtotal, &DRAcanFree);
+        assert(DRAtotal == 3);
+        assert(DRAcanFree == true);;
+        assert(DRA[0] == CITY_UNKNOWN);
+        assert(DRA[1] == DOUBLE_BACK_1);
+        assert(DRA[2] == CITY_UNKNOWN);
+        free(DRA);        
+
+		GvFree(gv);
+		printf("Test passed!\n");
+	
+	}
+	{///////////////////////////////////////////////////////////////////
+
+		printf("Test for GvGetLastMoves where numMoves > total moves\n");
+
+		char *trail = 
+			"GGE.... SBR.... HMA.... MVE.... DC?.... "
+			"GST.... SPR.... HGR.... MMI.... DC?.... "
+			"GFR.... SVI.... HMA.... MZU.... DD1.... "
+			"GCO.... SBD.... HSR.... MST.... DC?....";
+		Message messages[] = {};
+		GameView gv = GvNew(trail, messages);
+		bool HLGcanFree = false;
+		int HLGtotal = 0;
+		int HLGnumMoves = 5;
+        PlaceId *HLG = GvGetLastMoves(gv, PLAYER_LORD_GODALMING, 
+            HLGnumMoves, &HLGtotal, &HLGcanFree);
+        assert(HLGtotal == 4);
+        assert(HLGcanFree == true);
+        assert(HLG[0] == GENEVA);
+        assert(HLG[1] == STRASBOURG);
+        assert(HLG[2] == FRANKFURT);
+        assert(HLG[3] == COLOGNE);
+        free(HLG);
+ 
+		bool HDScanFree = false;
+		int HDStotal = 0;        
+		int HDSnumMoves = 7;   
+        PlaceId *HDS = GvGetLastMoves(gv, PLAYER_DR_SEWARD, 
+            HDSnumMoves, &HDStotal, &HDScanFree);
+        assert(HDStotal == 4);
+        assert(HDScanFree == true);
+        assert(HDS[0] == BERLIN);
+        assert(HDS[1] == PRAGUE);
+        assert(HDS[2] == VIENNA);
+        assert(HDS[3] == BUDAPEST);
+        free(HDS);
+
+		bool HVHcanFree = false;
+		int HVHtotal = 0;         
+		int HVHnumMoves = 9;     
+        PlaceId *HVH = GvGetLastMoves(gv, PLAYER_VAN_HELSING, 
+            HVHnumMoves, &HVHtotal, &HVHcanFree);
+        assert(HVHtotal == 4);
+        assert(HVHcanFree == true);
+        assert(HVH[0] == MADRID);
+        assert(HVH[1] == GRANADA);
+        assert(HVH[2] == MADRID);
+        assert(HVH[3] == SARAGOSSA);
+        free(HVH);
+
+		bool HMHcanFree = false;
+		int HMHtotal = 0;         
+		int HMHnumMoves = 10;       
+        PlaceId *HMH = GvGetLastMoves(gv, PLAYER_MINA_HARKER,
+            HMHnumMoves, &HMHtotal, &HMHcanFree);
+        assert(HMHtotal == 4);
+        assert(HMHcanFree == true);
+        assert(HMH[0] == VENICE);
+        assert(HMH[1] == MILAN);
+        assert(HMH[2] == ZURICH);
+        assert(HMH[3] == STRASBOURG);
+        free(HMH);
+
+		bool DRAcanFree = false;
+		int DRAtotal = 0;         
+		int DRAnumMoves = 500;        
+        PlaceId *DRA = GvGetLastMoves(gv, PLAYER_DRACULA, 
+            DRAnumMoves, &DRAtotal, &DRAcanFree);
+        assert(DRAtotal == 4);
+        assert(DRAcanFree == true);
+        assert(DRA[0] == CITY_UNKNOWN);
+        assert(DRA[1] == CITY_UNKNOWN);
+        assert(DRA[2] == DOUBLE_BACK_1);
+        assert(DRA[3] == CITY_UNKNOWN);
+        free(DRA);        
+
+		GvFree(gv);
+		printf("Test passed!\n");
+	
+	}
+	{///////////////////////////////////////////////////////////////////
+
+		printf("Test for GvGetLocationHistory\n");
+
+		char *trail = 
+			"GGE.... SBR.... HMA.... MVE.... DC?.... "
+			"GST.... SPR.... HGR.... MMI.... DC?.... "
+			"GFR.... SVI.... HMA.... MZU.... DD1.... "
+			"GCO.... SBD.... HSR.... MST.... DC?....";
+		Message messages[] = {};
+		GameView gv = GvNew(trail, messages);
+		bool HLGcanFree = false;
+		int HLGtotal = 0;
+        PlaceId *HLG = GvGetLocationHistory(gv, PLAYER_LORD_GODALMING,
+             &HLGtotal, &HLGcanFree);
+        assert(HLGtotal == 4);
+        assert(HLGcanFree == true);
+        assert(HLG[0] == GENEVA);
+        assert(HLG[1] == STRASBOURG);
+        assert(HLG[2] == FRANKFURT);
+        assert(HLG[3] == COLOGNE);
+        free(HLG);
+ 
+		bool HDScanFree = false;
+		int HDStotal = 0;          
+        PlaceId *HDS = GvGetLocationHistory(gv, PLAYER_DR_SEWARD, 
+             &HDStotal, &HDScanFree);
+        assert(HDStotal == 4);
+        assert(HDScanFree == true);
+        assert(HDS[0] == BERLIN);
+        assert(HDS[1] == PRAGUE);
+        assert(HDS[2] == VIENNA);
+        assert(HDS[3] == BUDAPEST);
+        free(HDS);
+
+		bool HVHcanFree = false;
+		int HVHtotal = 0;            
+        PlaceId *HVH = GvGetLocationHistory(gv, PLAYER_VAN_HELSING, 
+            &HVHtotal, &HVHcanFree);
+        assert(HVHtotal == 4);
+        assert(HVHcanFree == true);
+        assert(HVH[0] == MADRID);
+        assert(HVH[1] == GRANADA);
+        assert(HVH[2] == MADRID);
+        assert(HVH[3] == SARAGOSSA);
+        free(HVH);
+
+		bool HMHcanFree = false;
+		int HMHtotal = 0;               
+        PlaceId *HMH = GvGetLocationHistory(gv, PLAYER_MINA_HARKER,
+            &HMHtotal, &HMHcanFree);
+        assert(HMHtotal == 4);
+        assert(HMHcanFree == true);
+        assert(HMH[0] == VENICE);
+        assert(HMH[1] == MILAN);
+        assert(HMH[2] == ZURICH);
+        assert(HMH[3] == STRASBOURG);
+        free(HMH);
+
+		bool DRAcanFree = false;
+		int DRAtotal = 0;               
+        PlaceId *DRA = GvGetLocationHistory(gv, PLAYER_DRACULA, 
+            &DRAtotal, &DRAcanFree);
+        assert(DRAtotal == 4);
+        assert(DRAcanFree == true);
+        assert(DRA[0] == CITY_UNKNOWN);
+        assert(DRA[1] == CITY_UNKNOWN);
+        assert(DRA[2] == CITY_UNKNOWN);
+        assert(DRA[3] == CITY_UNKNOWN);
+        free(DRA);        
+
+		GvFree(gv);
+		printf("Test passed!\n");
+	
+	}
+	{///////////////////////////////////////////////////////////////////
+
+		printf("Test for GvGetLastLocations where numMoves < total moves\n");
+
+		char *trail = 
+			"GGE.... SBR.... HMA.... MVE.... DC?.... "
+			"GST.... SPR.... HGR.... MMI.... DC?.... "
+			"GFR.... SVI.... HMA.... MZU.... DD1.... "
+			"GCO.... SBD.... HSR.... MST.... DC?....";
+		Message messages[] = {};
+		GameView gv = GvNew(trail, messages);
+		bool HLGcanFree = false;
+		int HLGtotal = 0;
+		int HLGnumMoves = 3;
+        PlaceId *HLG = GvGetLastLocations(gv, PLAYER_LORD_GODALMING, 
+            HLGnumMoves, &HLGtotal, &HLGcanFree);
+        assert(HLGtotal == 3);
+        assert(HLGcanFree == true);
+        assert(HLG[0] == STRASBOURG);
+        assert(HLG[1] == FRANKFURT);
+        assert(HLG[2] == COLOGNE);
+        free(HLG);
+ 
+		bool HDScanFree = false;
+		int HDStotal = 0;     
+		int HDSnumMoves = 2;   
+        PlaceId *HDS = GvGetLastLocations(gv, PLAYER_DR_SEWARD, 
+            HDSnumMoves, &HDStotal, &HDScanFree);
+        assert(HDStotal == 2);
+        assert(HDScanFree == true);
+        assert(HDS[0] == VIENNA);
+        assert(HDS[1] == BUDAPEST);
+        free(HDS);
+
+		bool HVHcanFree = false;
+		int HVHtotal = 0;    
+		int HVHnumMoves = 4;     
+        PlaceId *HVH = GvGetLastLocations(gv, PLAYER_VAN_HELSING, 
+            HVHnumMoves, &HVHtotal, &HVHcanFree);
+        assert(HVHtotal == 4);
+        assert(HVHcanFree == true);
+        assert(HVH[0] == MADRID);
+        assert(HVH[1] == GRANADA);
+        assert(HVH[2] == MADRID);
+        assert(HVH[3] == SARAGOSSA);
+        free(HVH);
+
+		bool HMHcanFree = false;
+		int HMHtotal = 0;  
+		int HMHnumMoves = 0;       
+        PlaceId *HMH = GvGetLastLocations(gv, PLAYER_MINA_HARKER,
+            HMHnumMoves, &HMHtotal, &HMHcanFree);
+        assert(HMHtotal == 0);
+        assert(HMHcanFree == true);
+        assert(HMH == NULL);
+        free(HMH);
+
+		bool DRAcanFree = false;
+		int DRAtotal = 0;   
+		int DRAnumMoves = 3;            
+        PlaceId *DRA = GvGetLastLocations(gv, PLAYER_DRACULA, 
+            DRAnumMoves, &DRAtotal, &DRAcanFree);
+        assert(DRAtotal == 3);
+        assert(DRAcanFree == true);
+        assert(DRA[0] == CITY_UNKNOWN);
+        assert(DRA[1] == CITY_UNKNOWN);
+        assert(DRA[2] == CITY_UNKNOWN);
+        free(DRA);        
+
+		GvFree(gv);
+		printf("Test passed!\n");
+	
+	}	
+	{///////////////////////////////////////////////////////////////////
+
+		printf("Test for GvGetLastLocations where numMoves > total moves\n");
+
+		char *trail = 
+			"GGE.... SBR.... HMA.... MVE.... DC?.... "
+			"GST.... SPR.... HGR.... MMI.... DC?.... "
+			"GFR.... SVI.... HMA.... MZU.... DD1.... "
+			"GCO.... SBD.... HSR.... MST.... DC?....";
+		Message messages[] = {};
+		GameView gv = GvNew(trail, messages);
+		bool HLGcanFree = false;
+		int HLGtotal = 0;
+		int HLGnumMoves = 5;
+        PlaceId *HLG = GvGetLastLocations(gv, PLAYER_LORD_GODALMING, 
+            HLGnumMoves, &HLGtotal, &HLGcanFree);
+        assert(HLGtotal == 4);
+        assert(HLGcanFree == true);
+        assert(HLG[0] == GENEVA);
+        assert(HLG[1] == STRASBOURG);
+        assert(HLG[2] == FRANKFURT);
+        assert(HLG[3] == COLOGNE);
+        free(HLG);
+ 
+		bool HDScanFree = false;
+		int HDStotal = 0;        
+		int HDSnumMoves = 7;   
+        PlaceId *HDS = GvGetLastLocations(gv, PLAYER_DR_SEWARD, 
+            HDSnumMoves, &HDStotal, &HDScanFree);
+        assert(HDStotal == 4);
+        assert(HDScanFree == true);
+        assert(HDS[0] == BERLIN);
+        assert(HDS[1] == PRAGUE);
+        assert(HDS[2] == VIENNA);
+        assert(HDS[3] == BUDAPEST);
+        free(HDS);
+
+		bool HVHcanFree = false;
+		int HVHtotal = 0;         
+		int HVHnumMoves = 9;     
+        PlaceId *HVH = GvGetLastLocations(gv, PLAYER_VAN_HELSING, 
+            HVHnumMoves, &HVHtotal, &HVHcanFree);
+        assert(HVHtotal == 4);
+        assert(HVHcanFree == true);
+        assert(HVH[0] == MADRID);
+        assert(HVH[1] == GRANADA);
+        assert(HVH[2] == MADRID);
+        assert(HVH[3] == SARAGOSSA);
+        free(HVH);
+
+		bool HMHcanFree = false;
+		int HMHtotal = 0;         
+		int HMHnumMoves = 10;       
+        PlaceId *HMH = GvGetLastLocations(gv, PLAYER_MINA_HARKER,
+            HMHnumMoves, &HMHtotal, &HMHcanFree);
+        assert(HMHtotal == 4);
+        assert(HMHcanFree == true);
+        assert(HMH[0] == VENICE);
+        assert(HMH[1] == MILAN);
+        assert(HMH[2] == ZURICH);
+        assert(HMH[3] == STRASBOURG);
+        free(HMH);
+
+		bool DRAcanFree = false;
+		int DRAtotal = 0;         
+		int DRAnumMoves = 500;        
+        PlaceId *DRA = GvGetLastLocations(gv, PLAYER_DRACULA, 
+            DRAnumMoves, &DRAtotal, &DRAcanFree);
+        assert(DRAtotal == 4);
+        assert(DRAcanFree == true);
+        assert(DRA[0] == CITY_UNKNOWN);
+        assert(DRA[1] == CITY_UNKNOWN);
+        assert(DRA[2] == CITY_UNKNOWN);
+        assert(DRA[3] == CITY_UNKNOWN);
+        free(DRA);        
+
+		GvFree(gv);
+		printf("Test passed!\n");
+	
+	}
 	{///////////////////////////////////////////////////////////////////
 	
 		printf("Testing connections\n");
