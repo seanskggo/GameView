@@ -81,7 +81,7 @@ static void helperGameUpdate(GameView gv, char *currPlay);
 // Helper for convertPlay function
 static void helperConvertPlay(GameView gv, char *currPlay, int counter);
 // Updates the revealed version of history
-static void updateReveledHistory(GameView gv, Player player, char *currPlay);
+static void updateRevealedHistory(GameView gv, Player player, char *currPlay);
 
 //----------------------------------------------------------------------
 
@@ -337,7 +337,7 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
     } else {
         // create dynamically allocated array where there are more than 1 moves
         PlaceId *LocsHistory = malloc((total)*sizeof(*LocsHistory));
-        History *curr = gv->player[player].moves;
+        History *curr = gv->player[player].revealedMoves;
         for (int i = total - 1; i >= 0; i--) {
             char currMove[3];
             currMove[0] = curr->play[1];
@@ -404,12 +404,12 @@ static void gameUpdate(GameView gv, char *plays) {
 
 static void helperGameUpdate(GameView gv, char *currPlay) {
 	currPlay[7] = '\0';
-	// Update Gamescores and encounter history.
-	updateScores(gv, currPlay);
 	// Update history of the immediate player with tokenised string
 	updateHistory(gv, gv->current, currPlay);
+	// Update Gamescores and encounter history.
+	updateScores(gv, currPlay);
 	// Update revealed history
-	updateReveledHistory(gv, gv->current, currPlay);
+	updateRevealedHistory(gv, gv->current, currPlay);
 	// Update current player as the next in line
 	gv->current = updateCurrent(gv);
 }
@@ -631,7 +631,7 @@ static void updateHistory(GameView gv, Player player, char *currPlay) {
 }
 
 // This function is tested and works
-static void updateReveledHistory(GameView gv, Player player, char *currPlay) {
+static void updateRevealedHistory(GameView gv, Player player, char *currPlay) {
 	convertPlay(gv, currPlay);
 	History *new = malloc(sizeof(*new));
 	strcpy(new->play, currPlay);
