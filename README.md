@@ -41,6 +41,6 @@ we can review the code before it is added to this master.
 <strong>Note to marker:</strong> \
 We have deleted and replaced this repository with a restructured and optimised verison. Previous commit history is retained with a rebase. 
 \
-The back up repository where this restructuring happened is available here: https://github.com/seanskggo72/Backup-Dracula.git
+The back up repository where this restructuring <strong>initially</strong> happened is available here: https://github.com/seanskggo72/Backup-Dracula.git
 
 Thank you!
