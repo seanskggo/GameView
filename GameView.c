@@ -137,12 +137,35 @@ GameView GvNew(char *pastPlays, Message messages[])
 void GvFree(GameView gv)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	// for (int i = 0; i < 5; i++) {
-	// 	Character *tmp = &gv->player[i];
-	// 	free(tmp);
-	// }
+	// Free the characters
+	for (int i = 0; i < 5; i++) {
+	   // Free the history of players
+	   History *curr = gv->player[i].moves;
+	   History *prev = curr;
+	   while (curr != NULL) {
+	      curr = curr->next;
+	      free(prev);
+	      prev = curr;
+	   }
+	   // Free the revealed history of players
+	   curr = gv->player[i].revealedMoves;
+	   prev = curr;
+	   while (curr != NULL) {
+	      curr = curr->next;
+	      free(prev);
+	      prev = curr;
+	   }
+	   Character *tmp = &gv->player[i];
+	   free(tmp);
+	}
+	// Free the location struct array
+	for (int i = 0; i <= NUM_REAL_PLACES; i++) {
+	   Location *tmp = &gv->places[i];
+	   free(tmp);
+	}
 	free(gv);
 }
+
 
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
