@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
 // COMP2521 20T2 ... the Fury of Dracula
 // Map.c: an implementation of a Map type
 // You can change this as much as you want!
@@ -29,9 +29,11 @@ struct map {
 static void addConnections(Map m);
 static void addConnection(Map m, PlaceId v, PlaceId w, TransportType type);
 static inline bool isSentinelEdge(Connection c);
-
-static ConnList connListInsert(ConnList l, PlaceId v, TransportType type);
 static bool connListContains(ConnList l, PlaceId v, TransportType type);
+// Our static functions
+static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
+	int added[NUM_REAL_PLACES]);
+static ConnList removeNonRailConnecs(ConnList connecs);
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -117,6 +119,24 @@ int MapNumConnections(Map m, TransportType type)
 	return nE;
 }
 
+/// Insert a node into an adjacency list.
+ConnList connListInsert(ConnList l, PlaceId p, TransportType type)
+{
+	assert(placeIsReal(p));
+	assert(transportTypeIsValid(type));
+
+	ConnList new = malloc(sizeof(*new));
+	if (new == NULL) {
+		fprintf(stderr, "Couldn't allocate ConnNode");
+		exit(EXIT_FAILURE);
+	}
+
+	new->p = p;
+	new->type = type;
+	new->next = l;
+	return new;
+}
+
 ////////////////////////////////////////////////////////////////////////
 
 /// Add edges to Graph representing map of Europe
@@ -152,24 +172,6 @@ static inline bool isSentinelEdge(Connection c)
 	return c.v == -1 && c.w == -1 && c.t == ANY;
 }
 
-/// Insert a node into an adjacency list.
-static ConnList connListInsert(ConnList l, PlaceId p, TransportType type)
-{
-	assert(placeIsReal(p));
-	assert(transportTypeIsValid(type));
-
-	ConnList new = malloc(sizeof(*new));
-	if (new == NULL) {
-		fprintf(stderr, "Couldn't allocate ConnNode");
-		exit(EXIT_FAILURE);
-	}
-	
-	new->p = p;
-	new->type = type;
-	new->next = l;
-	return new;
-}
-
 /// Does this adjacency list contain a particular value?
 static bool connListContains(ConnList l, PlaceId p, TransportType type)
 {
@@ -181,7 +183,7 @@ static bool connListContains(ConnList l, PlaceId p, TransportType type)
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -194,3 +196,142 @@ ConnList MapGetConnections(Map m, PlaceId p)
 }
 
 ////////////////////////////////////////////////////////////////////////
+
+/// Functions we added
+
+// Pretty sure this function is useless and needs to be burned!
+ConnList MapNewEmptyConnList(void)
+{
+	ConnList new = malloc(sizeof(*new));
+	if (new == NULL) {
+		fprintf(stderr, "Couldn't allocate ConnNode");
+		exit(EXIT_FAILURE);
+	}
+
+	new->next = NULL;
+
+	return NULL;
+}
+
+int MapConnListLength(ConnList l)
+{
+	ConnList curr = l;
+	int length = 0;;
+	for (;curr != NULL;curr = curr->next) {
+		length++;
+	}
+	return length;
+}
+
+ConnList MapGetRailReachable(Map m, PlaceId src, int dist,
+	ConnList reachableLocs, int *numReturnedLocs, int *added)
+{
+	// We add the source to our added array
+	added[src] = 1;
+
+	ConnList connsToCheck =  m->connections[src];
+	connsToCheck = removeNonRailConnecs(connsToCheck);
+	for(int i = 0; i < dist; i++) {
+		// getConnectionsToCheck relies upon connsToCheck, which is why
+		// we need to separate it from curr
+		connsToCheck = getConnectionsToCheck(m, connsToCheck, i, added);
+		ConnList curr = connsToCheck;
+
+		for (; curr != NULL; curr = curr->next) {
+			// if we haven't added the element, and the connection type
+			// if rail, then we can add it!!
+			if (added[curr->p] == -1) {
+				// add the location to our reachableLocs array!
+				reachableLocs = connListInsert(reachableLocs, curr->p,
+					curr->type);
+				added[curr->p] = 1;
+				*numReturnedLocs += 1;
+			}
+		}
+	}
+
+	return reachableLocs;
+}
+
+bool MapConnListContains(ConnList list, PlaceId place)
+{
+	ConnList curr = list;
+	while (curr != NULL) {
+		if (list->p == place) {
+			return true;
+		}
+		curr = curr->next;
+	}
+
+	return false;
+}
+
+// Static helper functions we have added
+
+static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
+	int added[NUM_REAL_PLACES])
+{
+	if (iteration == 0) {
+		return list;
+	} else {
+		// loop through the list we are given and
+		// add all of the connections of that connlist
+		// so (map->connections[ConnList->p]) to a new list that we return!
+
+		// only need to add it if it's a rail conneciton.
+		ConnList connsToCheck = NULL;
+		int i = 0;
+		for(ConnList curr = list; curr != NULL; curr = curr->next) {
+			// loop through all the connections of the outer curr,
+			// and add them to our connsToCheck if their type is RAIL
+			ConnList connecs = m->connections[curr->p];
+			for (; connecs != NULL; connecs = connecs->next) {
+				if (connecs->type == RAIL && added[connecs->p] != 1) {
+					connsToCheck = connListInsert(connsToCheck, connecs->p,
+						connecs->type);
+				}
+			}
+			i++;
+		}
+		return connsToCheck;
+	}
+}
+
+static ConnList removeNonRailConnecs(ConnList connecs) {
+
+	ConnList curr = connecs;
+	ConnList prev = NULL;
+
+	while (curr != NULL) {
+
+		if (curr->type != RAIL) {
+			// head of list
+			if (prev == NULL) {
+				// curr is invalid, we don't want it in our list
+				connecs = curr->next;
+				curr = connecs;
+				continue;
+			}
+
+			// tail of list
+
+			else if (curr->next == NULL) {
+
+				prev->next = NULL;
+				break;
+			}
+
+			// body of list
+			else {
+				prev->next = curr->next;
+				curr = curr->next;
+				continue;
+			}
+		}
+
+		prev = curr;
+		curr = curr->next;
+	}
+
+	return connecs;
+}
