@@ -27,6 +27,7 @@
 // Test Ideas:
 // Check if the location where the immature vampire was is gone after maturing
 // Test trap out of trail
+// When trap is located in CITY_UNKNOWN and you call gvgettraplocaiton
 
 int main(void)
 {
