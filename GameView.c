@@ -85,12 +85,12 @@ static void helperConvertPlay(GameView gv, char *currPlay, int counter);
 static void updateRevealedHistory(GameView gv, Player player, char *currPlay);
 // Helper function for updateScores
 static void hunterUpdateScores(GameView gv, PlaceId location, char a);
-
-// helper for the "reachable" type functions
+// helper for the "reachable" type functions. ONLY takes two character word
 static void convertPlay2(GameView gv, char *currMove, History *curr);
 // Checks whether or not a given PlaceId refers to a DOUBLE_BACK move
 static bool isDoubleBack(PlaceId p);
-
+// Helper function for convertPlay2
+static void helperConvertPlay2(char *currMove, History *curr, int count);
 
 //----------------------------------------------------------------------
 
@@ -113,11 +113,11 @@ GameView GvNew(char *pastPlays, Message messages[])
 	new->places = malloc((NUM_REAL_PLACES + 1) * sizeof(*new->places));
 	new->map = MapNew();
 
-	//intialise places don't know if this is neccessary
-	// for (int i = 0; i < NUM_REAL_PLACES; i++) {
-	// 	new->places[i].traps = 0;
-	// 	new->places[i].vamp = false;
-	// }
+	// Initialise places
+	for (int i = 0; i <= NUM_REAL_PLACES; i++) {
+		new->places[i].traps = 0;
+		new->places[i].vamp = false;
+	}
 
 	// initialise players
 	for (int i = 0; i < 4; i++) {
@@ -172,31 +172,26 @@ void GvFree(GameView gv)
 
 Round GvGetRound(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return gv->round;
 }
 
 Player GvGetPlayer(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return gv->current;
 }
 
 int GvGetScore(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return gv->score;
 }
 
 int GvGetHealth(GameView gv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	return gv->player[player].health;
 }
 
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	if (gv->player[player].moves == NULL) return NOWHERE;
 	char currPlay[8];
 	strcpy(currPlay, gv->player[player].revealedMoves->play);
@@ -209,7 +204,6 @@ PlaceId GvGetPlayerLocation(GameView gv, Player player)
 
 PlaceId GvGetVampireLocation(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	for (int i = 0; i < NUM_REAL_PLACES; i++) {
 		if (gv->places[i].vamp == true) return i;
 	}
@@ -219,7 +213,6 @@ PlaceId GvGetVampireLocation(GameView gv)
 
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	PlaceId *placesWTraps = malloc(MAX_TRAIL_LENGTH * sizeof(*placesWTraps));
 	int j = 0;  // counter for number of locations found which contains traps
 	int k = 0;  // counter for number of traps
@@ -400,15 +393,10 @@ PlaceId *GvGetReachable(GameView gv, Player player, Round round,
 		case PLAYER_DR_SEWARD:
 		case PLAYER_VAN_HELSING:
 		case PLAYER_MINA_HARKER:
-
 			reachableLocs = GvGetReachableByType(gv, player, round, from,
 				true, true, true, numReturnedLocs);
-
 			return reachableLocs;
-
 			break;
-
-
 		case PLAYER_DRACULA:
 			// he can go anywhere nearby...unless a double back or hide
 			// was done recetnly
@@ -416,13 +404,10 @@ PlaceId *GvGetReachable(GameView gv, Player player, Round round,
 				true, false, true, numReturnedLocs);
 			return reachableLocs;
 			break;
-
 		default:
 			break;
-
 	}
 	*numReturnedLocs = 0;
-
 	return NULL;
 }
 
@@ -442,39 +427,31 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 	for(int i = 0; i < NUM_REAL_PLACES; i++) {
 		added[i] = -1;
 	}
-
 	switch(player) {
 		case PLAYER_LORD_GODALMING:
 		case PLAYER_DR_SEWARD:
 		case PLAYER_VAN_HELSING:
 		case PLAYER_MINA_HARKER:
-
 			// hunters can always stay in the same city
 			added[from] = 1;
 			reachableLocs = connListInsert(reachableLocs, from, ROAD);
 			*numReturnedLocs += 1;
 			break;
-
 		case PLAYER_DRACULA:
-
 			assert(rail == false);
-
 			History *curr2 = gv->player[PLAYER_DRACULA].moves;
 			int numMoves = 0;
 			bool foundDoubleBack = false;
 			bool foundHide = false;
 			char move[3];
 			for(; curr2 != NULL && numMoves < 5; curr2 = curr2->next) {
-
 				// we need to get the abreviation from the history
 				move[0] = curr2->play[1];
 				move[1] = curr2->play[2];
 				move[2] = '\0';
-
 				// then we check if it's a real location
 				PlaceId moveId = placeAbbrevToId(move);
 				if (placeIsReal(moveId) && added[moveId] != 1) {
-
 					added[moveId] = 2;
 					numMoves++;
 				} else if (isDoubleBack(moveId)) {
@@ -489,13 +466,11 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 					PlaceId hideLoc = placeAbbrevToId(move);
 					added[hideLoc] = 2;
 					numMoves++;
-
 				} else if (moveId == TELEPORT) {
 					added[CASTLE_DRACULA] = 2;
 					numMoves++;
 				}
 			}
-
 			// deal with the "from"
 			if (foundHide && foundDoubleBack) {
 				added[from] = 1;
@@ -504,7 +479,6 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 				reachableLocs = connListInsert(reachableLocs, from, ROAD);
 				*numReturnedLocs += 1;
 			}
-
 			// If we haven't double backed yet, we can actually
 			// go to any location in our trail...
 			if (foundDoubleBack == false) {
@@ -523,19 +497,14 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 					}
 				}
 			}
-
 			break;
-
 		default:
 			*numReturnedLocs = 0;
-
 			return NULL;
-
 			break;
 	}
 
 	// Get all locs reachable by boat/road (same for all players)
-
 	if (road == true) {
 		for(; curr != NULL; curr = curr->next) {
 			if (curr->type == ROAD && added[curr->p] != 1) {
@@ -546,7 +515,6 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 			}
 		}
 	}
-
 	curr = temp;
 	if (boat == true) {
 		for(; curr != NULL; curr = curr->next) {
@@ -558,17 +526,13 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 			}
 		}
 	}
-
 	// this has to come after the previous two ifs...
 	// MapGetRailReachable behaves badly otherwise
-
 	if (rail == true) {
 		int canTravelDist = round + player % 4;
 		reachableLocs = MapGetRailReachable(gv->map, from,
 			canTravelDist, reachableLocs, numReturnedLocs, added);
 	}
-
-
 	int rLocsLength = MapConnListLength(reachableLocs);
 	PlaceId *reachableLocsArray = malloc(rLocsLength * sizeof(PlaceId));
 	// populate the reachableLocsArray
@@ -576,22 +540,13 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 		reachableLocsArray[i] = reachableLocs->p;
 		reachableLocs = reachableLocs->next;
 	}
-
     free(added);
 	return reachableLocsArray;
 }
 
 ////////////////////////////////////////////////////////////////////////
-// Your own interface functions
+// Interface functions
 
-// TODO
-
-// Explanation of this function: First, the past play is tokenised.
-// The tokenised, unmodified play is processed. Then the unmodified history
-// is also added to the history of the player
-
-// Updates the status of game state
-// This function is tested and works 100%
 static void gameUpdate(GameView gv, char *plays) {
 
 	if (strcmp(plays, "") == 0) return;
@@ -622,7 +577,6 @@ static void helperGameUpdate(GameView gv, char *currPlay) {
 	gv->current = updateCurrent(gv);
 }
 
-// Currently still under develpment. This function updates the location of traps
 static void updateScores(GameView gv, char *currPlay) {
 
 	// If player health is >= 0 at the start of turn, set back to max health
@@ -697,8 +651,6 @@ static void updateScores(GameView gv, char *currPlay) {
 	}
 }
 
-// Helper function for updateScores. This function calculates hunter and
-// and Dracula scores when there is an encounter as well as trap count
 static void hunterUpdateScores(GameView gv, PlaceId location, char a) {
 	if (a == 'T') {
 			hunterEncounter(gv, 'T', location, gv->current);
@@ -714,8 +666,6 @@ static void hunterUpdateScores(GameView gv, PlaceId location, char a) {
 		if (a == '.') return;
 }
 
-// Helper function for hunter trap encounters
-// TESTED AND WORKS 100%
 static void hunterEncounter(GameView gv, char a, PlaceId location, Player name) {
 	if (a == 'T') {
 		gv->player[name].health -= LIFE_LOSS_TRAP_ENCOUNTER;
@@ -734,10 +684,6 @@ static void hunterEncounter(GameView gv, char a, PlaceId location, Player name) 
 	}
 }
 
-// Converts Dracula's play. If the string contains special moves,
-// this function modifies the string with the relevant place.
-// THIS FUNCTION ONLY CHANGES PLAY FOR DRACULA
-// Tested and Works 100%
 static void convertPlay(GameView gv, char *currPlay) {
 	char place[3];
 	place[0] = currPlay[1];
@@ -781,9 +727,6 @@ static void helperConvertPlay(GameView gv, char *currPlay, int counter) {
 	currPlay[2] = tmp[2];
 }
 
-// Dont forget to free this memeory
-// I don't know why pointer doesnt update the array here...
-// This function is tested and works
 static void updateHistory(GameView gv, Player player, char *currPlay) {
 	History *new = malloc(sizeof(*new));
 	strcpy(new->play, currPlay);
@@ -796,7 +739,6 @@ static void updateHistory(GameView gv, Player player, char *currPlay) {
 	}
 }
 
-// This function is tested and works
 static void updateRevealedHistory(GameView gv, Player player, char *currPlay) {
 	convertPlay(gv, currPlay);
 	History *new = malloc(sizeof(*new));
@@ -810,7 +752,6 @@ static void updateRevealedHistory(GameView gv, Player player, char *currPlay) {
 	}
 }
 
-//Tested and works
 static History *loop(History *ptr, int counter) {
 	for (int i = 0; i < counter - 1; i++) {
 		if (ptr->next == NULL) {
@@ -822,146 +763,43 @@ static History *loop(History *ptr, int counter) {
 	return ptr;
 }
 
-//Tested and works
 static Player updateCurrent(GameView gv) {
 	Player past = gv->current;
 	if (past < PLAYER_DRACULA) return past + 1;
 	else return PLAYER_LORD_GODALMING;
 }
 
-// checks if a placeId is a doubleBack
 static bool isDoubleBack(PlaceId p)
 {
 	return (p >= DOUBLE_BACK_1 && p <= DOUBLE_BACK_5) ? true : false;
 }
 
-// this version of convertPlay takes in a string with only two characters
-// (not including Nul terminator), and a pointer to a history node.
-// It is used by the Reachable functions.
 static void convertPlay2(GameView gv, char *currMove, History *curr) {
 	if (strcmp(currMove, "TP") == 0) {
 		currMove[0] = 'C';
 		currMove[1] = 'D';
 	} else if (strcmp(currMove, "HI") == 0) {
-		char *tmp = curr->next->play;
-		currMove[0] = tmp[1];
-		currMove[1] = tmp[2];
+		helperConvertPlay2(currMove, curr, 1);
 	} else if (strcmp(currMove, "D1") == 0) {
-		char *tmp = curr->next->play;
-		currMove[0] = tmp[1];
-		currMove[1] = tmp[2];
+		helperConvertPlay2(currMove, curr, 1);
 	} else if (strcmp(currMove, "D2") == 0) {
-		History *ptr = curr;
-		ptr = loop(ptr, 2);
-		char *tmp = ptr->play;
-		currMove[0] = tmp[1];
-		currMove[1] = tmp[2];
+		helperConvertPlay2(currMove, curr, 2);
 	} else if (strcmp(currMove, "D3") == 0) {
-		History *ptr = curr;
-		ptr = loop(ptr, 3);
-		char *tmp = ptr->play;
-		currMove[0] = tmp[1];
-		currMove[1] = tmp[2];
+		helperConvertPlay2(currMove, curr, 3);
 	} else if (strcmp(currMove, "D4") == 0) {
-		History *ptr = curr;
-		ptr = loop(ptr, 4);
-		char *tmp = ptr->play;
-		currMove[0] = tmp[1];
-		currMove[1] = tmp[2];
+		helperConvertPlay2(currMove, curr, 4);
 	} else if (strcmp(currMove, "D5") == 0) {
-		History *ptr = curr;
-		ptr = loop(ptr, 5);
-		char *tmp = ptr->play;
-		currMove[0] = tmp[1];
-		currMove[1] = tmp[2];
+		helperConvertPlay2(currMove, curr, 5);
 	}
 }
 
-//-------------------------------------------------
-/*
-
-// Neglected functions
-static bool isSpecial(char *tmp) {
-	if (tmp[1] == 'H' && tmp[2] == 'I') return true;
-	else if (tmp[1] == 'D' && tmp[2] == '1') return true;
-	else if (tmp[1] == 'D' && tmp[2] == '2') return true;
-	else if (tmp[1] == 'D' && tmp[2] == '3') return true;
-	else if (tmp[1] == 'D' && tmp[2] == '4') return true;
-	else if (tmp[1] == 'D' && tmp[2] == '5') return true;
-	else return false;
+static void helperConvertPlay2(char *currMove, History *curr, int count) {
+	count++;
+	History *ptr = curr;
+	ptr = loop(ptr, count);
+	char *tmp = ptr->play;
+	currMove[0] = tmp[1];
+	currMove[1] = tmp[2];
 }
 
-//Test suite
-
-	//Test for update history
-
-
-	//Test for updatecurrent
-
-	gv->current = PLAYER_VAN_HELSING;
-	Player test = updateCurrent(gv);
-	printf("%d\n", test);
-
-	// Place holders
-	updateHistory(gv, PLAYER_DRACULA, "test");
-	updateScores(gv, "test");
-	convertPlay(gv, "test");
-
-	char currPlay[8] = "DD2....";
-	updateHistory(gv, PLAYER_DRACULA, "DGE....");
-	updateHistory(gv, PLAYER_DRACULA, "DFE....");
-	updateHistory(gv, PLAYER_DRACULA, "DPP....");
-	convertPlay(gv, currPlay);
-	printf("%s\n", currPlay);
-
-	History *ptr = gv->player[PLAYER_MINA_HARKER].moves;
-	while (ptr != NULL) {
-		printf("%s\n", ptr->play);
-		ptr = ptr->next;
-	}
-
-	SUPER BUG test
-			currPlay[8] = '\0';
-			// Update current charater
-			printf("*** %d ***\n", gv->current);
-			printf("before: %s\n", currPlay);
-			convertPlay(gv, currPlay);
-			printf("after: %s\n", currPlay);
-			// Update history of the immediate player with tokenised string
-			updateHistory(gv, gv->current, currPlay);
-				History *ptr = gv->player[gv->current].moves;
-				printf("In memory: ");
-				while (ptr != NULL) {
-					printf("%s ", ptr->play);
-					ptr = ptr->next;
-				}
-				printf("\n");
-			// Update Gamescores
-			updateScores(gv, currPlay);
-			// Update current player as the next in line
-			gv->current = updateCurrent(gv);
-			counter = 0;
-			printf("***********\n");
-
-	UpdateScore Tests!
-	// testing
-	printf("*** TESTING ***\n");
-
-	gv->current = PLAYER_LORD_GODALMING;
-	updateHistory(gv, PLAYER_LORD_GODALMING, "GAMTTTD");
-	updateScores(gv, "GAMTTTD");
-
-	printf("%d\n", gv->places[AMSTERDAM].traps);
-	printf("%d\n", gv->player[PLAYER_LORD_GODALMING].health);
-	printf("*** END TEST ***\n");
-	char currPlay[8] = "GAMTTTD";
-	convertPlay(gv, currPlay);
-	printf("%s\n", currPlay);
-
-	gv->current = PLAYER_LORD_GODALMING;
-	updateHistory(gv, PLAYER_LORD_GODALMING, "GAM....");
-	updateScores(gv, "GAMVVVV");
-	printf("%d\n", gv->places[AMSTERDAM].traps);
-	printf("%d\n", gv->score);
-	printf("%d\n", gv->player[PLAYER_LORD_GODALMING].health);
-*/
+////////////////////////////////////////////////////////////////////////////

@@ -23,6 +23,10 @@
 #include "Places.h"
 #include "testUtils.h"
 
+#define GRN   "\x1B[32m"
+#define RESET "\x1B[0m"
+#define YEL   "\x1B[33m"
+
 // Notes: test for when trap leaves the trail
 // Test Ideas:
 // Check if the location where the immature vampire was is gone after maturing
@@ -32,7 +36,7 @@
 int main(void)
 {
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing Hunter Part of GvGetReachable() No1.\n");
+		printf(YEL "Testing Hunter Part of GvGetReachable() No1.\n" RESET);
 
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DEC.... "
@@ -55,12 +59,12 @@ int main(void)
  		assert(returnedLocs == 5 && reachableLength == 5);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 
 	}
 
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing Hunter Part of GvGetReachable() No.2\n");
+		printf(YEL "Testing Hunter Part of GvGetReachable() No.2\n" RESET);
 
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DEC.... "
@@ -83,12 +87,12 @@ int main(void)
  		assert(returnedLocs == 7 && reachableLength == 7);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 
 	}
 
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing Hunter Part of GvGetReachable() No.3\n");
+		printf(YEL "Testing Hunter Part of GvGetReachable() No.3\n" RESET);
 
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DEC.... "
@@ -111,11 +115,11 @@ int main(void)
  		assert(returnedLocs == 8 && reachableLength == 8);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing Drac Part of GvGetReachable() No.1\n");
+		printf(YEL "Testing Drac Part of GvGetReachable() No.1\n" RESET);
 
 		char *trail =
 			"GCD.... SCD.... HCD.... MCD.... DHA.... "
@@ -140,11 +144,11 @@ int main(void)
  		assert(returnedLocs == 2 && reachableLength == 2);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing Drac Part of GvGetReachable() No.2\n");
+		printf(YEL "Testing Drac Part of GvGetReachable() No.2\n" RESET);
 
 		char *trail =
 			"GCD.... SCD.... HCD.... MCD.... DHA.... ";
@@ -164,11 +168,11 @@ int main(void)
  		assert(returnedLocs == 5 && reachableLength == 5);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing Drac Part of GvGetReachable() No.3\n");
+		printf(YEL "Testing Drac Part of GvGetReachable() No.3\n" RESET);
 
 		char *trail =
 			"GCD.... SCD.... HCD.... MCD.... DSR.... "
@@ -192,11 +196,11 @@ int main(void)
  		assert(returnedLocs == 7 && reachableLength == 7);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing Drac Part of GvGetReachable() No.4\n");
+		printf(YEL "Testing Drac Part of GvGetReachable() No.4\n" RESET);
 
 		char *trail =
 			"GCD.... SCD.... HCD.... MCD.... DMA.... "
@@ -217,12 +221,12 @@ int main(void)
  		assert(returnedLocs == 7 && reachableLength == 7);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Test for GvGetPlayerLocation\n");
+		printf(YEL "Test for GvGetPlayerLocation\n" RESET);
 
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DEC.... "
@@ -237,13 +241,13 @@ int main(void)
 
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Individual Testing\n");
+		printf(YEL "Individual Testing\n" RESET);
 
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DEC.... "
@@ -256,14 +260,14 @@ int main(void)
 		assert(GvGetPlayer(gv) == PLAYER_DRACULA);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 
 	}
 
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Basic initialisation\n");
+		printf(YEL "Basic initialisation\n" RESET);
 
 		char *trail = "";
 		Message messages[] = {};
@@ -278,12 +282,12 @@ int main(void)
 		assert(GvGetVampireLocation(gv) == NOWHERE);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("After Lord Godalming's turn\n");
+		printf(YEL "After Lord Godalming's turn\n" RESET);
 
 		char *trail =
 			"GST....";
@@ -298,12 +302,12 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_DR_SEWARD) == NOWHERE);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("After Mina Harker's turn\n");
+		printf(YEL "After Mina Harker's turn\n" RESET);
 
 		char *trail =
 			"GST.... SAO.... HZU.... MBB....";
@@ -321,12 +325,12 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == NOWHERE);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("After Dracula's turn\n");
+		printf(YEL "After Dracula's turn\n" RESET);
 
 		char *trail =
 			"GST.... SAO.... HZU.... MBB.... DC?.V..";
@@ -350,12 +354,12 @@ int main(void)
 		assert(GvGetVampireLocation(gv) == CITY_UNKNOWN);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Encountering Dracula\n");
+		printf(YEL "Encountering Dracula\n" RESET);
 
 		char *trail =
 			"GST.... SAO.... HCD.... MAO.... DGE.V.. "
@@ -377,13 +381,13 @@ int main(void)
 		assert(GvGetVampireLocation(gv) == NOWHERE);
 
 		GvFree(gv);
-		printf("Test passed\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Test for Dracula doubling back at sea, "
-		       "and losing blood points (Hunter View)\n");
+		printf(YEL "Test for Dracula doubling back at sea, "
+		       "and losing blood points (Hunter View)\n" RESET);
 
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DS?.... "
@@ -404,14 +408,14 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == SEA_UNKNOWN);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Test for Dracula doubling back at sea, "
-			   "and losing blood points (Dracula View)\n");
+		printf(YEL "Test for Dracula doubling back at sea, "
+			   "and losing blood points (Dracula View)\n" RESET);
 
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DEC.... "
@@ -432,12 +436,12 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == ENGLISH_CHANNEL);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Checking that hunters' health points are capped\n");
+		printf(YEL "Checking that hunters' health points are capped\n" RESET);
 
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DC?.V.. "
@@ -449,12 +453,12 @@ int main(void)
 		assert(GvGetHealth(gv, PLAYER_LORD_GODALMING) == GAME_START_HUNTER_LIFE_POINTS);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Testing a hunter 'dying'\n");
+		printf(YEL "Testing a hunter 'dying'\n");
 
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DC?.V.. "
@@ -474,12 +478,12 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == STRASBOURG);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Testing Dracula doubling back to Castle Dracula\n");
+		printf(YEL "Testing Dracula doubling back to Castle Dracula\n" RESET);
 
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DCD.V.. "
@@ -493,12 +497,12 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == CASTLE_DRACULA);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Testing vampire/trap locations\n");
+		printf(YEL "Testing vampire/trap locations\n" RESET);
 
 		char *trail =
 			"GVI.... SGE.... HGE.... MGE.... DCD.V.. "
@@ -519,12 +523,12 @@ int main(void)
 		free(traps);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Testing trap locations after one is destroyed\n");
+		printf(YEL "Testing trap locations after one is destroyed\n" RESET);
 
 		char *trail =
 			"GVI.... SGE.... HGE.... MGE.... DBC.V.. "
@@ -548,12 +552,12 @@ int main(void)
 		free(traps);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Testing a vampire maturing\n");
+		printf(YEL "Testing a vampire maturing\n" RESET);
 
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DC?.V.. "
@@ -574,12 +578,12 @@ int main(void)
 		assert(GvGetVampireLocation(gv) == NOWHERE);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Testing move/location history\n");
+		printf(YEL "Testing move/location history\n" RESET);
 
 		char *trail =
 			"GLS.... SGE.... HGE.... MGE.... DST.V.. "
@@ -629,11 +633,11 @@ int main(void)
 			if (canFree) free(moves);
 		}
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Testing move/location history (Extended)\n");
+		printf(YEL "Testing move/location history (Extended)\n" RESET);
 
 		char *trail =
 			"GLS.... SGE.... HGE.... MGE.... DST.V.. "
@@ -698,11 +702,11 @@ int main(void)
 		}
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Test for GvGetMoveHistory\n");
+		printf(YEL "Test for GvGetMoveHistory\n" RESET);
 
 		char *trail =
 			"GGE.... SBR.... HMA.... MVE.... DC?.... "
@@ -767,12 +771,12 @@ int main(void)
         free(DRA);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 
 	}
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Test for GvGetLastMoves where numMoves < total moves\n");
+		printf(YEL "Test for GvGetLastMoves where numMoves < total moves\n" RESET);
 
 		char *trail =
 			"GGE.... SBR.... HMA.... MVE.... DC?.... "
@@ -840,12 +844,12 @@ int main(void)
         free(DRA);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 
 	}
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Test for GvGetLastMoves where numMoves > total moves\n");
+		printf(YEL "Test for GvGetLastMoves where numMoves > total moves\n" RESET);
 
 		char *trail =
 			"GGE.... SBR.... HMA.... MVE.... DC?.... "
@@ -920,12 +924,12 @@ int main(void)
         free(DRA);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 
 	}
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Test for GvGetLocationHistory\n");
+		printf(YEL "Test for GvGetLocationHistory\n" RESET);
 
 		char *trail =
 			"GGE.... SBR.... HMA.... MVE.... DC?.... "
@@ -995,12 +999,12 @@ int main(void)
         free(DRA);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 
 	}
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Test for GvGetLastLocations where numMoves < total moves\n");
+		printf(YEL "Test for GvGetLastLocations where numMoves < total moves\n" RESET);
 
 		char *trail =
 			"GGE.... SBR.... HMA.... MVE.... DC?.... "
@@ -1068,12 +1072,12 @@ int main(void)
         free(DRA);
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 
 	}
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Test for GvGetLastLocations where numMoves > total moves\n");
+		printf(YEL "Test for GvGetLastLocations where numMoves > total moves\n" RESET);
 
 		char *trail =
 			"GGE.... SBR.... HMA.... MVE.... DC?.... "
@@ -1150,14 +1154,14 @@ int main(void)
 
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 
 		}
 	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Testing connections\n");
+		printf(YEL "Testing connections\n" RESET);
 
 		char *trail = "";
 		Message messages[] = {};
@@ -1165,7 +1169,7 @@ int main(void)
 
 		{
 			printf("\tChecking Galatz road connections "
-			       "(Lord Godalming, Round 1)\n");
+			       "(Lord Godalming, Round 1)");
 			int numLocs = -1;
 			PlaceId *locs = GvGetReachableByType(gv, PLAYER_LORD_GODALMING,
 			                                     1, GALATZ, true, false,
@@ -1179,11 +1183,12 @@ int main(void)
 			assert(locs[3] == GALATZ);
 			assert(locs[4] == KLAUSENBURG);
 			free(locs);
+			printf(GRN "\tPassed\n" RESET);
 		}
 
 		{
 			printf("\tChecking Ionian Sea boat connections "
-			       "(Lord Godalming, Round 1)\n");
+			       "(Lord Godalming, Round 1)");
 
 			int numLocs = -1;
 			PlaceId *locs = GvGetReachableByType(gv, PLAYER_LORD_GODALMING,
@@ -1200,11 +1205,12 @@ int main(void)
 			assert(locs[5] == TYRRHENIAN_SEA);
 			assert(locs[6] == VALONA);
 			free(locs);
+			printf(GRN "\tPassed\n" RESET);
 		}
 
 		{
 			printf("\tChecking Paris rail connections "
-			       "(Lord Godalming, Round 2)\n");
+			       "(Lord Godalming, Round 2)");
 			int numLocs = -1;
 			PlaceId *locs = GvGetReachableByType(gv, PLAYER_LORD_GODALMING,
 			                                     2, PARIS, false, true,
@@ -1220,10 +1226,11 @@ int main(void)
 			assert(locs[5] == PARIS);
 			assert(locs[6] == SARAGOSSA);
 			free(locs);
+			printf(GRN "\tPassed\n" RESET);
 		}
 
 		{
-			printf("\tChecking Athens rail connections (none)\n");
+			printf("\tChecking Athens rail connections (none)");
 			int numLocs = -1;
 			PlaceId *locs = GvGetReachableByType(gv, PLAYER_LORD_GODALMING,
 			                                     1, ATHENS, false, true,
@@ -1232,13 +1239,15 @@ int main(void)
 			assert(numLocs == 1);
 			assert(locs[0] == ATHENS);
 			free(locs);
+			printf(GRN "\t\t\t\tPassed\n" RESET);
 		}
 
 		GvFree(gv);
-		printf("Test passed!\n");
+		printf(GRN "Test passed!\n" RESET);
 	}
 	printf("\n");
-	printf("Passed all tests!\n");
-
+	printf("Verdict: ");
+	printf(GRN "Passed\n" RESET);
+	printf("\n");
 	return EXIT_SUCCESS;
 }
