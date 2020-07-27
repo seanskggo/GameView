@@ -81,7 +81,9 @@ static void helperGameUpdate(GameView gv, char *currPlay);
 // Helper for convertPlay function
 static void helperConvertPlay(GameView gv, char *currPlay, int counter);
 // Updates the revealed version of history
-static void updateReveledHistory(GameView gv, Player player, char *currPlay);
+static void updateRevealedHistory(GameView gv, Player player, char *currPlay);
+// Helper function for updateScores
+static void hunterUpdateScores(GameView gv, PlaceId location, char a);
 
 //----------------------------------------------------------------------
 
@@ -284,7 +286,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // Updates the status of game state
 // This function is tested and works 100%
 static void gameUpdate(GameView gv, char *plays) {
- 
+	
 	if (strcmp(plays, "") == 0) return;
 	// Tokenise past plays to single plays
 	char currPlay[8];
@@ -303,12 +305,12 @@ static void gameUpdate(GameView gv, char *plays) {
 
 static void helperGameUpdate(GameView gv, char *currPlay) {
 	currPlay[7] = '\0';
-	// Update Gamescores and encounter history.
-	updateScores(gv, currPlay);
 	// Update history of the immediate player with tokenised string
 	updateHistory(gv, gv->current, currPlay);
+	// Update Gamescores and encounter history.
+	updateScores(gv, currPlay);
 	// Update revealed history
-	updateReveledHistory(gv, gv->current, currPlay);
+	updateRevealedHistory(gv, gv->current, currPlay);
 	// Update current player as the next in line
 	gv->current = updateCurrent(gv);
 }
@@ -381,70 +383,28 @@ static void updateScores(GameView gv, char *currPlay) {
 	} else {
 		// If trap is encountered, minus life points. If hunter life is 0 or
 		// below,  
-		if (currPlay[3] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[3] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[3] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-		
-		// Terminates the calculation of hunter once the health is depleted
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-			return;
-		}
-
-		if (currPlay[3] == '.') return;
-		
-		if (currPlay[4] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[4] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[4] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-		
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-			return;
-		}
-
-		if (currPlay[4] == '.') return;
-
-		if (currPlay[5] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[5] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[5] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-		
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-			return;
-		}
-
-		if (currPlay[5] == '.') return;
-
-		if (currPlay[6] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[6] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[6] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-		}
-
-		if (currPlay[6] == '.') return;
+		hunterUpdateScores(gv, location, currPlay[3]);
+		hunterUpdateScores(gv, location, currPlay[4]);
+		hunterUpdateScores(gv, location, currPlay[5]);
+		hunterUpdateScores(gv, location, currPlay[6]);
 	}
+}
+
+// Helper function for updateScores. This function calculates hunter and
+// and Dracula scores when there is an encounter as well as trap count
+static void hunterUpdateScores(GameView gv, PlaceId location, char a) {
+	if (a == 'T') {
+			hunterEncounter(gv, 'T', location, gv->current);
+		} else if (a == 'V') {
+			hunterEncounter(gv, 'V', location, gv->current);
+		} else if (a == 'D') {
+			hunterEncounter(gv, 'D', location, gv->current);
+		} 
+		if (gv->player[gv->current].health <= 0) {
+			gv->player[gv->current].health = 0;
+			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
+		}
+		if (a == '.') return;
 }
 
 // Helper function for hunter trap encounters
@@ -530,7 +490,7 @@ static void updateHistory(GameView gv, Player player, char *currPlay) {
 }
 
 // This function is tested and works
-static void updateReveledHistory(GameView gv, Player player, char *currPlay) {
+static void updateRevealedHistory(GameView gv, Player player, char *currPlay) {
 	convertPlay(gv, currPlay);
 	History *new = malloc(sizeof(*new));
 	strcpy(new->play, currPlay);
