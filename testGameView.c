@@ -24,6 +24,9 @@
 #include "testUtils.h"
 
 // Notes: test for when trap leaves the trail
+// Test Ideas:
+// Check if the location where the immature vampire was is gone after maturing
+// Test trap out of trail
 
 int main(void)
 {
@@ -47,23 +50,6 @@ int main(void)
 		printf("Test passed!\n");
 	
 	}
-	
-	{///////////////////////////////////////////////////////////////////
-
-		// printf("Test trap out of trail\n");
-
-		// char *trail = 
-		// 	;
-		
-		// Message messages[] = {};
-		// GameView gv = GvNew(trail, messages);
-
-		// assert(GvGetRound(gv) == 2);
-
-		// GvFree(gv);
-		// printf("Test passed!\n");
-	
-	}
 
 	{///////////////////////////////////////////////////////////////////
 
@@ -77,7 +63,7 @@ int main(void)
 		GameView gv = GvNew(trail, messages);
 
 		assert(GvGetRound(gv) == 2);
-		// assert(GvGetPlayer(gv) == PLAYER_DRACULA);
+		assert(GvGetPlayer(gv) == PLAYER_DRACULA);
 
 		GvFree(gv);
 		printf("Test passed!\n");
