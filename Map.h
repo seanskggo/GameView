@@ -49,4 +49,28 @@ int MapNumConnections(Map m, TransportType type);
  */
 ConnList MapGetConnections(Map m, PlaceId p);
 
+
+/** Create a new, empty connList. */
+ConnList MapNewEmptyConnList(void);
+
+/**
+ *  Inserts a new connNode * into a "connList".
+ *	Used to be a static function provided by "Team Dracula" in Map.c,
+ *  But is useful as an interface function
+ */
+ConnList connListInsert(ConnList l, PlaceId p, TransportType type);
+
+/** Return the length of a connList. */
+int MapConnListLength(ConnList l);
+
+/**
+ *  Finds the locations reachable by rail with a particular number of
+ *  "hops" that is specified by the distance parameter
+ */
+ConnList MapGetRailReachable(Map m, PlaceId src, int dist,
+	ConnList reachableLocs, int *numReturnedLocs, int *added);
+
+/** Checks if a given PlaceId is in a ConnList */
+bool MapConnListContains(ConnList list, PlaceId place);
+
 #endif // !defined(FOD__MAP_H_)
