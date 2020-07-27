@@ -439,9 +439,12 @@ int main(void)
 			assert(moves[5] == CITY_UNKNOWN);
 			if (canFree) free(moves);
 		}
+		GvFree(gv);
+		printf("Test passed!\n");
+
 	{///////////////////////////////////////////////////////////////////
 	
-		printf("Testing move/location history\n");
+		printf("Testing move/location history (Extended)\n");
 		
 		char *trail =
 			"GLS.... SGE.... HGE.... MGE.... DST.V.. "
@@ -954,11 +957,10 @@ int main(void)
         assert(DRA[2] == CITY_UNKNOWN);
         assert(DRA[3] == CITY_UNKNOWN);
         free(DRA);        
-
-		GvFree(gv);
-		printf("Test passed!\n");
 	
-	}		
+		}	
+		// @ Francis, this test fails. Did you create it? if so, is this wrong?
+	
 		{
 			int numLocs = 0; bool canFree = false;
 			PlaceId *locs = GvGetLocationHistory(gv, PLAYER_DRACULA,
