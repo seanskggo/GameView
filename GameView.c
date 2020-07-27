@@ -186,8 +186,18 @@ PlaceId GvGetVampireLocation(GameView gv)
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numTraps = 0;
-	return NULL;
+	PlaceId *placesWTraps = malloc(NUM_REAL_PLACES * sizeof(*placesWTraps));
+	int j = 0;  // counter for number of locations found which contains traps
+	int k = 0;  // counter for number of traps
+	for (int i = 0; i < NUM_REAL_PLACES; i++) {
+	   if (gv->places[i].traps > 0) {
+	      k++;
+	      placesWTraps[j] = i;
+	      j++;
+		}
+	}
+	*numTraps = k;
+	return placesWTraps;
 }
 
 ////////////////////////////////////////////////////////////////////////
