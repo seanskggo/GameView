@@ -24,7 +24,8 @@
 // Local #defines
 
 #define MAX_PLAY_LENGTH 8 // Extra Space for Null Terminator
-
+#define MAX_TRAIL_LENGTH 6
+ 
 // TODO: ADD YOUR OWN STRUCTS HERE
 
 // Linked list for storing history. NOTE: When storing history,
@@ -82,6 +83,9 @@ static void helperGameUpdate(GameView gv, char *currPlay);
 static void helperConvertPlay(GameView gv, char *currPlay, int counter);
 // Updates the revealed version of history
 static void updateRevealedHistory(GameView gv, Player player, char *currPlay);
+// Helper function for updateScores
+static void hunterUpdateScores(GameView gv, PlaceId location, char a);
+
 
 //----------------------------------------------------------------------
 
@@ -167,20 +171,7 @@ PlaceId GvGetPlayerLocation(GameView gv, Player player)
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	if (gv->player[player].moves == NULL) return NOWHERE;
 	char currPlay[8];
-	strcpy(currPlay, gv->player[player].moves->play);
-	// Temporarily convert current player to function convertPlay
-	Player temp = gv->current;
-	gv->current = player;
-	convertPlay(gv, currPlay);
-	// When this function is called, the turn is over and the history is
-	// updated hence a special case for dracula is needed
-	if (player == PLAYER_DRACULA) {
-		History *tmp = gv->player[PLAYER_DRACULA].moves;
-		gv->player[PLAYER_DRACULA].moves = tmp->next;
-		convertPlay(gv, currPlay);
-		gv->player[PLAYER_DRACULA].moves = tmp;
-	}
-	gv->current = temp;
+	strcpy(currPlay, gv->player[player].revealedMoves->play);
 	char where[3];
 	where[0] = currPlay[1];
 	where[1] = currPlay[2];
@@ -201,8 +192,24 @@ PlaceId GvGetVampireLocation(GameView gv)
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numTraps = 0;
-	return NULL;
+	PlaceId *placesWTraps = malloc(MAX_TRAIL_LENGTH * sizeof(*placesWTraps));
+	int j = 0;  // counter for number of locations found which contains traps
+	int k = 0;  // counter for number of traps
+	for (int i = 0; i < NUM_REAL_PLACES; i++) {
+		if ((!gv->places[i].vamp) && gv->places[i].traps > 0) {
+			placesWTraps[j] = i;
+	      	k = k + gv->places[i].traps;
+	      	j++;
+		}
+	}
+	// If city unknown has a trap 
+	if ((!gv->places[NUM_REAL_PLACES].vamp) && 
+		gv->places[NUM_REAL_PLACES].traps > 0) {
+		placesWTraps[j] = CITY_UNKNOWN;
+		k = k + gv->places[NUM_REAL_PLACES].traps;
+	}
+	*numTraps = k;
+	return placesWTraps;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -385,7 +392,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 // Updates the status of game state
 // This function is tested and works 100%
 static void gameUpdate(GameView gv, char *plays) {
- 
+	
 	if (strcmp(plays, "") == 0) return;
 	// Tokenise past plays to single plays
 	char currPlay[8];
@@ -482,70 +489,28 @@ static void updateScores(GameView gv, char *currPlay) {
 	} else {
 		// If trap is encountered, minus life points. If hunter life is 0 or
 		// below,  
-		if (currPlay[3] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[3] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[3] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-		
-		// Terminates the calculation of hunter once the health is depleted
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-			return;
-		}
-
-		if (currPlay[3] == '.') return;
-		
-		if (currPlay[4] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[4] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[4] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-		
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-			return;
-		}
-
-		if (currPlay[4] == '.') return;
-
-		if (currPlay[5] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[5] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[5] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-		
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-			return;
-		}
-
-		if (currPlay[5] == '.') return;
-
-		if (currPlay[6] == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (currPlay[6] == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (currPlay[6] == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		} 
-
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-		}
-
-		if (currPlay[6] == '.') return;
+		hunterUpdateScores(gv, location, currPlay[3]);
+		hunterUpdateScores(gv, location, currPlay[4]);
+		hunterUpdateScores(gv, location, currPlay[5]);
+		hunterUpdateScores(gv, location, currPlay[6]);
 	}
+}
+
+// Helper function for updateScores. This function calculates hunter and
+// and Dracula scores when there is an encounter as well as trap count
+static void hunterUpdateScores(GameView gv, PlaceId location, char a) {
+	if (a == 'T') {
+			hunterEncounter(gv, 'T', location, gv->current);
+		} else if (a == 'V') {
+			hunterEncounter(gv, 'V', location, gv->current);
+		} else if (a == 'D') {
+			hunterEncounter(gv, 'D', location, gv->current);
+		} 
+		if (gv->player[gv->current].health <= 0) {
+			gv->player[gv->current].health = 0;
+			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
+		}
+		if (a == '.') return;
 }
 
 // Helper function for hunter trap encounters
@@ -750,13 +715,4 @@ static bool isSpecial(char *tmp) {
 	printf("%d\n", gv->places[AMSTERDAM].traps);
 	printf("%d\n", gv->score);
 	printf("%d\n", gv->player[PLAYER_LORD_GODALMING].health);
-
-	char currPlay[8] = "DD1....";
-	gv->current = PLAYER_DRACULA;
-	updateHistory(gv, PLAYER_DRACULA, "DS?....");
-	printf("LOACATIN: %s\n", gv->player[PLAYER_DRACULA].moves->play);
-	convertPlay(gv, currPlay);
-	printf("%s\n", currPlay);
-s
-
 */

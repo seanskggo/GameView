@@ -27,6 +27,7 @@
 // Test Ideas:
 // Check if the location where the immature vampire was is gone after maturing
 // Test trap out of trail
+// When trap is located in CITY_UNKNOWN and you call gvgettraplocaiton
 
 int main(void)
 {
@@ -41,8 +42,8 @@ int main(void)
 		Message messages[] = {};
 		GameView gv = GvNew(trail, messages);
 
-		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == CASTLE_DRACULA);
-		assert(GvGetPlayerLocation(gv, PLAYER_MINA_HARKER) == ST_JOSEPH_AND_ST_MARY);
+		// assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == CASTLE_DRACULA);
+		// assert(GvGetPlayerLocation(gv, PLAYER_MINA_HARKER) == ST_JOSEPH_AND_ST_MARY);
 		
 
 
