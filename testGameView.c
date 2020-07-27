@@ -1237,6 +1237,8 @@ int main(void)
 		GvFree(gv);
 		printf("Test passed!\n");
 	}
+	printf("\n");
+	printf("Passed all tests!\n");
 
 	return EXIT_SUCCESS;
 }
