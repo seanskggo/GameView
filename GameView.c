@@ -203,8 +203,18 @@ PlaceId GvGetVampireLocation(GameView gv)
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numTraps = 0;
-	return NULL;
+	PlaceId *placesWTraps = malloc(NUM_REAL_PLACES * sizeof(*placesWTraps));
+	int j = 0;  // counter for number of locations found which contains traps
+	int k = 0;  // counter for number of traps
+	for (int i = 0; i < NUM_REAL_PLACES; i++) {
+	   if (gv->places[i].traps > 0) {
+	      k++;
+	      placesWTraps[j] = i;
+	      j++;
+		}
+	}
+	*numTraps = k;
+	return placesWTraps;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -609,13 +619,4 @@ static bool isSpecial(char *tmp) {
 	printf("%d\n", gv->places[AMSTERDAM].traps);
 	printf("%d\n", gv->score);
 	printf("%d\n", gv->player[PLAYER_LORD_GODALMING].health);
-
-	char currPlay[8] = "DD1....";
-	gv->current = PLAYER_DRACULA;
-	updateHistory(gv, PLAYER_DRACULA, "DS?....");
-	printf("LOACATIN: %s\n", gv->player[PLAYER_DRACULA].moves->play);
-	convertPlay(gv, currPlay);
-	printf("%s\n", currPlay);
-s
-
 */
