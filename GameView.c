@@ -155,14 +155,9 @@ void GvFree(GameView gv)
 	      free(prev);
 	      prev = curr;
 	   }
-	   Character *tmp = &gv->player[i];
-	   free(tmp);
 	}
-	// Free the location struct array
-	for (int i = 0; i <= NUM_REAL_PLACES; i++) {
-	   Location *tmp = &gv->places[i];
-	   free(tmp);
-	}
+	free(gv->player);
+	free(gv->places);
 	free(gv);
 }
 
