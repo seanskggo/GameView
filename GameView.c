@@ -156,6 +156,7 @@ void GvFree(GameView gv)
 	      prev = curr;
 	   }
 	}
+	free(gv->map);
 	free(gv->player);
 	free(gv->places);
 	free(gv);

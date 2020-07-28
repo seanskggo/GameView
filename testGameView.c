@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "Game.h"
 #include "GameView.h"
@@ -26,6 +27,7 @@
 #define GRN   "\x1B[32m"
 #define RESET "\x1B[0m"
 #define YEL   "\x1B[33m"
+#define RED   "\x1B[31m"	
 
 // Notes: test for when trap leaves the trail
 // Test Ideas:
@@ -33,8 +35,33 @@
 // Test trap out of trail
 // When trap is located in CITY_UNKNOWN and you call gvgettraplocaiton
 
+static void delay(int i, bool speed) {
+	if (speed) return;
+	long long int time = i*CLOCKS_PER_SEC;
+	while (clock() < time);
+}
+
 int main(void)
 {
+	int i = 1;
+	char b;
+	bool speed = false;
+	printf("*** Starting tests ***\n\n");
+	printf("Would you like to speed test? (y or n)?\nType here: ");
+	scanf("%c", &b);
+	printf("\n");
+	if (b == 'y') {
+		speed = true;
+
+	} else if (b == 'n') {
+		speed = false;	
+		printf(RED "This testing process has been time delayed\n\n" RESET);
+	}
+	else {
+		printf("Invalid answer. Terminating...\n");
+		exit(EXIT_FAILURE);
+	}
+
 	{///////////////////////////////////////////////////////////////////
 		printf(YEL "Testing Hunter Part of GvGetReachable() No1.\n" RESET);
 
@@ -57,9 +84,14 @@ int main(void)
 			printf("\n");
 		}
  		assert(returnedLocs == 5 && reachableLength == 5);
+		free(reachable);
 
 		GvFree(gv);
+		delay(i, speed);
+		i++;
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 
 	}
 
@@ -85,9 +117,14 @@ int main(void)
 			printf("\n");
 		}
  		assert(returnedLocs == 7 && reachableLength == 7);
+		free(reachable);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 
 	}
 
@@ -113,9 +150,14 @@ int main(void)
 			printf("\n");
 		}
  		assert(returnedLocs == 8 && reachableLength == 8);
+		free(reachable);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -142,9 +184,14 @@ int main(void)
 			printf("\n");
 		}
  		assert(returnedLocs == 2 && reachableLength == 2);
-
+		free(reachable);
+		
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -166,9 +213,14 @@ int main(void)
 			printf("\n");
 		}
  		assert(returnedLocs == 5 && reachableLength == 5);
-
+		free(reachable);
+		
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -194,9 +246,14 @@ int main(void)
 			printf("\n");
 		}
  		assert(returnedLocs == 7 && reachableLength == 7);
-
+		free(reachable);
+		
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -219,9 +276,14 @@ int main(void)
 			printf("\n");
 		}
  		assert(returnedLocs == 7 && reachableLength == 7);
+		free(reachable);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -235,14 +297,15 @@ int main(void)
 		Message messages[] = {};
 		GameView gv = GvNew(trail, messages);
 
-		// assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == CASTLE_DRACULA);
-		// assert(GvGetPlayerLocation(gv, PLAYER_MINA_HARKER) == ST_JOSEPH_AND_ST_MARY);
+		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == CASTLE_DRACULA);
+		assert(GvGetPlayerLocation(gv, PLAYER_MINA_HARKER) == ST_JOSEPH_AND_ST_MARY);
 
-
-
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
-
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -259,9 +322,12 @@ int main(void)
 		assert(GvGetRound(gv) == 2);
 		assert(GvGetPlayer(gv) == PLAYER_DRACULA);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
-
+		delay(i, speed);
+		i++;
 	}
 
 
@@ -281,8 +347,12 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_LORD_GODALMING) == NOWHERE);
 		assert(GvGetVampireLocation(gv) == NOWHERE);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -301,8 +371,12 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_LORD_GODALMING) == STRASBOURG);
 		assert(GvGetPlayerLocation(gv, PLAYER_DR_SEWARD) == NOWHERE);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -324,8 +398,12 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_MINA_HARKER) == BAY_OF_BISCAY);
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == NOWHERE);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -353,8 +431,12 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == CITY_UNKNOWN);
 		assert(GvGetVampireLocation(gv) == CITY_UNKNOWN);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -380,8 +462,12 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == GENEVA);
 		assert(GvGetVampireLocation(gv) == NOWHERE);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -407,8 +493,12 @@ int main(void)
 				GAME_START_BLOOD_POINTS - (2 * LIFE_LOSS_SEA));
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == SEA_UNKNOWN);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 
@@ -435,8 +525,12 @@ int main(void)
 				GAME_START_BLOOD_POINTS - (2 * LIFE_LOSS_SEA));
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == ENGLISH_CHANNEL);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -452,8 +546,12 @@ int main(void)
 
 		assert(GvGetHealth(gv, PLAYER_LORD_GODALMING) == GAME_START_HUNTER_LIFE_POINTS);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -477,8 +575,12 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_LORD_GODALMING) == HOSPITAL_PLACE);
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == STRASBOURG);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -496,8 +598,12 @@ int main(void)
 				GAME_START_BLOOD_POINTS + (2 * LIFE_GAIN_CASTLE_DRACULA));
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == CASTLE_DRACULA);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -522,8 +628,12 @@ int main(void)
 		assert(traps[0] == GALATZ && traps[1] == KLAUSENBURG);
 		free(traps);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -551,8 +661,12 @@ int main(void)
 		assert(traps[0] == CONSTANTA && traps[1] == GALATZ);
 		free(traps);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -577,8 +691,12 @@ int main(void)
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == CITY_UNKNOWN);
 		assert(GvGetVampireLocation(gv) == NOWHERE);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -632,8 +750,13 @@ int main(void)
 			assert(moves[5] == CITY_UNKNOWN);
 			if (canFree) free(moves);
 		}
+
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 
 	{///////////////////////////////////////////////////////////////////
 
@@ -701,8 +824,12 @@ int main(void)
 			if (canFree) free(locs);
 		}
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 	{///////////////////////////////////////////////////////////////////
 
@@ -770,8 +897,12 @@ int main(void)
         assert(DRA[3] == CITY_UNKNOWN);
         free(DRA);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 
 	}
 	{///////////////////////////////////////////////////////////////////
@@ -843,8 +974,12 @@ int main(void)
         assert(DRA[2] == CITY_UNKNOWN);
         free(DRA);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 
 	}
 	{///////////////////////////////////////////////////////////////////
@@ -923,8 +1058,12 @@ int main(void)
         assert(DRA[3] == CITY_UNKNOWN);
         free(DRA);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 
 	}
 	{///////////////////////////////////////////////////////////////////
@@ -998,8 +1137,12 @@ int main(void)
         assert(DRA[3] == CITY_UNKNOWN);
         free(DRA);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 
 	}
 	{///////////////////////////////////////////////////////////////////
@@ -1071,8 +1214,12 @@ int main(void)
         assert(DRA[2] == CITY_UNKNOWN);
         free(DRA);
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 
 	}
 	{///////////////////////////////////////////////////////////////////
@@ -1151,10 +1298,12 @@ int main(void)
         assert(DRA[3] == CITY_UNKNOWN);
         free(DRA);
 
-
-
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 
 		}
 	}
@@ -1242,12 +1391,15 @@ int main(void)
 			printf(GRN "\t\t\t\tPassed\n" RESET);
 		}
 
+		delay(i, speed);
+		i++;
 		GvFree(gv);
 		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
-	printf("\n");
-	printf("Verdict: ");
-	printf(GRN "Passed\n" RESET);
-	printf("\n");
+
+	printf("\nTotal test time: %ld seconds", clock()/CLOCKS_PER_SEC);
+	printf("\nVerdict: " GRN "Passed\n\n" RESET);
 	return EXIT_SUCCESS;
 }
