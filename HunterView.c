@@ -21,26 +21,8 @@
 #include "Places.h"
 // add your own #includes here
 
-#define NUM_PLAYERS 4
-
-// Character struct for storing character information
-typedef struct character {
-	int health;
-	int numMoves;
-	PlaceId *moves;
-	bool canFreeMoves;
-} Character;
-
 struct hunterView {
-	int round;
-	int score;
 	GameView gv;
-	Player current;
-	PlaceId vampLoc;
-	Character *hunter;
-	PlaceId *revealedDracMovesHistory;
-	int numDracMovesHistory;
-	bool canFreeDracHistory;
 	Map map;
 };
 
@@ -56,25 +38,6 @@ HunterView HvNew(char *pastPlays, Message messages[])
 	}
 
 	new->gv = GvNew(pastPlays, messages);
-	new->round = GvGetRound(new->gv);
-	new->score = GvGetScore(new->gv);
-	new->current = GvGetPlayer(new->gv);
-
-	new->hunter = malloc(5 * sizeof(*new->hunter));
-
-	// initialise hunters
-	for (int i = 0; i < NUM_PLAYERS; i++) {
-		new->hunter[i].health = GvGetHealth(new->gv, i);
-		new->hunter[i].moves = GvGetMoveHistory(new->gv, i,
-			&new->hunter[i].numMoves, &new->hunter[i].canFreeMoves);
-	}
-	// The use of "tempB" might be slightly problematic/bad style.
-	// I will keep it for now.
-	// the alternative is to store whether you can free this info in
-	// the above structs. Same for ""
-	new->revealedDracMovesHistory = GvGetMoveHistory(new->gv, PLAYER_DRACULA,
-	                          &new->numDracMovesHistory,
-							  &new->canFreeDracHistory);
 	return new;
 }
 
@@ -89,38 +52,32 @@ void HvFree(HunterView hv)
 
 Round HvGetRound(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	return GvGetRound(hv->gv);
 }
 
 Player HvGetPlayer(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return PLAYER_LORD_GODALMING;
+	return  GvGetPlayer(hv->gv);
 }
 
 int HvGetScore(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	return GvGetScore(hv->gv);
 }
 
 int HvGetHealth(HunterView hv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	return GvGetHealth(hv->gv, player);
 }
 
 PlaceId HvGetPlayerLocation(HunterView hv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return NOWHERE;
+	return GvGetPlayerLocation(hv->gv, player);
 }
 
 PlaceId HvGetVampireLocation(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return NOWHERE;
+	return GvGetVampireLocation(hv->gv);
 }
 
 ////////////////////////////////////////////////////////////////////////

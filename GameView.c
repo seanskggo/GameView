@@ -214,15 +214,20 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 	int k = 0;  // counter for number of traps
 	for (int i = 0; i < NUM_REAL_PLACES; i++) {
 		if ((!gv->places[i].vamp) && gv->places[i].traps > 0) {
-			placesWTraps[j] = i;
-	      	k = k + gv->places[i].traps;
-	      	j++;
+			for (int k = 0; k < gv->places[i].traps; k++) {
+				placesWTraps[j] = i;
+				j++;
+			}
+			k = k + gv->places[i].traps;
 		}
 	}
 	// If city unknown has a trap
 	if ((!gv->places[NUM_REAL_PLACES].vamp) &&
 		gv->places[NUM_REAL_PLACES].traps > 0) {
-		placesWTraps[j] = CITY_UNKNOWN;
+		for (int k = 0; k < gv->places[NUM_REAL_PLACES].traps; k++) {
+			placesWTraps[j] = NUM_REAL_PLACES;
+			j++;
+		}
 		k = k + gv->places[NUM_REAL_PLACES].traps;
 	}
 	*numTraps = k;
