@@ -21,10 +21,27 @@
 #include "Places.h"
 // add your own #includes here
 
-// TODO: ADD YOUR OWN STRUCTS HERE
+#define NUM_PLAYERS 4
+
+// Character struct for storing character information
+typedef struct character {
+	int health;
+	int numMoves;
+	PlaceId *moves;
+	bool canFreeMoves;
+} Character;
 
 struct hunterView {
-	// TODO: ADD FIELDS HERE
+	int round;
+	int score;
+	GameView gv;
+	Player current;
+	PlaceId vampLoc;
+	Character *hunter;
+	PlaceId *revealedDracMovesHistory;
+	int numDracMovesHistory;
+	bool canFreeDracHistory;
+	Map map;
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -32,13 +49,32 @@ struct hunterView {
 
 HunterView HvNew(char *pastPlays, Message messages[])
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	HunterView new = malloc(sizeof(*new));
 	if (new == NULL) {
 		fprintf(stderr, "Couldn't allocate HunterView!\n");
 		exit(EXIT_FAILURE);
 	}
 
+	new->gv = GvNew(pastPlays, messages);
+	new->round = GvGetRound(new->gv);
+	new->score = GvGetScore(new->gv);
+	new->current = GvGetPlayer(new->gv);
+
+	new->hunter = malloc(5 * sizeof(*new->hunter));
+
+	// initialise hunters
+	for (int i = 0; i < NUM_PLAYERS; i++) {
+		new->hunter[i].health = GvGetHealth(new->gv, i);
+		new->hunter[i].moves = GvGetMoveHistory(new->gv, i,
+			&new->hunter[i].numMoves, &new->hunter[i].canFreeMoves);
+	}
+	// The use of "tempB" might be slightly problematic/bad style.
+	// I will keep it for now.
+	// the alternative is to store whether you can free this info in
+	// the above structs. Same for ""
+	new->revealedDracMovesHistory = GvGetMoveHistory(new->gv, PLAYER_DRACULA,
+	                          &new->numDracMovesHistory,
+							  &new->canFreeDracHistory);
 	return new;
 }
 
@@ -101,6 +137,19 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+
+	// my current thought on how to write this is to simply do
+	// BFS but include rail-accessable edges (see test HunterView btw)
+	// aka we can probably make use of getReachable??
+
+	// this will require updating the hypothetical "round" after
+	// ever move
+
+	// this will require the Queue ADT after all...
+
+	// not sure at this point if we need to use the map ADT
+	// — I don't think we do, we can just continually continually
+	// call 'get reachable'
 	*pathLength = 0;
 	return NULL;
 }
