@@ -52,6 +52,10 @@ struct hunterView {
 };
 
 ////////////////////////////////////////////////////////////////////////
+// Helper Function Declarations
+int helperComparePlaceIds(const void *a, const void *b);
+
+////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
 
 HunterView HvNew(char *pastPlays, Message messages[])
@@ -74,6 +78,7 @@ HunterView HvNew(char *pastPlays, Message messages[])
 		new->hunter[i].health = GvGetHealth(new->gv, i);
 		new->hunter[i].moves = GvGetMoveHistory(new->gv, i,
 			&new->hunter[i].numMoves, &new->hunter[i].canFreeMoves);
+		new->hunter[i].location = GvGetPlayerLocation(new->gv, i);
 	}
 	new->revealedDracMovesHistory = GvGetMoveHistory(new->gv, PLAYER_DRACULA,
 	                          &new->numDracMovesHistory,
@@ -140,20 +145,6 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength)
 {
-	// my current thought on how to write this is to simply do
-	// BFS but include rail-accessable edges (see test HunterView btw)
-	// aka we can probably make use of getReachable??
-
-	// this will require updating the hypothetical "round" after
-	// ever move
-
-	// this will require the Queue ADT after all...
-
-	// not sure at this point if we need to use the map ADT
-	// — I don't think we do, we can just continually continually
-	// call 'get reachable'
-
-
 	// we have an added array to check if we've already realised
 	// we can access that location
 	int *visited = malloc(NUM_REAL_PLACES * sizeof(int));
@@ -162,12 +153,14 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 	for(int i = 0; i < NUM_REAL_PLACES; i++) {
 		visited[i] = -1;
 	}
-
+	
+	// We add the source to our added array
 	Queue q = newQueue();
-	QueueJoin(q, dest);
-	visited[dest] = 1;
+	PlaceId hunterLoc = GvGetPlayerLocation(hv->gv, hunter);
+	QueueJoin(q, hunterLoc);
+	visited[hunterLoc] = hunterLoc;
 	bool found = false;
-	// round may depend on the hunter...
+	// round depends on the hunter...
 	// i.e. if it is round 2 but PLAYER_DR_SEWARD was already moved,
 	// his next move will be in round 3!!!
 
@@ -178,54 +171,71 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 	} else {
 		round = hv->round;
 	}
-
-	// deal with this later...
-	// it can easily be calculating by comparing the hunter
-	// who is being called with the "current" hunter
+	// int holds the number of locations at each "stage" of the BFS
+	int numBFSStageLocs = 1;
+	int nextStageLocs = 0;
 	while (!QueueIsEmpty(q) && !found) {
-		PlaceId p = QueueLeave(q);
+		// this for loop runs once on the first pass through, 
+		// but multiple times every other time
+		for(int i = 0; i < numBFSStageLocs; i++) {
+			PlaceId p = QueueLeave(q);
 
-		if (p == dest) {
-			found = true;
-			// do we need a break here? not in pseudocode...
-		}
-		// increment round every time? round++;
-		int numPlaces = 0;
-		PlaceId *reachable = GvGetReachable(hv->gv, hunter, round,
-		                        p, &numPlaces);
-		// this MAY NOT work!!!
-		for (int i = 0; i < numPlaces; i++) {
-			if (visited[reachable[i]] == -1) {
-				QueueJoin(q, reachable[i]);
-				visited[p] = 1;
+			if (p == dest) {
+				found = true;
+				//break;
+				// do we need a break here? not in pseudocode...
 			}
+			// increment round every time? round++;
+			int numPlaces = 0;
+			PlaceId *reachable = GvGetReachable(hv->gv, hunter, round,
+				                    p, &numPlaces);
+				                    
+		    
+			// this MAY NOT work!!!
+			for (int i = 0; i < numPlaces; i++) {
+				if (visited[reachable[i]] == -1) {
+					QueueJoin(q, reachable[i]);
+					visited[reachable[i]] = p;
+					nextStageLocs++;
+				}
+			}
+			free(reachable);
 		}
-		// we increment the round after each BFS? this may not work
-		// either...but maybe it will! I have some hope for it.
-		// think it through later, but given how BFS works, i think
-		// we'll get the righ answer using this
+		numBFSStageLocs = nextStageLocs;
+		nextStageLocs = 0;
 		round++;
+		
 	}
 
 	*pathLength = 0;
+	int *tempPathArray = malloc(NUM_REAL_PLACES * sizeof(int));
 	PlaceId* path = malloc(NUM_REAL_PLACES * sizeof(int));
 	if (found) {
+	
+		tempPathArray[0] = dest;
+		*pathLength += 1;
+		int tempPathIndex = 1;
+		
 		for (int i = dest; visited[i] != hv->hunter[hunter].location;
 			i = visited[i]) {
-			path[*pathLength] = visited[i];
+			tempPathArray[tempPathIndex] = visited[i];
 			*pathLength += 1;
+			tempPathIndex++;
+		}
+		tempPathIndex--;
+		//reorder the array
+		for(int i = 0; i < *pathLength; i++) {
+			path[i] = tempPathArray[tempPathIndex];
+			tempPathIndex--;
 		}
 
-		// cover the last case down here! (double check that the first line
-		// is necessary!!!!! (I think it is!))
-		path[*pathLength] = hv->hunter[hunter].location;
-		*pathLength += 1;
 	}
-	//*pathLength = 0;
+	
 	if (*pathLength == 0) {
 		free(path);
 	}
-
+	
+	free(tempPathArray);
 	free(visited);
 
 	return (*pathLength != 0) ? path : NULL;
@@ -269,4 +279,3 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
 
-// TODO

@@ -435,6 +435,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 		case PLAYER_MINA_HARKER:
 			// hunters can always stay in the same city
 			added[from] = 1;
+			// maybe this should be NONE??? not ROAD???
 			reachableLocs = connListInsert(reachableLocs, from, ROAD);
 			*numReturnedLocs += 1;
 			break;
@@ -530,7 +531,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 	// this has to come after the previous two ifs...
 	// MapGetRailReachable behaves badly otherwise
 	if (rail == true) {
-		int canTravelDist = round + player % 4;
+		int canTravelDist = (round + player) % 4;
 		reachableLocs = MapGetRailReachable(gv->map, from,
 			canTravelDist, reachableLocs, numReturnedLocs, added);
 	}

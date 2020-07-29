@@ -27,54 +27,39 @@ int main(void)
 {
 	/*
 	{///////////////////////////////////////////////////////////////////
-
 		printf("Basic initialisation\n");
-
 		char *trail = "";
 		Message messages[] = {};
 		HunterView hv = HvNew(trail, messages);
-
 		assert(HvGetRound(hv) == 0);
 		assert(HvGetPlayer(hv) == PLAYER_LORD_GODALMING);
 		assert(HvGetScore(hv) == GAME_START_SCORE);
 		assert(HvGetHealth(hv, PLAYER_LORD_GODALMING) == GAME_START_HUNTER_LIFE_POINTS);
 		assert(HvGetHealth(hv, PLAYER_DRACULA) == GAME_START_BLOOD_POINTS);
 		assert(HvGetVampireLocation(hv) == NOWHERE);
-
 		HvFree(hv);
 		printf("Test passed\n");
 	}
-
 	{///////////////////////////////////////////////////////////////////
-
 		printf("After Lord Godalming's turn\n");
-
 		char *trail =
 			"GST....";
-
 		Message messages[1] = {};
 		HunterView hv = HvNew(trail, messages);
-
 		assert(HvGetRound(hv) == 0);
 		assert(HvGetPlayer(hv) == PLAYER_DR_SEWARD);
 		assert(HvGetScore(hv) == GAME_START_SCORE);
 		assert(HvGetPlayerLocation(hv, PLAYER_LORD_GODALMING) == STRASBOURG);
 		assert(HvGetPlayerLocation(hv, PLAYER_DR_SEWARD) == NOWHERE);
-
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-
 	{///////////////////////////////////////////////////////////////////
-
 		printf("After Van Helsing's turn\n");
-
 		char *trail =
 			"GST.... SAO.... HZU....";
-
 		Message messages[3] = {};
 		HunterView hv = HvNew(trail, messages);
-
 		assert(HvGetRound(hv) == 0);
 		assert(HvGetPlayer(hv) == PLAYER_MINA_HARKER);
 		assert(HvGetScore(hv) == GAME_START_SCORE);
@@ -83,24 +68,17 @@ int main(void)
 		assert(HvGetPlayerLocation(hv, PLAYER_VAN_HELSING) == ZURICH);
 		assert(HvGetPlayerLocation(hv, PLAYER_MINA_HARKER) == NOWHERE);
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == NOWHERE);
-
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-
 	{///////////////////////////////////////////////////////////////////
-
 		printf("After Dracula's turn\n");
-
 		char *trail =
 			"GST.... SAO.... HZU.... MBB.... DC?.V..";
-
 		Message messages[] = {
 			"Hello", "Goodbye", "Stuff", "...", "Mwahahahaha"
 		};
-
 		HunterView hv = HvNew(trail, messages);
-
 		assert(HvGetRound(hv) == 1);
 		assert(HvGetPlayer(hv) == PLAYER_LORD_GODALMING);
 		assert(HvGetScore(hv) == GAME_START_SCORE - SCORE_LOSS_DRACULA_TURN);
@@ -113,26 +91,19 @@ int main(void)
 		assert(HvGetVampireLocation(hv) == CITY_UNKNOWN);
 		Round round = -1;
 		assert(HvGetLastKnownDraculaLocation(hv, &round) == NOWHERE);
-
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-
 	{///////////////////////////////////////////////////////////////////
-
 		printf("Encountering Dracula\n");
-
 		char *trail =
 			"GST.... SAO.... HCD.... MAO.... DGE.V.. "
 			"GGEVD..";
-
 		Message messages[] = {
 			"Hello", "Goodbye", "Stuff", "...", "Mwahahahaha",
 			"Aha!"
 		};
-
 		HunterView hv = HvNew(trail, messages);
-
 		assert(HvGetHealth(hv, PLAYER_LORD_GODALMING) ==
 				GAME_START_HUNTER_LIFE_POINTS - LIFE_LOSS_DRACULA_ENCOUNTER);
 		assert(HvGetHealth(hv, PLAYER_DRACULA) ==
@@ -143,106 +114,77 @@ int main(void)
 		Round round = -1;
 		assert(HvGetLastKnownDraculaLocation(hv, &round) == GENEVA);
 		assert(round == 0);
-
 		HvFree(hv);
 		printf("Test passed\n");
 	}
-
 	{///////////////////////////////////////////////////////////////////
-
 		printf("Test for Dracula doubling back at sea, "
 			   "and losing blood points\n");
-
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DS?.... "
 			"GST.... SST.... HST.... MST.... DD1....";
-
 		Message messages[] = {
 			"Party at Geneva", "Okay", "Sure", "Let's go", "Mwahahahaha",
 			"", "", "", "", "Back I go"
 		};
-
 		HunterView hv = HvNew(trail, messages);
-
 		assert(HvGetRound(hv) == 2);
 		assert(HvGetPlayer(hv) == PLAYER_LORD_GODALMING);
 		assert(HvGetScore(hv) == GAME_START_SCORE - 2 * SCORE_LOSS_DRACULA_TURN);
 		assert(HvGetHealth(hv, PLAYER_DRACULA) ==
 				GAME_START_BLOOD_POINTS - (2 * LIFE_LOSS_SEA));
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == SEA_UNKNOWN);
-
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-
 	{///////////////////////////////////////////////////////////////////
-
 		printf("Testing a hunter 'dying'\n");
-
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DC?.V.. "
 			"GGE.... SGE.... HGE.... MGE.... DSTT... "
 			"GGE.... SGE.... HGE.... MGE.... DHIT... "
 			"GGE.... SGE.... HGE.... MGE.... DD1T... "
 			"GSTTTTD";
-
 		Message messages[21] = {};
 		HunterView hv = HvNew(trail, messages);
-
 		assert(HvGetScore(hv) == GAME_START_SCORE
 		                         - 4 * SCORE_LOSS_DRACULA_TURN
 		                         - SCORE_LOSS_HUNTER_HOSPITAL);
 		assert(HvGetHealth(hv, PLAYER_LORD_GODALMING) == 0);
 		assert(HvGetPlayerLocation(hv, PLAYER_LORD_GODALMING) == HOSPITAL_PLACE);
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == STRASBOURG);
-
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-
 	{///////////////////////////////////////////////////////////////////
-
 		printf("Testing Dracula doubling back to Castle Dracula\n");
-
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DCD.V.. "
 			"GGE.... SGE.... HGE.... MGE.... DD1T...";
-
 		Message messages[10] = {};
 		HunterView hv = HvNew(trail, messages);
-
 		assert(HvGetHealth(hv, PLAYER_DRACULA) ==
 				GAME_START_BLOOD_POINTS + (2 * LIFE_GAIN_CASTLE_DRACULA));
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == CASTLE_DRACULA);
-
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-
 	{///////////////////////////////////////////////////////////////////
-
 		printf("Testing vampire location\n");
-
 		char *trail =
 			"GVI.... SGE.... HGE.... MGE.... DCD.V.. "
 			"GBD.... SGE.... HGE.... MGE.... DC?T... "
 			"GSZ.... SGE.... HGE.... MGE.... DC?T... "
 			"GSZ.... SGE.... HGE....";
-
 		Message messages[18] = {};
 		HunterView hv = HvNew(trail, messages);
-
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == CITY_UNKNOWN);
 		assert(HvGetVampireLocation(hv) == CASTLE_DRACULA);
-
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-
 	{///////////////////////////////////////////////////////////////////
-
 		printf("Testing a vampire maturing\n");
-
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DC?.V.. "
 			"GGE.... SGE.... HGE.... MGE.... DC?T... "
@@ -251,39 +193,30 @@ int main(void)
 			"GGE.... SGE.... HGE.... MGE.... DC?T... "
 			"GGE.... SGE.... HGE.... MGE.... DC?T... "
 			"GGE.... SGE.... HGE.... MGE.... DC?T.V.";
-
 		Message messages[35] = {};
 		HunterView hv = HvNew(trail, messages);
-
 		assert(HvGetScore(hv) == GAME_START_SCORE
 		                         - 7 * SCORE_LOSS_DRACULA_TURN
 		                         - SCORE_LOSS_VAMPIRE_MATURES);
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == CITY_UNKNOWN);
 		assert(HvGetVampireLocation(hv) == NOWHERE);
-
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-
 	{///////////////////////////////////////////////////////////////////
-
 		printf("Testing Dracula's last known location 1\n");
-
 		char *trail =
 			"GGE.... SGE.... HVI.... MGE.... DCD.V.. "
 			"GGE.... SGE.... HBD.... MGE.... DKLT... "
 			"GGE.... SGE.... HSZ.... MGE.... DC?T... "
 			"GGE.... SGE.... HKLT... MGE.... DC?T... "
 			"GGE.... SGE.... HCDV... MGE.... DD1T...";
-
 		Message messages[25] = {};
 		HunterView hv = HvNew(trail, messages);
-
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == CITY_UNKNOWN);
 		Round round = -1;
 		assert(HvGetLastKnownDraculaLocation(hv, &round) == KLAUSENBURG);
 		assert(round == 1);
-
 		HvFree(hv);
 		printf("Test passed!\n");
 	}*/
@@ -303,13 +236,6 @@ int main(void)
 			int pathLength = -1;
 			PlaceId *path = HvGetShortestPathTo(hv, PLAYER_LORD_GODALMING,
 			                                    BARCELONA, &pathLength);
-			// TEMP code
-			printf("pathLength: %d\n", pathLength);
-			for(int i = 0; i < pathLength; i++) {
-					fputs(placeIdToName(path[i]),stdout);
-					printf("\n");
-			}
-			// END TEMP code
 			assert(pathLength == 2);
 			assert(path[0] == MADRID);
 			assert(path[1] == BARCELONA);
@@ -321,6 +247,7 @@ int main(void)
 			int pathLength = -1;
 			PlaceId *path = HvGetShortestPathTo(hv, PLAYER_LORD_GODALMING,
 			                                    COLOGNE, &pathLength);
+           
 			assert(pathLength == 3);
 			assert(path[0] == MADRID);
 			assert(path[1] == BORDEAUX);
@@ -332,7 +259,7 @@ int main(void)
 			printf("\tSwansea -> Hamburg (Van Helsing, Round 1)\n");
 			int pathLength = -1;
 			PlaceId *path = HvGetShortestPathTo(hv, PLAYER_VAN_HELSING,
-			                                    HAMBURG, &pathLength);
+			                                    HAMBURG, &pathLength); 
 			assert(pathLength == 3);
 			assert(path[0] == EDINBURGH);
 			assert(path[1] == NORTH_SEA);
@@ -479,3 +406,4 @@ int main(void)
 
 	return EXIT_SUCCESS;
 }
+
