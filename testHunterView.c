@@ -25,7 +25,7 @@
 
 int main(void)
 {
-	/*
+	
 	{///////////////////////////////////////////////////////////////////
 		printf("Basic initialisation\n");
 		char *trail = "";
@@ -219,7 +219,7 @@ int main(void)
 		assert(round == 1);
 		HvFree(hv);
 		printf("Test passed!\n");
-	}*/
+	}
 
 	{///////////////////////////////////////////////////////////////////
 
