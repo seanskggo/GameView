@@ -118,8 +118,27 @@ PlaceId HvGetVampireLocation(HunterView hv)
 
 PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*round = 0;
+	int numReturnedLocs = 0;
+	bool canFree = false;
+	PlaceId *DracRevealedLocations = GvGetLocationHistory(hv->gv, 
+	    PLAYER_DRACULA, &numReturnedLocs, &canFree);
+    
+    // Dracula has made a turn
+	int roundNum = numReturnedLocs - 1;
+	while (roundNum >= 0) {
+	    // Dracula has a last known location
+	    if (DracRevealedLocations[roundNum] != CITY_UNKNOWN && 
+	        DracRevealedLocations[roundNum] != SEA_UNKNOWN) {
+	        *round = roundNum;
+	        PlaceId LastKnownLocation = DracRevealedLocations[roundNum];
+	        free(DracRevealedLocations);
+	        return LastKnownLocation;
+	    } else roundNum--;
+	}
+	
+	// Dracula has not been spotted yet
+	// Returns NOWHERE
+	free(DracRevealedLocations);
 	return NOWHERE;
 }
 
