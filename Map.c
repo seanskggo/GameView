@@ -1,3 +1,4 @@
+
 //////////////////////////////////////////////////////////////////////////
 // COMP2521 20T2 ... the Fury of Dracula
 // Map.c: an implementation of a Map type
@@ -33,7 +34,6 @@ static bool connListContains(ConnList l, PlaceId v, TransportType type);
 // Our static functions
 static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 	int added[NUM_REAL_PLACES]);
-static ConnList removeNonRailConnecs(ConnList connecs);
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -230,7 +230,6 @@ ConnList MapGetRailReachable(Map m, PlaceId src, int dist,
 	added[src] = 1;
 
 	ConnList connsToCheck =  m->connections[src];
-	connsToCheck = removeNonRailConnecs(connsToCheck);
 	for(int i = 0; i < dist; i++) {
 		// getConnectionsToCheck relies upon connsToCheck, which is why
 		// we need to separate it from curr
@@ -240,7 +239,7 @@ ConnList MapGetRailReachable(Map m, PlaceId src, int dist,
 		for (; curr != NULL; curr = curr->next) {
 			// if we haven't added the element, and the connection type
 			// if rail, then we can add it!!
-			if (added[curr->p] == -1) {
+			if (curr->type == RAIL && added[curr->p] == -1) {
 				// add the location to our reachableLocs array!
 				reachableLocs = connListInsert(reachableLocs, curr->p,
 					curr->type);
@@ -286,7 +285,8 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 			// and add them to our connsToCheck if their type is RAIL
 			ConnList connecs = m->connections[curr->p];
 			for (; connecs != NULL; connecs = connecs->next) {
-				if (connecs->type == RAIL && added[connecs->p] != 1) {
+				if (curr->type == RAIL && connecs->type == RAIL &&
+					added[connecs->p] != 1) {
 					connsToCheck = connListInsert(connsToCheck, connecs->p,
 						connecs->type);
 				}
@@ -295,43 +295,4 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 		}
 		return connsToCheck;
 	}
-}
-
-static ConnList removeNonRailConnecs(ConnList connecs) {
-
-	ConnList curr = connecs;
-	ConnList prev = NULL;
-
-	while (curr != NULL) {
-
-		if (curr->type != RAIL) {
-			// head of list
-			if (prev == NULL) {
-				// curr is invalid, we don't want it in our list
-				connecs = curr->next;
-				curr = connecs;
-				continue;
-			}
-
-			// tail of list
-
-			else if (curr->next == NULL) {
-
-				prev->next = NULL;
-				break;
-			}
-
-			// body of list
-			else {
-				prev->next = curr->next;
-				curr = curr->next;
-				continue;
-			}
-		}
-
-		prev = curr;
-		curr = curr->next;
-	}
-
-	return connecs;
 }
