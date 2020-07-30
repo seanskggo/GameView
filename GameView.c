@@ -242,6 +242,7 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
 {
 	// Count num of moves
 	int total = 0;
+    *canFree = true;
 	History *current = gv->player[player].moves;
 	while (current != NULL) {
 	    total++;
@@ -251,8 +252,7 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
 	if (total == 0) {
 	    PlaceId *MoveHistory = malloc(sizeof(*MoveHistory)*1);
 	    MoveHistory = NULL;
-	    *canFree = true;
-	    *numReturnedMoves = total;
+    	*numReturnedMoves = total;
 	    return MoveHistory;
 	} else {
 	    // create dynamically allocated array where there are more than 1 moves
@@ -268,8 +268,7 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
 	        MoveHistory[i] = currPlace;
 	        curr = curr->next;
 	    }
-	    *numReturnedMoves = total;
-	    *canFree = true;
+    	*numReturnedMoves = total;
 	    return MoveHistory;
 	}
 
@@ -279,6 +278,7 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
                         int *numReturnedMoves, bool *canFree)
 {
 	int total = 0;
+    *canFree = true;
 	History *current = gv->player[player].moves;
 	while (total < numMoves && current != NULL) {
 	    total++;
@@ -288,8 +288,7 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 	if (total == 0) {
 	    PlaceId *MoveHistory = malloc(sizeof(*MoveHistory)*1);
 	    MoveHistory = NULL;
-	    *canFree = true;
-	    *numReturnedMoves = total;
+    	*numReturnedMoves = total;
 	    return MoveHistory;
 	} else {
 	    PlaceId *MoveHistory = malloc((total)*sizeof(*MoveHistory));
@@ -304,8 +303,7 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 	        MoveHistory[i] = currPlace;
 	        curr = curr->next;
 	    }
-	    *numReturnedMoves = total;
-	    *canFree = true;
+    	*numReturnedMoves = total;
 	    return MoveHistory;
 	}
 }
@@ -314,7 +312,6 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player,
                               int *numReturnedLocs, bool *canFree)
 {
 	int total = 0;
-	*numReturnedLocs = total;
 	*canFree = true;
 	History *current = gv->player[player].revealedMoves;
 	while (current != NULL) {
@@ -324,8 +321,7 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player,
     if (total == 0) {
         PlaceId *LocsHistory = malloc(sizeof(*LocsHistory)*1);
         LocsHistory = NULL;
-        *canFree = true;
-        *numReturnedLocs = total;
+    	*numReturnedLocs = total;
         return LocsHistory;
     } else {
         // create dynamically allocated array where there are more than 1 moves
@@ -340,8 +336,7 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player,
             LocsHistory[i] = currPlace;
             curr = curr->next;
         }
-        *numReturnedLocs = total;
-        *canFree = true;
+    	*numReturnedLocs = total;
         return LocsHistory;
     }
 }
@@ -350,7 +345,6 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
                             int *numReturnedLocs, bool *canFree)
 {
 	int total = 0;
-	*numReturnedLocs = total;
 	*canFree = true;
 	History *current = gv->player[player].revealedMoves;
 	while (total < numLocs && current != NULL) {
@@ -360,8 +354,7 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
     if (total == 0) {
         PlaceId *LocsHistory = malloc(sizeof(*LocsHistory)*1);
         LocsHistory = NULL;
-        *canFree = true;
-        *numReturnedLocs = total;
+    	*numReturnedLocs = total;
         return LocsHistory;
     } else {
         // create dynamically allocated array where there are more than 1 moves
@@ -376,8 +369,7 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
             LocsHistory[i] = currPlace;
             curr = curr->next;
         }
-        *numReturnedLocs = total;
-        *canFree = true;
+    	*numReturnedLocs = total;
         return LocsHistory;
     }
 }
@@ -435,6 +427,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 		case PLAYER_MINA_HARKER:
 			// hunters can always stay in the same city
 			added[from] = 1;
+			// maybe this should be NONE??? not ROAD???
 			reachableLocs = connListInsert(reachableLocs, from, ROAD);
 			*numReturnedLocs += 1;
 			break;
@@ -530,7 +523,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 	// this has to come after the previous two ifs...
 	// MapGetRailReachable behaves badly otherwise
 	if (rail == true) {
-		int canTravelDist = round + player % 4;
+		int canTravelDist = (round + player) % 4;
 		reachableLocs = MapGetRailReachable(gv->map, from,
 			canTravelDist, reachableLocs, numReturnedLocs, added);
 	}
