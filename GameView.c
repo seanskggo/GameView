@@ -655,16 +655,16 @@ static void updateScores(GameView gv, char *currPlay) {
 static void hunterUpdateScores(GameView gv, PlaceId location, char a) {
 	if (a == 'T') {
 			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (a == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (a == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		}
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-		}
-		if (a == '.') return;
+	} else if (a == 'V') {
+		hunterEncounter(gv, 'V', location, gv->current);
+	} else if (a == 'D') {
+		hunterEncounter(gv, 'D', location, gv->current);
+	}
+	if (gv->player[gv->current].health <= 0) {
+		gv->player[gv->current].health = 0;
+		gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
+	}
+	if (a == '.') return;
 }
 
 static void hunterEncounter(GameView gv, char a, PlaceId location, Player name) {
