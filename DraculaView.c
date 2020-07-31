@@ -142,7 +142,7 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 
 	PlaceId *availableMoves = reachableLocs;
 	// if no double backs/hides, just return his reachableLocs
-	// and all available DOUBLE_BACKs and the hide?
+	// and all available DOUBLE_BACKs and the hide
 	if (!foundDoubleBack && !foundHide && reachableLocs != NULL) {
 		// so numReturnedMoves is 5 moves short
 		// it includes the HIDE move, but not DOUBLE_BACK1
@@ -151,12 +151,14 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 			numReachableLocs, lastLocs, numLastLocs, availableMoves,
 			numReturnedMoves);
 
-		// add HIDE move
-		availableMoves = realloc(availableMoves, 1 + *numReturnedMoves *
+		// add HIDE move if not at sea
+		if (!placeIsSea(dv->player[PLAYER_DRACULA].location)) {
+			availableMoves = realloc(availableMoves, 1 + *numReturnedMoves *
 									sizeof(PlaceId));
-
-		availableMoves[*numReturnedMoves] = HIDE;
-		*numReturnedMoves += 1;
+			availableMoves[*numReturnedMoves] = HIDE;
+			*numReturnedMoves += 1;
+		}
+		
 		
 		int numLocs = *numReturnedMoves;
 		availableMoves = helperRemoveCurrentLocation(dv, availableMoves,
@@ -212,12 +214,13 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 
 	// if we've found a DoubleBack, there is only one move to add: HIDE
 	if (foundDoubleBack) {
-		// add HIDE move
-		availableMoves = realloc(availableMoves, 1 + *numReturnedMoves *
+		// add HIDE move if not at sea
+		if (!placeIsSea(dv->player[PLAYER_DRACULA].location)) {
+			availableMoves = realloc(availableMoves, 1 + *numReturnedMoves *
 									sizeof(PlaceId));
-
-		availableMoves[*numReturnedMoves] = HIDE;
-		*numReturnedMoves += 1;
+			availableMoves[*numReturnedMoves] = HIDE;
+			*numReturnedMoves += 1;
+		}
 		
 		int numLocs = *numReturnedMoves;
 		availableMoves = helperRemoveCurrentLocation(dv, availableMoves,

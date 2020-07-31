@@ -35,7 +35,7 @@ int main(void)
 			"GCD.... SCD.... HCD.... MCD.... DCO.... "
 			"GGA.... SGA.... HGA.... MGA.... DFR.... "
 			"GCD.... SCD.... HCD.... MCD.... DLI.... "
-			"GGA.... SGA.... HGA.... MGA.... DD1.... ";
+			"GGA.... SGA.... HGA.... MGA.... DD1....";
 		Message messages[] = {};
 		DraculaView dv = DvNew(trail, messages);
 
@@ -60,7 +60,7 @@ int main(void)
 			"GGA.... SGA.... HGA.... MGA.... DBA.... "
 			"GCD.... SCD.... HCD.... MCD.... DHI.... "
 			"GGA.... SGA.... HGA.... MGA.... DAL.... "
-			"GCD.... SCD.... HCD.... MCD.... DMA.... ";
+			"GCD.... SCD.... HCD.... MCD.... DMA....";
 		Message messages[] = {};
 		DraculaView dv = DvNew(trail, messages);
 		
@@ -88,7 +88,7 @@ int main(void)
 		char *trail =
 			"GCD.... SCD.... HCD.... MCD.... DPA.... "
 			"GGA.... SGA.... HGA.... MGA.... DLE.... "
-			"GCD.... SCD.... HCD.... MCD.... DNA.... ";
+			"GCD.... SCD.... HCD.... MCD.... DNA....";
 		Message messages[] = {};
 		DraculaView dv = DvNew(trail, messages);
 		
@@ -103,6 +103,104 @@ int main(void)
 		assert(moves[4] == DOUBLE_BACK_1);
 		assert(moves[5] == DOUBLE_BACK_2);
 		assert(moves[6] == DOUBLE_BACK_3);
+		free(moves);
+		
+		printf("Test passed!\n");
+		DvFree(dv);
+	} 
+	
+	{///////////////////////////////////////////////////////////////////
+	
+		printf("Testing DvGetValidMoves No.4 (can't move to hospital)\n");
+		
+		char *trail =
+			"GCD.... SCD.... HCD.... MCD.... DSZ....";
+		Message messages[] = {};
+		DraculaView dv = DvNew(trail, messages);
+		
+		int numMoves = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numMoves);
+		assert(numMoves == 6);
+		sortPlaces(moves, numMoves);
+		assert(moves[0] == BELGRADE);
+		assert(moves[1] == BUDAPEST);
+		assert(moves[2] == KLAUSENBURG);
+		assert(moves[3] == ZAGREB);
+		assert(moves[4] == HIDE);
+		assert(moves[5] == DOUBLE_BACK_1);
+		free(moves);
+		
+		printf("Test passed!\n");
+		DvFree(dv);
+	} 
+	
+	{///////////////////////////////////////////////////////////////////
+		printf("Testing DvGetValidMoves No.5 (can't HIDE at sea)\n");
+		
+		char *trail =
+			"GCD.... SCD.... HCD.... MCD.... DEC....";
+		Message messages[] = {};
+		DraculaView dv = DvNew(trail, messages);
+		
+		int numMoves = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numMoves);
+		assert(numMoves == 6);
+		sortPlaces(moves, numMoves);
+		assert(moves[0] == ATLANTIC_OCEAN);
+		assert(moves[1] == LE_HAVRE);
+		assert(moves[2] == LONDON);
+		assert(moves[3] == NORTH_SEA);
+		assert(moves[4] == PLYMOUTH);
+		assert(moves[5] == DOUBLE_BACK_1);
+		free(moves);
+		
+		printf("Test passed!\n");
+		DvFree(dv);
+	} 
+	
+	{///////////////////////////////////////////////////////////////////
+		printf("Testing DvGetValidMoves No.6 (can't double back/hide)\n");
+		
+		char *trail =
+			"GCD.... SCD.... HCD.... MCD.... DEC.... "
+			"GCD.... SCD.... HCD.... MCD.... DD1.... "
+			"GCD.... SCD.... HCD.... MCD.... DLE.... "
+			"GCD.... SCD.... HCD.... MCD.... DHI....";
+		Message messages[] = {};
+		DraculaView dv = DvNew(trail, messages);
+		
+		int numMoves = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numMoves);
+		assert(numMoves == 3);
+		sortPlaces(moves, numMoves);
+		assert(moves[0] == BRUSSELS);
+		assert(moves[1] == NANTES);
+		assert(moves[2] == PARIS);
+		free(moves);
+		
+		printf("Test passed!\n");
+		DvFree(dv);
+	} 
+	
+	{///////////////////////////////////////////////////////////////////
+		printf("Testing DvGetValidMoves No.7 (can't hide)\n");
+		
+		char *trail =
+			"GCD.... SCD.... HCD.... MCD.... DEC.... "
+			"GCD.... SCD.... HCD.... MCD.... DLE.... "
+			"GCD.... SCD.... HCD.... MCD.... DHI....";
+		Message messages[] = {};
+		DraculaView dv = DvNew(trail, messages);
+		
+		int numMoves = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numMoves);
+		assert(numMoves == 5);
+		sortPlaces(moves, numMoves);
+		assert(moves[0] == BRUSSELS);
+		assert(moves[1] == NANTES);
+		assert(moves[2] == PARIS);
+		assert(moves[3] == DOUBLE_BACK_1);
+		assert(moves[4] == DOUBLE_BACK_3);
 		free(moves);
 		
 		printf("Test passed!\n");
