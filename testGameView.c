@@ -29,8 +29,7 @@
 #define YEL   "\x1B[33m"
 #define RED   "\x1B[31m"	
 
-// When trap is located in CITY_UNKNOWN and you call gvgettraplocaiton
-
+// When trap is located in CITY_UNKNOWN and you call GvGetTraplocaiton
 static void delay(int i, bool speed) {
 	if (speed) return;
 	long long int time = i*CLOCKS_PER_SEC;
@@ -89,7 +88,6 @@ int main(void)
 		printf(GRN "Test passed!\n" RESET);
 		delay(i, speed);
 		i++;
-
 	}
 
 	{///////////////////////////////////////////////////////////////////
@@ -787,9 +785,8 @@ int main(void)
 		Message messages[35] = {};
 		GameView gv = GvNew(trail, messages);
 
-		assert(GvGetScore(gv) == GAME_START_SCORE
-            - 7 * SCORE_LOSS_DRACULA_TURN
-            - SCORE_LOSS_VAMPIRE_MATURES);
+		assert(GvGetScore(gv) == GAME_START_SCORE - 7 * 
+            SCORE_LOSS_DRACULA_TURN - SCORE_LOSS_VAMPIRE_MATURES);
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == CITY_UNKNOWN);
 		assert(GvGetVampireLocation(gv) == NOWHERE);
 
@@ -1014,7 +1011,8 @@ int main(void)
 	}
 	{///////////////////////////////////////////////////////////////////
 
-		printf(YEL "Test for GvGetLastMoves where numMoves < total moves\n" RESET);
+		printf(YEL "Test for GvGetLastMoves where "
+            "numMoves < total moves\n" RESET);
 
 		char *trail =
 			"GGE.... SBR.... HMA.... MVE.... DC?.... "
@@ -1091,7 +1089,8 @@ int main(void)
 	}
 	{///////////////////////////////////////////////////////////////////
 
-		printf(YEL "Test for GvGetLastMoves where numMoves > total moves\n" RESET);
+		printf(YEL "Test for GvGetLastMoves where "
+            "numMoves > total moves\n" RESET);
 
 		char *trail =
 			"GGE.... SBR.... HMA.... MVE.... DC?.... "
@@ -1254,7 +1253,8 @@ int main(void)
 	}
 	{///////////////////////////////////////////////////////////////////
 
-		printf(YEL "Test for GvGetLastLocations where numMoves < total moves\n" RESET);
+		printf(YEL "Test for GvGetLastLocations where "
+            "numMoves < total moves\n" RESET);
 
 		char *trail =
 			"GGE.... SBR.... HMA.... MVE.... DC?.... "
@@ -1331,7 +1331,8 @@ int main(void)
 	}
 	{///////////////////////////////////////////////////////////////////
 
-		printf(YEL "Test for GvGetLastLocations where numMoves > total moves\n" RESET);
+		printf(YEL "Test for GvGetLastLocations where "
+            "numMoves > total moves\n" RESET);
 
 		char *trail =
 			"GGE.... SBR.... HMA.... MVE.... DC?.... "
