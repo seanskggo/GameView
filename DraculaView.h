@@ -143,7 +143,7 @@ PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs);
  * false, boat connections will be ignored.
  */
 PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
-                             int *numReturnedLocs);
+    int *numReturnedLocs);
 
 /**
  * Gets  all  the  locations  that the given player can move to in their
@@ -164,7 +164,7 @@ PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
  * and return NULL.
  */
 PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player,
-                          int *numReturnedLocs);
+    int *numReturnedLocs);
 
 /**
  * Similar to DvWhereCanTheyGo but the caller can restrict the transport
@@ -172,8 +172,8 @@ PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player,
  * boat is false, boat connections will be ignored.
  */
 PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
-                                bool road, bool rail, bool boat,
-                                int *numReturnedLocs);
+    bool road, bool rail, bool boat,
+    int *numReturnedLocs);
 
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
