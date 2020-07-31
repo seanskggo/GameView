@@ -29,7 +29,6 @@
 #define YEL   "\x1B[33m"
 #define RED   "\x1B[31m"	
 
-// Check if the location where the immature vampire was is gone after maturing
 // When trap is located in CITY_UNKNOWN and you call gvgettraplocaiton
 
 static void delay(int i, bool speed) {
@@ -72,11 +71,16 @@ int main(void)
 			FRANKFURT, &returnedLocs);
 		int reachableLength = 0;
 
-		for (int i = 0; i < returnedLocs; i++) {
-			reachableLength++;
-			fputs(placeIdToName(reachable[i]), stdout);
-			printf("\n");
-		}
+		assert(strcmp(placeIdToName(reachable[0]), "Cologne") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[1]), "Leipzig") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[2]), "Nuremburg") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[3]), "Strasbourg") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[4]), "Frankfurt") == 0);
+		reachableLength++;
  		assert(returnedLocs == 5 && reachableLength == 5);
 		free(reachable);
 
@@ -102,11 +106,22 @@ int main(void)
 			CLERMONT_FERRAND, &returnedLocs);
 		int reachableLength = 0;
 
-		for (int i = 0; i < returnedLocs; i++) {
-			reachableLength++;
-			fputs(placeIdToName(reachable[i]), stdout);
-			printf("\n");
-		}
+		assert(strcmp(placeIdToName(reachable[0]), "Bordeaux") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[1]), "Geneva") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[2]), "Marseilles") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[3]), "Nantes") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[4]), "Paris") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[5]), "Toulouse") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[6]), 
+			"Clermont-Ferrand") == 0);
+		reachableLength++;
+
  		assert(returnedLocs == 7 && reachableLength == 7);
 		free(reachable);
 
@@ -135,11 +150,39 @@ int main(void)
 		PlaceId *reachable = GvGetReachable(gv, PLAYER_MINA_HARKER, round,
 			SZEGED, &returnedLocs);
 		int reachableLength = 0;
-		for (int i = 0; i < returnedLocs; i++) {
-			reachableLength++;
-			fputs(placeIdToName(reachable[i]), stdout);
-			printf("\n");
-		}
+
+		assert(strcmp(placeIdToName(reachable[0]), "Varna") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[1]), "Salonica") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[2]), "Venice") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[3]), "Prague") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[4]), "Vienna") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[5]), "Galatz") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[6]), "Constanta") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[7]), "Sofia") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[8]), "Bucharest") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[9]), "Belgrade") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[10]), "Budapest") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[11]), "Klausenburg") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[12]), 
+			"St Joseph and St Mary") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[13]), "Zagreb") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[14]), "Szeged") == 0);
+		reachableLength++;
+
  		assert(returnedLocs == 15 && reachableLength == 15);
 		free(reachable);
 
@@ -169,11 +212,12 @@ int main(void)
 		PlaceId *reachable = GvGetReachable(gv, PLAYER_DRACULA, round,
 			LEIPZIG, &returnedLocs);
 		int reachableLength = 0;
-		for (int i = 0; i < returnedLocs; i++) {
-			reachableLength++;
-			fputs(placeIdToName(reachable[i]), stdout);
-			printf("\n");
-		}
+
+		assert(strcmp(placeIdToName(reachable[0]), "Berlin") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[1]), "Nuremburg") == 0);
+		reachableLength++;
+
  		assert(returnedLocs == 2 && reachableLength == 2);
 		free(reachable);
 		
@@ -198,11 +242,18 @@ int main(void)
 		PlaceId *reachable = GvGetReachable(gv, PLAYER_DRACULA, round,
 			HAMBURG, &returnedLocs);
 		int reachableLength = 0;
-		for (int i = 0; i < returnedLocs; i++) {
-			reachableLength++;
-			fputs(placeIdToName(reachable[i]), stdout);
-			printf("\n");
-		}
+		
+		assert(strcmp(placeIdToName(reachable[0]), "North Sea") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[1]), "Berlin") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[2]), "Cologne") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[3]), "Leipzig") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[4]), "Hamburg") == 0);
+		reachableLength++;
+
  		assert(returnedLocs == 5 && reachableLength == 5);
 		free(reachable);
 		
@@ -231,11 +282,22 @@ int main(void)
 		PlaceId *reachable = GvGetReachable(gv, PLAYER_DRACULA, round,
 			MADRID, &returnedLocs);
 		int reachableLength = 0;
-		for (int i = 0; i < returnedLocs; i++) {
-			reachableLength++;
-			fputs(placeIdToName(reachable[i]), stdout);
-			printf("\n");
-		}
+
+		assert(strcmp(placeIdToName(reachable[0]), "Alicante") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[1]), "Cadiz") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[2]), "Granada") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[3]), "Lisbon") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[4]), "Santander") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[5]), "Saragossa") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[6]), "Madrid") == 0);
+		reachableLength++;
+
  		assert(returnedLocs == 7 && reachableLength == 7);
 		free(reachable);
 		
@@ -261,11 +323,22 @@ int main(void)
 		PlaceId *reachable = GvGetReachable(gv, PLAYER_DRACULA, round,
 			MADRID, &returnedLocs);
 		int reachableLength = 0;
-		for (int i = 0; i < returnedLocs; i++) {
-			reachableLength++;
-			fputs(placeIdToName(reachable[i]), stdout);
-			printf("\n");
-		}
+
+		assert(strcmp(placeIdToName(reachable[0]), "Alicante") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[1]), "Cadiz") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[2]), "Granada") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[3]), "Lisbon") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[4]), "Santander") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[5]), "Saragossa") == 0);
+		reachableLength++;
+		assert(strcmp(placeIdToName(reachable[6]), "Madrid") == 0);
+		reachableLength++;
+
  		assert(returnedLocs == 7 && reachableLength == 7);
 		free(reachable);
 
