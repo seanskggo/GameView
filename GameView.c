@@ -245,11 +245,9 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
 	}
 	// if there are 0 moves, it should return an empty array
 	if (total == 0) {
-	    PlaceId *MoveHistory = malloc(sizeof(*MoveHistory) * 1);
-	    MoveHistory = NULL;
-	    *canFree = true;
+	    *canFree = false;
 	    *numReturnedMoves = total;
-	    return MoveHistory;
+	    return NULL;
 	} else {
 	    // create dynamically allocated array where there are more than 1 moves
 	    PlaceId *MoveHistory = malloc((total) * sizeof(*MoveHistory));
@@ -313,11 +311,9 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player,
 	    current = current->next;
 	}
     if (total == 0) {
-        PlaceId *LocsHistory = malloc(sizeof(*LocsHistory) * 1);
-        LocsHistory = NULL;
-        *canFree = true;
+        *canFree = false;
         *numReturnedLocs = total;
-        return LocsHistory;
+        return NULL;
     } else {
         // create dynamically allocated array where there are more than 1 moves
         PlaceId *LocsHistory = malloc((total) * sizeof(*LocsHistory));

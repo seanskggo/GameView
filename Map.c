@@ -33,8 +33,12 @@ static bool connListContains(ConnList l, PlaceId v, TransportType type);
 
 // Our static functions:
 
+// helper function for MapGetRailReachable
+
 static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 	int added[NUM_REAL_PLACES]);
+// frees a given ConnList
+static void freeConnList(ConnList list);
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -219,13 +223,16 @@ ConnList MapGetRailReachable(Map m, PlaceId src, int dist,
 	added[src] = 1;
 
 	ConnList connsToCheck =  m->connections[src];
-	for(int i = 0; i < dist; i++) {
+	ConnList curr = NULL;
+	ConnList prev = NULL;
+	int i = 0;
+	for(; i < dist; i++) {
 		// getConnectionsToCheck relies upon connsToCheck, which is why
 		// we need to separate it from curr
-		connsToCheck = getConnectionsToCheck(m, connsToCheck, i, added);
-		ConnList curr = connsToCheck;
-
-		for (; curr != NULL; curr = curr->next) {
+	    connsToCheck = getConnectionsToCheck(m, connsToCheck, i, added);
+	    curr = connsToCheck;
+	    
+		while (curr != NULL) {
 			// if we haven't added the element, and the connection type
 			// if rail, then we can add it!!
 			if (curr->type == RAIL && added[curr->p] == -1) {
@@ -235,9 +242,22 @@ ConnList MapGetRailReachable(Map m, PlaceId src, int dist,
 				added[curr->p] = 1;
 				*numReturnedLocs += 1;
 			}
+			curr = curr->next;
 		}
+		if (i > 1) {
+		    ConnList tempList;
+		    while (prev != NULL) {
+		        tempList = prev;
+		        prev = prev->next;
+		        free(tempList);
+		    }
+		}
+		prev = connsToCheck;
 	}
-
+	
+	if (i == 2) {
+		freeConnList(connsToCheck);
+	}
 	return reachableLocs;
 }
 
@@ -285,3 +305,16 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 		return connsToCheck;
 	}
 }
+
+static void freeConnList(ConnList list) 
+{
+	ConnList curr = list;
+	ConnList prev = NULL;
+	for(; curr != NULL;) {
+		prev = curr;
+        curr = curr->next;
+        free(prev);
+	}
+	return;
+}
+
