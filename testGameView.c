@@ -29,10 +29,7 @@
 #define YEL   "\x1B[33m"
 #define RED   "\x1B[31m"	
 
-// Notes: test for when trap leaves the trail
-// Test Ideas:
 // Check if the location where the immature vampire was is gone after maturing
-// Test trap out of trail
 // When trap is located in CITY_UNKNOWN and you call gvgettraplocaiton
 
 static void delay(int i, bool speed) {
@@ -576,6 +573,40 @@ int main(void)
 		delay(i, speed);
 		i++;
 	}
+
+	{///////////////////////////////////////////////////////////////////
+
+        printf(YEL "Test for when trap leaves the trail\n" RESET);
+
+        char *trail =
+            "GCD.... SCD.... HCD.... MCD.... DSRT... "
+            "GGA.... SGA.... HGA.... MGA.... DBAT... "
+            "GCD.... SCD.... HCD.... MCD.... DHIT... "
+            "GGA.... SGA.... HGA.... MGA.... DALT... "
+            "GCD.... SCD.... HCD.... MCD.... DMAT... "
+            "GCD.... SCD.... HCD.... MCD.... DD1V... "
+            "GCD.... SCD.... HCD.... MCD.... DHI..M.";
+        Message messages[] = {};
+        GameView gv = GvNew(trail, messages);
+
+        assert(GvGetRound(gv) == 7);
+        assert(GvGetPlayer(gv) == PLAYER_LORD_GODALMING);
+        int numTraps = 0;
+        PlaceId *traps = GvGetTrapLocations(gv, &numTraps);
+        assert(numTraps == 4);
+        sortPlaces(traps, numTraps);
+        assert(traps[0] == ALICANTE);
+        assert(traps[1] != SARAGOSSA && traps[2] != SARAGOSSA &&
+            traps[3] != SARAGOSSA);
+        free(traps);
+
+        delay(i, speed);
+        i++;
+        GvFree(gv);
+        printf(GRN "Test passed!\n" RESET);
+        delay(i, speed);
+        i++;
+    }
 
 	{///////////////////////////////////////////////////////////////////
 
