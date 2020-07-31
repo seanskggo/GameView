@@ -26,7 +26,7 @@
 #define MAX_PLAY_LENGTH 8 // Extra Space for Null Terminator
 #define MAX_TRAIL_LENGTH 6
 
-// TODO: ADD YOUR OWN STRUCTS HERE
+// Structs we added
 
 // Linked list for storing history. NOTE: When storing history,
 // the most recent history is added to the front of the list
@@ -49,7 +49,6 @@ typedef struct location {
 
 // Gameview struct
 struct gameView {
-	// TODO: ADD FIELDS HERE
 	int round;
 	int score;
 	Player current;
@@ -97,7 +96,6 @@ static void helperConvertPlay2(char *currMove, History *curr, int count);
 
 GameView GvNew(char *pastPlays, Message messages[])
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	GameView new = malloc(sizeof(*new));
 	if (new == NULL) {
 		fprintf(stderr, "Couldn't allocate GameView!\n");
@@ -437,7 +435,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 		case PLAYER_MINA_HARKER:
 			// hunters can always stay in the same city
 			added[from] = 1;
-			reachableLocs = connListInsert(reachableLocs, from, ROAD);
+			reachableLocs = MapConnListInsert(reachableLocs, from, ROAD);
 			*numReturnedLocs += 1;
 			break;
 		case PLAYER_DRACULA:
@@ -479,7 +477,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 				added[from] = 1;
 			} else {
 				// we should be able to hide/doubleBack to current loc
-				reachableLocs = connListInsert(reachableLocs, from, ROAD);
+				reachableLocs = MapConnListInsert(reachableLocs, from, ROAD);
 				*numReturnedLocs += 1;
 			}
 			// If we haven't double backed yet, we can actually
@@ -515,7 +513,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 					) {
 					continue;
 				}
-				reachableLocs = connListInsert(reachableLocs,
+				reachableLocs = MapConnListInsert(reachableLocs,
 					curr->p, curr->type);
 				added[curr->p] = 1;
 				*numReturnedLocs += 1;
@@ -526,7 +524,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 	if (boat == true) {
 		for(; curr != NULL; curr = curr->next) {
 			if (curr->type == BOAT && added[curr->p] != 1) {
-				reachableLocs = connListInsert(reachableLocs,
+				reachableLocs = MapConnListInsert(reachableLocs,
 					curr->p, curr->type);
 				added[curr->p] = 1;
 				*numReturnedLocs += 1;

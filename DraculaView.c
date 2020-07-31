@@ -240,8 +240,6 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 	if (canFreeLastMoves) {
 		free(lastMoves);
 	}
-	
-	// bunch of other memory to be freed here!!!
 
 	*numReturnedMoves = 0;
 	return NULL;
@@ -313,22 +311,6 @@ static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
 	// we also need to store which "number" DOUBLE_BACK we need to do
 	bool canDoDoubleBack[MAX_DOUBLE_BACKS] = {false};
 	int numDoubleBacks = 0;
-	/*for (int i = 0; i <	numReachableLocs; i++) {
-		bool alreadyFound = false;
-		int timesLooped = 0;
-		for (int j = (numLastLocs - 1); j >= 0; j--) {
-			if (!alreadyFound && reachableLocs[i] == lastLocs[j]) {
-				alreadyFound = true;
-				canDoDoubleBack[timesLooped] = true;
-				numDoubleBacks++;
-				// Remove the loc the doubleback refers to 
-				// from available moves
-				// tired when writing this, hope it solves the McBug
-				helperRemoveLoc(availableMoves, i, currentNumMoves);
-				timesLooped++;
-			}
-		}
-	}*/
 	
 	int timesOuterLooped = 0;
 	for (int i = (numLastLocs - 1); i >= 0; i--) {
@@ -362,9 +344,6 @@ static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
 			}
 		}
 	}
-
-
-	// assuming, of course, that currentNumMoves - 1 was the OLD last element of availableMoves
 
 	*currentNumMoves = newNumMoves;
 	return availableMoves;
