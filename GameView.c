@@ -425,6 +425,11 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 	for(int i = 0; i < NUM_REAL_PLACES; i++) {
 		added[i] = -1;
 	}
+	
+	if (player < gv->current) {
+		round++;
+	} 
+	
 	switch(player) {
 		case PLAYER_LORD_GODALMING:
 		case PLAYER_DR_SEWARD:
@@ -432,7 +437,6 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 		case PLAYER_MINA_HARKER:
 			// hunters can always stay in the same city
 			added[from] = 1;
-			// maybe this should be NONE??? not ROAD???
 			reachableLocs = connListInsert(reachableLocs, from, ROAD);
 			*numReturnedLocs += 1;
 			break;
@@ -507,6 +511,10 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 	if (road == true) {
 		for(; curr != NULL; curr = curr->next) {
 			if (curr->type == ROAD && added[curr->p] != 1) {
+				if (player == PLAYER_DRACULA && curr->p == ST_JOSEPH_AND_ST_MARY
+					) {
+					continue;
+				}
 				reachableLocs = connListInsert(reachableLocs,
 					curr->p, curr->type);
 				added[curr->p] = 1;
