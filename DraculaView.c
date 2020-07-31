@@ -35,8 +35,8 @@ struct draculaView {
 
 // Helper Functions
 
-static PlaceId *helperRemoveCurrentLocation(DraculaView dv, PlaceId *locs,
-    int numLocs, int *currentNumMoves);
+static PlaceId *helperRemoveCurrentLocation(DraculaView dv, PlaceId *moves,
+	int *currentNumMoves);
 static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
 	int numReachableLocs, PlaceId *lastLocs, int numLastLocs,
 	PlaceId *availableMoves, int *currentNumMoves);
@@ -69,6 +69,7 @@ DraculaView DvNew(char *pastPlays, Message messages[])
 
 void DvFree(DraculaView dv)
 {
+	free(dv->player);
 	GvFree(dv->gv);
 	free(dv);
 }
@@ -111,8 +112,8 @@ PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps)
 
 PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 {
+	*numReturnedMoves = 0;
 	if (dv->player[PLAYER_DRACULA].location == NOWHERE) {
-		*numReturnedMoves = 0;
 		return NULL;
 	}
 	
@@ -158,16 +159,16 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 			numReachableLocs, lastLocs, numLastLocs, availableMoves,
 			numReturnedMoves);
 
-		// add HIDE move
-		availableMoves = realloc(availableMoves, 1 + *numReturnedMoves *
-            sizeof(PlaceId));
-    
-		availableMoves[*numReturnedMoves] = HIDE;
-		*numReturnedMoves += 1;
+		// add HIDE move if not at sea
+		if (!placeIsSea(dv->player[PLAYER_DRACULA].location)) {
+			availableMoves = realloc(availableMoves, (1 + *numReturnedMoves) *
+				sizeof(PlaceId));
+			availableMoves[*numReturnedMoves] = HIDE;
+			*numReturnedMoves += 1;
+		}
 		
-		int numLocs = *numReturnedMoves;
 		availableMoves = helperRemoveCurrentLocation(dv, availableMoves,
-		    numLocs, numReturnedMoves);
+		    numReturnedMoves);
 		
 		if (canFreeLastLocs) {
 			free(lastLocs);
@@ -201,9 +202,8 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 			numReachableLocs, lastLocs, numLastLocs, availableMoves,
 			numReturnedMoves);
 			
-		int numLocs = *numReturnedMoves;
 		availableMoves = helperRemoveCurrentLocation(dv, availableMoves,
-		numLocs, numReturnedMoves);
+		numReturnedMoves);
 		
 		if (canFreeLastLocs) {
 			free(lastLocs);
@@ -218,17 +218,16 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 
 	// if we've found a DoubleBack, there is only one move to add: HIDE
 	if (foundDoubleBack) {
-    
-		// add HIDE move
-		availableMoves = realloc(availableMoves, 1 + *numReturnedMoves *
-            sizeof(PlaceId));
-    
-		availableMoves[*numReturnedMoves] = HIDE;
-		*numReturnedMoves += 1;
+		// add HIDE move if not at sea
+		if (!placeIsSea(dv->player[PLAYER_DRACULA].location)) {
+			availableMoves = realloc(availableMoves, (1 + *numReturnedMoves) *
+				sizeof(PlaceId));
+			availableMoves[*numReturnedMoves] = HIDE;
+			*numReturnedMoves += 1;
+		}
 		
-		int numLocs = *numReturnedMoves;
 		availableMoves = helperRemoveCurrentLocation(dv, availableMoves,
-		    numLocs, numReturnedMoves);
+		    numReturnedMoves);
 		
 		if (canFreeLastLocs) {
 			free(lastLocs);
@@ -304,21 +303,20 @@ PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
 ////////////////////////////////////////////////////////////////////////
 // Helper functions
 
-static PlaceId *helperRemoveCurrentLocation(DraculaView dv, PlaceId *locs,
-		int numLocs, int *currentNumMoves)
+static PlaceId *helperRemoveCurrentLocation(DraculaView dv, PlaceId *moves,
+	int *currentNumMoves)
 {
 	int i = 0;
-	for (; i < numLocs; i++) {
-		if (locs[i] == dv->player[PLAYER_DRACULA].location) {
-			for (; i < numLocs - 1; i++) {
-				locs[i] = locs[i + 1];
-				locs = realloc(locs, (numLocs - 1) * sizeof(PlaceId));
+	for (; i < (*currentNumMoves); i++) {
+		if (moves[i] == dv->player[PLAYER_DRACULA].location) {
+			for (; i < (*currentNumMoves - 1); i++) {
+				moves[i] = moves[i + 1];
 			}
-			currentNumMoves--;
+			*currentNumMoves -= 1;
 			break;
 		}
 	}
-	return locs;
+	return moves;
 }
 
 static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
@@ -341,9 +339,6 @@ static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
 				alreadyFound = true;
 				canDoDoubleBack[timesOuterLooped] = true;
 				numDoubleBacks++;
-				// Remove the loc the doubleback refers to 
-				// from available moves (reachableLocs)
-				// tired when writing this, hope it solves the McBug
 				helperRemoveLoc(availableMoves, j, currentNumMoves);
 			}
 		}
@@ -355,7 +350,6 @@ static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
 	availableMoves = realloc(availableMoves, newNumMoves * sizeof(PlaceId));
 
 	// for loop adding the appropriate double backs
-
 	for (int i = 0; i < numDoubleBacks; i++) {
 		for (int j = 0; j < MAX_DOUBLE_BACKS; j++) {
 			if (canDoDoubleBack[j]) {
@@ -371,10 +365,9 @@ static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
 
 static PlaceId *helperRemoveLoc(PlaceId *availableMoves, int index, int *size) {
 	
-	for (int i = index; i < *size - 2; i++) {
+	for (int i = index; i < (*size - 1); i++) {
 		availableMoves[i] = availableMoves[i + 1];
 	}
-	availableMoves = realloc(availableMoves, (*size - 1) * sizeof(PlaceId));
 	*size -= 1;
 	return availableMoves;
 }
