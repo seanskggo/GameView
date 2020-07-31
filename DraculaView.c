@@ -34,15 +34,16 @@ struct draculaView {
 #define MAX_DOUBLE_BACKS 5
 
 // Helper Functions
+
 static PlaceId *helperRemoveCurrentLocation(DraculaView dv, PlaceId *locs,
-		int numLocs, int *currentNumMoves);
+    int numLocs, int *currentNumMoves);
 static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
 	int numReachableLocs, PlaceId *lastLocs, int numLastLocs,
 	PlaceId *availableMoves, int *currentNumMoves);
 static PlaceId *helperRemoveLoc(PlaceId *availableMoves, int index, int *size);
 
 ////////////////////////////////////////////////////////////////////////
-// Constructor/Destructor
+// Constructor
 
 DraculaView DvNew(char *pastPlays, Message messages[])
 {
@@ -64,6 +65,7 @@ DraculaView DvNew(char *pastPlays, Message messages[])
 
 	return new;
 }
+// Destructor
 
 void DvFree(DraculaView dv)
 {
@@ -111,20 +113,20 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 {
 	int numReachableLocs;
 	PlaceId *reachableLocs = GvGetReachable(dv->gv, PLAYER_DRACULA, dv->round,
-							dv->player[PLAYER_DRACULA].location,
-							&numReachableLocs);
+        dv->player[PLAYER_DRACULA].location,
+        &numReachableLocs);
 
 	// we get drac's last 5 moves
 	int numLastMoves = 0;
 	bool canFreeLastMoves = true;
 	PlaceId *lastMoves = GvGetLastMoves(dv->gv, PLAYER_DRACULA, 5,
-	                        &numLastMoves, &canFreeLastMoves);
+        &numLastMoves, &canFreeLastMoves);
 
 	// we may also need his last 5 LOCATIONS
 	int numLastLocs = 0;
 	bool canFreeLastLocs = true;
 	PlaceId *lastLocs = GvGetLastLocations(dv->gv, PLAYER_DRACULA, 5,
-	                        &numLastLocs, &canFreeLastLocs);
+        &numLastLocs, &canFreeLastLocs);
 
 	bool foundDoubleBack = false;
 	bool foundHide = false;
@@ -153,14 +155,14 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 
 		// add HIDE move
 		availableMoves = realloc(availableMoves, 1 + *numReturnedMoves *
-									sizeof(PlaceId));
+            sizeof(PlaceId));
 
 		availableMoves[*numReturnedMoves] = HIDE;
 		*numReturnedMoves += 1;
 		
 		int numLocs = *numReturnedMoves;
 		availableMoves = helperRemoveCurrentLocation(dv, availableMoves,
-		numLocs, numReturnedMoves);
+		    numLocs, numReturnedMoves);
 		
 		if (canFreeLastLocs) {
 			free(lastLocs);
@@ -189,7 +191,6 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 
 	// if a hide, add the double back moves
 	if (foundHide) {
-		
 		// we have to swap the last element of available 
 		availableMoves = helperGetDoubleBacks(dv, reachableLocs,
 			numReachableLocs, lastLocs, numLastLocs, availableMoves,
@@ -214,14 +215,14 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 	if (foundDoubleBack) {
 		// add HIDE move
 		availableMoves = realloc(availableMoves, 1 + *numReturnedMoves *
-									sizeof(PlaceId));
+            sizeof(PlaceId));
 
 		availableMoves[*numReturnedMoves] = HIDE;
 		*numReturnedMoves += 1;
 		
 		int numLocs = *numReturnedMoves;
 		availableMoves = helperRemoveCurrentLocation(dv, availableMoves,
-		numLocs, numReturnedMoves);
+		    numLocs, numReturnedMoves);
 		
 		if (canFreeLastLocs) {
 			free(lastLocs);
@@ -247,32 +248,32 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs)
 {
 	return GvGetReachable(dv->gv, PLAYER_DRACULA, dv->round,
-							dv->player[PLAYER_DRACULA].location,
-							numReturnedLocs);
+        dv->player[PLAYER_DRACULA].location,
+        numReturnedLocs);
 }
 
 PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
-                             int *numReturnedLocs)
+    int *numReturnedLocs)
 {
 	return GvGetReachableByType(dv->gv, PLAYER_DRACULA, dv->round,
-								dv->player[PLAYER_DRACULA].location, road,
-								false, boat, numReturnedLocs);
+        dv->player[PLAYER_DRACULA].location, road,
+        false, boat, numReturnedLocs);
 }
 
 PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player,
-                          int *numReturnedLocs)
+    int *numReturnedLocs)
 {
 	return GvGetReachable(dv->gv, player, dv->round,
-						dv->player[player].location, numReturnedLocs);
+        dv->player[player].location, numReturnedLocs);
 }
 
 PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
-                                bool road, bool rail, bool boat,
-                                int *numReturnedLocs)
+    bool road, bool rail, bool boat,
+    int *numReturnedLocs)
 {
 	return GvGetReachableByType(dv->gv, player, dv->round,
-								dv->player[player].location, road, rail,
-								boat, numReturnedLocs);
+        dv->player[player].location, road, rail,
+        boat, numReturnedLocs);
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -359,7 +360,6 @@ static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
 			}
 		}
 	}
-
 
 	// assuming, of course, that currentNumMoves - 1 was the OLD last element of availableMoves
 
