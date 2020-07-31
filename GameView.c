@@ -22,7 +22,6 @@
 // add your own #includes here
 
 // Local #defines
-
 #define MAX_PLAY_LENGTH 8 // Extra Space for Null Terminator
 #define MAX_TRAIL_LENGTH 6
 
@@ -132,31 +131,30 @@ GameView GvNew(char *pastPlays, Message messages[])
 
 void GvFree(GameView gv)
 {
-	// Free the characters
-	for (int i = 0; i < 5; i++) {
-	   // Free the history of players
-	   History *curr = gv->player[i].moves;
-	   History *prev = curr;
-	   while (curr != NULL) {
-	      curr = curr->next;
-	      free(prev);
-	      prev = curr;
-	   }
-	   // Free the revealed history of players
-	   curr = gv->player[i].revealedMoves;
-	   prev = curr;
-	   while (curr != NULL) {
-	      curr = curr->next;
-	      free(prev);
-	      prev = curr;
-	   }
-	}
-	MapFree(gv->map);
-	free(gv->player);
-	free(gv->places);
-	free(gv);
+    // Free the characters
+    for (int i = 0; i < 5; i++) {
+        // Free the history of players
+        History *curr = gv->player[i].moves;
+        History *prev = curr;
+        while (curr != NULL) {
+            curr = curr->next;
+            free(prev);
+            prev = curr;
+        }
+        // Free the revealed history of players
+        curr = gv->player[i].revealedMoves;
+        prev = curr;
+        while (curr != NULL) {
+            curr = curr->next;
+            free(prev);
+            prev = curr;
+        }
+    }
+    MapFree(gv->map);
+    free(gv->player);
+    free(gv->places);
+    free(gv);
 }
-
 
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
@@ -233,7 +231,7 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 // Game History
 
 PlaceId *GvGetMoveHistory(GameView gv, Player player,
-                          int *numReturnedMoves, bool *canFree)
+    int *numReturnedMoves, bool *canFree)
 {
 	// Count num of moves
 	int total = 0;
@@ -252,7 +250,6 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
 	} else {
 	    // create dynamically allocated array where there are more than 1 moves
 	    PlaceId *MoveHistory = malloc((total)*sizeof(*MoveHistory));
-
 	    History *curr = gv->player[player].moves;
 	    for (int i = total - 1; i >= 0; i--) {
 	        char currMove[3];
@@ -271,7 +268,7 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
 }
 
 PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
-                        int *numReturnedMoves, bool *canFree)
+    int *numReturnedMoves, bool *canFree)
 {
 	int total = 0;
 	History *current = gv->player[player].moves;
@@ -279,14 +276,12 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 	    total++;
 	    current = current->next;
 	}
-
 	if (total == 0) {
 	    *canFree = false;
 	    *numReturnedMoves = total;
 	    return NULL;
 	} else {
 	    PlaceId *MoveHistory = malloc((total)*sizeof(*MoveHistory));
-
 	    History *curr = gv->player[player].moves;
 	    for (int i = total - 1; i >= 0; i--) {
 	        char currMove[3];
@@ -304,7 +299,7 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 }
 
 PlaceId *GvGetLocationHistory(GameView gv, Player player,
-                              int *numReturnedLocs, bool *canFree)
+    int *numReturnedLocs, bool *canFree)
 {
 	int total = 0;
 	*numReturnedLocs = total;
@@ -340,7 +335,7 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player,
 }
 
 PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
-                            int *numReturnedLocs, bool *canFree)
+    int *numReturnedLocs, bool *canFree)
 {
 	int total = 0;
 	*numReturnedLocs = total;
@@ -377,7 +372,7 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 // Making a Move
 
 PlaceId *GvGetReachable(GameView gv, Player player, Round round,
-                        PlaceId from, int *numReturnedLocs)
+    PlaceId from, int *numReturnedLocs)
 {
 	PlaceId *reachableLocs = NULL;
 	switch(player) {
@@ -404,8 +399,8 @@ PlaceId *GvGetReachable(GameView gv, Player player, Round round,
 }
 
 PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
-                              PlaceId from, bool road, bool rail,
-                              bool boat, int *numReturnedLocs)
+    PlaceId from, bool road, bool rail,
+    bool boat, int *numReturnedLocs)
 {
     *numReturnedLocs = 0;
     ConnList reachableLocs = NULL;
@@ -414,16 +409,13 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 	// we have an added array to check if we've already realised
 	// we can access that location
 	int *added = malloc(NUM_REAL_PLACES * sizeof(int));
-
 	// initialise added
 	for(int i = 0; i < NUM_REAL_PLACES; i++) {
 		added[i] = -1;
 	}
-	
 	if (player < gv->current) {
 		round++;
 	} 
-	
 	switch(player) {
 		case PLAYER_LORD_GODALMING:
 		case PLAYER_DR_SEWARD:
@@ -505,8 +497,8 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 	if (road == true) {
 		for(; curr != NULL; curr = curr->next) {
 			if (curr->type == ROAD && added[curr->p] != 1) {
-				if (player == PLAYER_DRACULA && curr->p == ST_JOSEPH_AND_ST_MARY
-					) {
+				if (player == PLAYER_DRACULA 
+                    && curr->p == ST_JOSEPH_AND_ST_MARY) {
 					continue;
 				}
 				reachableLocs = MapConnListInsert(reachableLocs,
@@ -587,7 +579,6 @@ static void helperGameUpdate(GameView gv, char *currPlay) {
 }
 
 static void updateScores(GameView gv, char *currPlay) {
-
 	// If player health is >= 0 at the start of turn, set back to max health
 	if (gv->player[gv->current].health == 0)
 		gv->player[gv->current].health = GAME_START_HUNTER_LIFE_POINTS;
@@ -606,13 +597,11 @@ static void updateScores(GameView gv, char *currPlay) {
 	// Assert only if place is not C? or S?
 	if (strcmp(place, "C?") != 0 && strcmp(place, "S?") != 0)
 		assert(placeIsReal(location));
-
 	if (gv->current == PLAYER_DRACULA) {
 		// If in Castle Dracula, gain 10 lifepoints
 		// Change depending on spec. Can castle dracula have traps? apparently yes
 		if (strcmp(place, "TP") == 0 || location == CASTLE_DRACULA)
 			gv->player[PLAYER_DRACULA].health += LIFE_GAIN_CASTLE_DRACULA;
-
 		// If in sea, lose lifepoints
 		if (placeIsSea(location))
 			gv->player[PLAYER_DRACULA].health -= LIFE_LOSS_SEA;
@@ -662,17 +651,17 @@ static void updateScores(GameView gv, char *currPlay) {
 
 static void hunterUpdateScores(GameView gv, PlaceId location, char a) {
 	if (a == 'T') {
-			hunterEncounter(gv, 'T', location, gv->current);
-		} else if (a == 'V') {
-			hunterEncounter(gv, 'V', location, gv->current);
-		} else if (a == 'D') {
-			hunterEncounter(gv, 'D', location, gv->current);
-		}
-		if (gv->player[gv->current].health <= 0) {
-			gv->player[gv->current].health = 0;
-			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-		}
-		if (a == '.') return;
+        hunterEncounter(gv, 'T', location, gv->current);
+    } else if (a == 'V') {
+        hunterEncounter(gv, 'V', location, gv->current);
+    } else if (a == 'D') {
+        hunterEncounter(gv, 'D', location, gv->current);
+    }
+    if (gv->player[gv->current].health <= 0) {
+        gv->player[gv->current].health = 0;
+        gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
+    }
+    if (a == '.') return;
 }
 
 static void hunterEncounter(GameView gv, char a, PlaceId location, Player name) {
@@ -806,5 +795,4 @@ static void helperConvertPlay2(char *currMove, History *curr, int count) {
 	currMove[1] = tmp[2];
 }
 
-////////////////////////////////////////////////////////////////////////
-				
+////////////////////////////////////////////////////////////////////////			

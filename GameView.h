@@ -148,7 +148,7 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps);
  * memory leaks. Otherwise, set it to false.
  */
 PlaceId *GvGetMoveHistory(GameView gv, Player player,
-                          int *numReturnedMoves, bool *canFree);
+    int *numReturnedMoves, bool *canFree);
 
 /**
  * Gets  the given player's last `numMoves` moves in chronological order
@@ -170,7 +170,7 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
  *       move history.
  */
 PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
-                        int *numReturnedMoves, bool *canFree);
+    int *numReturnedMoves, bool *canFree);
 
 /**
  * Gets  the  complete  location history, in chronological order, of the
@@ -192,7 +192,7 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
  * memory leaks. Otherwise, set it to false.
  */
 PlaceId *GvGetLocationHistory(GameView gv, Player player,
-                              int *numReturnedLocs, bool *canFree);
+    int *numReturnedLocs, bool *canFree);
 
 /**
  * Gets  the  given   player's last `numLocs` locations in chronological
@@ -214,7 +214,7 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player,
  *       complete location history.
  */
 PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
-                            int *numReturnedLocs, bool *canFree);
+    int *numReturnedLocs, bool *canFree);
 
 ////////////////////////////////////////////////////////////////////////
 // Making a Move
@@ -240,7 +240,7 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
  * least one move.
  */
 PlaceId *GvGetReachable(GameView gv, Player player, Round round,
-                        PlaceId from, int *numReturnedLocs);
+    PlaceId from, int *numReturnedLocs);
 
 /**
  * Similar  to GvGetReachable, but the caller can restrict the transport
@@ -248,8 +248,8 @@ PlaceId *GvGetReachable(GameView gv, Player player, Round round,
  * boat is false, boat connections will be ignored.
  */
 PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
-                              PlaceId from, bool road, bool rail,
-                              bool boat, int *numReturnedLocs);
+    PlaceId from, bool road, bool rail,
+    bool boat, int *numReturnedLocs);
 
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
