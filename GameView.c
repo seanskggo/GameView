@@ -533,8 +533,6 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 			}
 		}
 	}
-	// this has to come after the previous two ifs...
-	// MapGetRailReachable behaves badly otherwise
 	if (rail == true) {
 		int canTravelDist = (round + player) % 4;
 		reachableLocs = MapGetRailReachable(gv->map, from,

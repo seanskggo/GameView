@@ -65,17 +65,14 @@ int main(void)
 	{///////////////////////////////////////////////////////////////////
 		printf(YEL "Testing Hunter Part of GvGetReachable() No1.\n" RESET);
 
-		char *trail =
-			"GGE.... SGE.... HGE.... MGE.... DEC.... "
-			"GST.... SST.... HST.... MST.... DD1.... "
-			"GFR.... SFR.... HFR.... MFR....";
+		char *trail = "";
 		Message messages[] = {};
 		GameView gv = GvNew(trail, messages);
 
-		int round = 0;
+		int round = 3;
 		int returnedLocs = 0;
 		PlaceId *reachable = GvGetReachable(gv, PLAYER_DR_SEWARD, round,
-			CONSTANTA, &returnedLocs);
+			FRANKFURT, &returnedLocs);
 		int reachableLength = 0;
 
 		for (int i = 0; i < returnedLocs; i++) {
@@ -98,10 +95,7 @@ int main(void)
 	{///////////////////////////////////////////////////////////////////
 		printf(YEL "Testing Hunter Part of GvGetReachable() No.2\n" RESET);
 
-		char *trail =
-			"GGE.... SGE.... HGE.... MGE.... DEC.... "
-			"GST.... SST.... HST.... MST.... DD1.... "
-			"GFR.... SFR.... HFR.... MFR....";
+		char *trail = "";
 		Message messages[] = {};
 		GameView gv = GvNew(trail, messages);
 
@@ -132,24 +126,24 @@ int main(void)
 		printf(YEL "Testing Hunter Part of GvGetReachable() No.3\n" RESET);
 
 		char *trail =
-			"GGE.... SGE.... HGE.... MGE.... DEC.... "
-			"GST.... SST.... HST.... MST.... DD1.... "
-			"GFR.... SFR.... HFR.... MFR....";
+			"GGE.... SGE.... HGE.... MVI.... DEC.... "
+			"GST.... SST.... HST.... MBD.... DD1.... "
+			"GFR.... SFR.... HFR.... MSZ.... DPL.... "
+			"GFR.... SFR.... HFR.... MSZ....";
 		Message messages[] = {};
 		GameView gv = GvNew(trail, messages);
 
-		int round = 1;
+		int round = GvGetRound(gv);
 		int returnedLocs = 0;
-		PlaceId *reachable = GvGetReachable(gv, PLAYER_DR_SEWARD, round,
-			VIENNA, &returnedLocs);
+		PlaceId *reachable = GvGetReachable(gv, PLAYER_MINA_HARKER, round,
+			SZEGED, &returnedLocs);
 		int reachableLength = 0;
-
 		for (int i = 0; i < returnedLocs; i++) {
 			reachableLength++;
 			fputs(placeIdToName(reachable[i]), stdout);
 			printf("\n");
 		}
- 		assert(returnedLocs == 8 && reachableLength == 8);
+ 		assert(returnedLocs == 15 && reachableLength == 15);
 		free(reachable);
 
 		delay(i, speed);
@@ -169,7 +163,7 @@ int main(void)
 			"GCD.... SCD.... HCD.... MCD.... DCO.... "
 			"GGA.... SGA.... HGA.... MGA.... DFR.... "
 			"GCD.... SCD.... HCD.... MCD.... DLI.... "
-			"GGA.... SGA.... HGA.... MGA.... DD1.... ";
+			"GGA.... SGA.... HGA.... MGA.... DD1....";
 		Message messages[] = {};
 		GameView gv = GvNew(trail, messages);
 
@@ -198,7 +192,7 @@ int main(void)
 		printf(YEL "Testing Drac Part of GvGetReachable() No.2\n" RESET);
 
 		char *trail =
-			"GCD.... SCD.... HCD.... MCD.... DHA.... ";
+			"GCD.... SCD.... HCD.... MCD.... DHA....";
 		Message messages[] = {};
 		GameView gv = GvNew(trail, messages);
 
@@ -231,7 +225,7 @@ int main(void)
 			"GGA.... SGA.... HGA.... MGA.... DBA.... "
 			"GCD.... SCD.... HCD.... MCD.... DHI.... "
 			"GGA.... SGA.... HGA.... MGA.... DAL.... "
-			"GCD.... SCD.... HCD.... MCD.... DMA.... ";
+			"GCD.... SCD.... HCD.... MCD.... DMA....";
 		Message messages[] = {};
 		GameView gv = GvNew(trail, messages);
 
@@ -261,7 +255,7 @@ int main(void)
 
 		char *trail =
 			"GCD.... SCD.... HCD.... MCD.... DMA.... "
-			"GGA.... SGA.... HGA.... MGA.... DD1.... ";
+			"GGA.... SGA.... HGA.... MGA.... DD1....";
 		Message messages[] = {};
 		GameView gv = GvNew(trail, messages);
 
