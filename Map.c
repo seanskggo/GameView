@@ -30,9 +30,14 @@ static void addConnections(Map m);
 static void addConnection(Map m, PlaceId v, PlaceId w, TransportType type);
 static inline bool isSentinelEdge(Connection c);
 static bool connListContains(ConnList l, PlaceId v, TransportType type);
-// Our static functions
+
+// Our static functions:
+
+// helper function for MapGetRailReachable
 static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 	int added[NUM_REAL_PLACES]);
+// frees a given ConnList
+static void freeConnList(ConnList list);
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -219,7 +224,8 @@ ConnList MapGetRailReachable(Map m, PlaceId src, int dist,
 	ConnList connsToCheck =  m->connections[src];
 	ConnList curr = NULL;
 	ConnList prev = NULL;
-	for(int i = 0; i < dist; i++) {
+	int i = 0;
+	for(; i < dist; i++) {
 		// getConnectionsToCheck relies upon connsToCheck, which is why
 		// we need to separate it from curr
 	    connsToCheck = getConnectionsToCheck(m, connsToCheck, i, added);
@@ -246,6 +252,10 @@ ConnList MapGetRailReachable(Map m, PlaceId src, int dist,
 		    }
 		}
 		prev = connsToCheck;
+	}
+	
+	if (i == 2) {
+		freeConnList(connsToCheck);
 	}
 	return reachableLocs;
 }
@@ -293,5 +303,17 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 		}
 		return connsToCheck;
 	}
+}
+
+static void freeConnList(ConnList list) 
+{
+	ConnList curr = list;
+	ConnList prev = NULL;
+	for(; curr != NULL;) {
+		prev = curr;
+        curr = curr->next;
+        free(prev);
+	}
+	return;
 }
 
