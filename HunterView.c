@@ -140,6 +140,7 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 	return NOWHERE;
 }
 
+
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength)
 {

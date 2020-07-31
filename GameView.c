@@ -87,8 +87,6 @@ static void updateRevealedHistory(GameView gv, Player player, char *currPlay);
 static void hunterUpdateScores(GameView gv, PlaceId location, char a);
 // helper for the "reachable" type functions. ONLY takes two character word
 static void convertPlay2(GameView gv, char *currMove, History *curr);
-// Checks whether or not a given PlaceId refers to a DOUBLE_BACK move
-static bool isDoubleBack(PlaceId p);
 // Helper function for convertPlay2
 static void helperConvertPlay2(char *currMove, History *curr, int count);
 
@@ -156,7 +154,7 @@ void GvFree(GameView gv)
 	      prev = curr;
 	   }
 	}
-	MapFree(gv->map);
+	free(gv->map);
 	free(gv->player);
 	free(gv->places);
 	free(gv);
@@ -242,7 +240,6 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
 {
 	// Count num of moves
 	int total = 0;
-    *canFree = true;
 	History *current = gv->player[player].moves;
 	while (current != NULL) {
 	    total++;
@@ -252,7 +249,8 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
 	if (total == 0) {
 	    PlaceId *MoveHistory = malloc(sizeof(*MoveHistory)*1);
 	    MoveHistory = NULL;
-    	*numReturnedMoves = total;
+	    *canFree = true;
+	    *numReturnedMoves = total;
 	    return MoveHistory;
 	} else {
 	    // create dynamically allocated array where there are more than 1 moves
@@ -268,7 +266,8 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
 	        MoveHistory[i] = currPlace;
 	        curr = curr->next;
 	    }
-    	*numReturnedMoves = total;
+	    *numReturnedMoves = total;
+	    *canFree = true;
 	    return MoveHistory;
 	}
 
@@ -278,7 +277,6 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
                         int *numReturnedMoves, bool *canFree)
 {
 	int total = 0;
-    *canFree = true;
 	History *current = gv->player[player].moves;
 	while (total < numMoves && current != NULL) {
 	    total++;
@@ -288,7 +286,8 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 	if (total == 0) {
 	    PlaceId *MoveHistory = malloc(sizeof(*MoveHistory)*1);
 	    MoveHistory = NULL;
-    	*numReturnedMoves = total;
+	    *canFree = true;
+	    *numReturnedMoves = total;
 	    return MoveHistory;
 	} else {
 	    PlaceId *MoveHistory = malloc((total)*sizeof(*MoveHistory));
@@ -303,7 +302,8 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 	        MoveHistory[i] = currPlace;
 	        curr = curr->next;
 	    }
-    	*numReturnedMoves = total;
+	    *numReturnedMoves = total;
+	    *canFree = true;
 	    return MoveHistory;
 	}
 }
@@ -312,6 +312,7 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player,
                               int *numReturnedLocs, bool *canFree)
 {
 	int total = 0;
+	*numReturnedLocs = total;
 	*canFree = true;
 	History *current = gv->player[player].revealedMoves;
 	while (current != NULL) {
@@ -321,7 +322,8 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player,
     if (total == 0) {
         PlaceId *LocsHistory = malloc(sizeof(*LocsHistory)*1);
         LocsHistory = NULL;
-    	*numReturnedLocs = total;
+        *canFree = true;
+        *numReturnedLocs = total;
         return LocsHistory;
     } else {
         // create dynamically allocated array where there are more than 1 moves
@@ -336,7 +338,8 @@ PlaceId *GvGetLocationHistory(GameView gv, Player player,
             LocsHistory[i] = currPlace;
             curr = curr->next;
         }
-    	*numReturnedLocs = total;
+        *numReturnedLocs = total;
+        *canFree = true;
         return LocsHistory;
     }
 }
@@ -345,6 +348,7 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
                             int *numReturnedLocs, bool *canFree)
 {
 	int total = 0;
+	*numReturnedLocs = total;
 	*canFree = true;
 	History *current = gv->player[player].revealedMoves;
 	while (total < numLocs && current != NULL) {
@@ -354,7 +358,8 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
     if (total == 0) {
         PlaceId *LocsHistory = malloc(sizeof(*LocsHistory)*1);
         LocsHistory = NULL;
-    	*numReturnedLocs = total;
+        *canFree = true;
+        *numReturnedLocs = total;
         return LocsHistory;
     } else {
         // create dynamically allocated array where there are more than 1 moves
@@ -369,7 +374,8 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
             LocsHistory[i] = currPlace;
             curr = curr->next;
         }
-    	*numReturnedLocs = total;
+        *numReturnedLocs = total;
+        *canFree = true;
         return LocsHistory;
     }
 }
@@ -448,7 +454,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 				if (placeIsReal(moveId) && added[moveId] != 1) {
 					added[moveId] = 2;
 					numMoves++;
-				} else if (isDoubleBack(moveId)) {
+				} else if (GvIsDoubleBack(moveId)) {
 					foundDoubleBack = true;
 					numMoves++;
 					convertPlay2(gv, move, curr2);
@@ -540,6 +546,14 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 
 ////////////////////////////////////////////////////////////////////////
 // Interface functions
+
+bool GvIsDoubleBack(PlaceId p)
+{
+	return (p >= DOUBLE_BACK_1 && p <= DOUBLE_BACK_5) ? true : false;
+}
+
+////////////////////////////////////////////////////////////////////////
+// Helper functions
 
 static void gameUpdate(GameView gv, char *plays) {
 
@@ -648,16 +662,16 @@ static void updateScores(GameView gv, char *currPlay) {
 static void hunterUpdateScores(GameView gv, PlaceId location, char a) {
 	if (a == 'T') {
 			hunterEncounter(gv, 'T', location, gv->current);
-	} else if (a == 'V') {
-		hunterEncounter(gv, 'V', location, gv->current);
-	} else if (a == 'D') {
-		hunterEncounter(gv, 'D', location, gv->current);
-	}
-	if (gv->player[gv->current].health <= 0) {
-		gv->player[gv->current].health = 0;
-		gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-	}
-	if (a == '.') return;
+		} else if (a == 'V') {
+			hunterEncounter(gv, 'V', location, gv->current);
+		} else if (a == 'D') {
+			hunterEncounter(gv, 'D', location, gv->current);
+		}
+		if (gv->player[gv->current].health <= 0) {
+			gv->player[gv->current].health = 0;
+			gv->score -= SCORE_LOSS_HUNTER_HOSPITAL;
+		}
+		if (a == '.') return;
 }
 
 static void hunterEncounter(GameView gv, char a, PlaceId location, Player name) {
@@ -763,11 +777,6 @@ static Player updateCurrent(GameView gv) {
 	else return PLAYER_LORD_GODALMING;
 }
 
-static bool isDoubleBack(PlaceId p)
-{
-	return (p >= DOUBLE_BACK_1 && p <= DOUBLE_BACK_5) ? true : false;
-}
-
 static void convertPlay2(GameView gv, char *currMove, History *curr) {
 	if (strcmp(currMove, "TP") == 0) {
 		currMove[0] = 'C';
@@ -796,4 +805,5 @@ static void helperConvertPlay2(char *currMove, History *curr, int count) {
 	currMove[1] = tmp[2];
 }
 
-////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+				

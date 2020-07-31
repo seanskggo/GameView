@@ -24,7 +24,93 @@
 #include "testUtils.h"
 
 int main(void)
-{
+{	
+	// start tests we wrote
+	{///////////////////////////////////////////////////////////////////
+		printf("Testing DvGetValidMoves No.1\n");
+
+		char *trail =
+			"GCD.... SCD.... HCD.... MCD.... DHA.... "
+			"GGA.... SGA.... HGA.... MGA.... DHI.... "
+			"GCD.... SCD.... HCD.... MCD.... DCO.... "
+			"GGA.... SGA.... HGA.... MGA.... DFR.... "
+			"GCD.... SCD.... HCD.... MCD.... DLI.... "
+			"GGA.... SGA.... HGA.... MGA.... DD1.... ";
+		Message messages[] = {};
+		DraculaView dv = DvNew(trail, messages);
+
+		int numMoves = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numMoves);
+		assert(numMoves == 2);
+		sortPlaces(moves, numMoves);
+		assert(moves[0] == BERLIN);
+		assert(moves[1] == NUREMBURG);
+		free(moves);
+		
+		printf("Test passed!\n");
+		DvFree(dv);
+	}
+	
+	{///////////////////////////////////////////////////////////////////
+	
+		printf("Testing DvGetValidMoves No.2\n");
+		
+		char *trail =
+			"GCD.... SCD.... HCD.... MCD.... DSR.... "
+			"GGA.... SGA.... HGA.... MGA.... DBA.... "
+			"GCD.... SCD.... HCD.... MCD.... DHI.... "
+			"GGA.... SGA.... HGA.... MGA.... DAL.... "
+			"GCD.... SCD.... HCD.... MCD.... DMA.... ";
+		Message messages[] = {};
+		DraculaView dv = DvNew(trail, messages);
+		
+		int numMoves = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numMoves);
+		assert(numMoves == 7);
+		sortPlaces(moves, numMoves);
+		assert(moves[0] == CADIZ);
+		assert(moves[1] == GRANADA);
+		assert(moves[2] == LISBON);
+		assert(moves[3] == SANTANDER);
+		assert(moves[4] == DOUBLE_BACK_1);
+		assert(moves[5] == DOUBLE_BACK_2);
+		assert(moves[6] == DOUBLE_BACK_5);
+		free(moves);
+		
+		printf("Test passed!\n");
+		DvFree(dv);
+	}
+	
+	{///////////////////////////////////////////////////////////////////
+	
+		printf("Testing DvGetValidMoves No.3\n");
+		
+		char *trail =
+			"GCD.... SCD.... HCD.... MCD.... DPA.... "
+			"GGA.... SGA.... HGA.... MGA.... DLE.... "
+			"GCD.... SCD.... HCD.... MCD.... DNA.... ";
+		Message messages[] = {};
+		DraculaView dv = DvNew(trail, messages);
+		
+		int numMoves = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numMoves);
+		assert(numMoves == 7);
+		sortPlaces(moves, numMoves);
+		assert(moves[0] == BAY_OF_BISCAY);
+		assert(moves[1] == BORDEAUX);
+		assert(moves[2] == CLERMONT_FERRAND);
+		assert(moves[3] == HIDE);
+		assert(moves[4] == DOUBLE_BACK_1);
+		assert(moves[5] == DOUBLE_BACK_2);
+		assert(moves[6] == DOUBLE_BACK_3);
+		free(moves);
+		
+		printf("Test passed!\n");
+		DvFree(dv);
+	} // end tests we've written
+
+
+	
 	{///////////////////////////////////////////////////////////////////
 	
 		printf("Test for basic functions, "
@@ -112,7 +198,7 @@ int main(void)
 		printf("Test passed!\n");
 		DvFree(dv);
 	}
-
+	
 	{///////////////////////////////////////////////////////////////////
 	
 		printf("Test for Dracula's valid moves 1\n");
