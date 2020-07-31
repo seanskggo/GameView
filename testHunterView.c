@@ -25,6 +25,71 @@
 
 int main(void)
 {
+	{///////////////////////////////////////////////////////////////////
+
+		printf("Checking HvWhereCanTheyGoByType if no moves made)\n");
+
+		char *trail ="";
+
+		Message messages[1] = {};
+		HunterView hv = HvNew(trail, messages);
+
+		int numLocs = -1;
+		PlaceId *dracLocs = HvWhereCanTheyGoByType(hv, PLAYER_DRACULA,
+		                                       true, false, false, &numLocs);
+		PlaceId *helsingLocs = HvWhereCanTheyGoByType(hv, PLAYER_VAN_HELSING,
+												true, false, false, &numLocs);
+		assert(dracLocs == 0);
+		assert(helsingLocs == 0);
+		free(dracLocs);
+		free(helsingLocs);
+
+		HvFree(hv);
+		printf("Test passed!\n");
+	}
+	
+	{///////////////////////////////////////////////////////////////////
+
+		printf("Checking HvWhereCanTheyGoif no moves made)\n");
+
+		char *trail ="";
+
+		Message messages[1] = {};
+		HunterView hv = HvNew(trail, messages);
+
+		int numLocs = -1;
+		PlaceId *dracLocs = HvWhereCanTheyGo(hv, PLAYER_DRACULA,
+			&numLocs);
+		PlaceId *helsingLocs = HvWhereCanTheyGo(hv, PLAYER_VAN_HELSING,
+			&numLocs);
+		assert(dracLocs == 0);
+		assert(helsingLocs == 0);
+		free(dracLocs);
+		free(helsingLocs);
+
+		HvFree(hv);
+		printf("Test passed!\n");
+	}
+	
+	{///////////////////////////////////////////////////////////////////
+
+		printf("Checking HvGetShortestPathTo if no moves made)\n");
+
+		char *trail ="";
+
+		Message messages[1] = {};
+		HunterView hv = HvNew(trail, messages);
+
+		int pathLength = -1;
+		PlaceId *path = HvGetShortestPathTo(hv, PLAYER_VAN_HELSING,
+			ROME, &pathLength);
+		assert(pathLength == 0);
+		assert(path == NULL);
+		free(path);
+
+		HvFree(hv);
+		printf("Test passed!\n");
+	}
 	
 	{///////////////////////////////////////////////////////////////////
 		printf("Basic initialisation\n");
