@@ -28,7 +28,6 @@ struct draculaView {
 	int round;
 	GameView gv;
 	Character *player;
-	Map map;
 };
 
 #define MAX_DOUBLE_BACKS 5
@@ -61,8 +60,6 @@ DraculaView DvNew(char *pastPlays, Message messages[])
 	for (int i = 0; i < NUM_PLAYERS; i++) {
 		new->player[i].location = GvGetPlayerLocation(new->gv, i);
 	}
-	new->map = MapNew();
-
 	return new;
 }
 // Destructor

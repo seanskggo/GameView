@@ -1,0 +1,3 @@
+#!/bin/sh
+
+code GameView.c testGameView.c testDraculaView.c testHunterView.c &
