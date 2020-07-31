@@ -34,6 +34,7 @@ static bool connListContains(ConnList l, PlaceId v, TransportType type);
 // Our static functions:
 
 // helper function for MapGetRailReachable
+
 static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 	int added[NUM_REAL_PLACES]);
 // frees a given ConnList

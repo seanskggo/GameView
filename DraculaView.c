@@ -115,9 +115,8 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 	}
 	
 	int numReachableLocs;
-	PlaceId *reachableLocs = GvGetReachable(dv->gv, PLAYER_DRACULA, dv->round,
-        dv->player[PLAYER_DRACULA].location,
-        &numReachableLocs);
+	PlaceId *reachableLocs = GvGetReachable(dv->gv, PLAYER_DRACULA, 
+        dv->round, dv->player[PLAYER_DRACULA].location, &numReachableLocs);
 
 	// we get drac's last 5 moves
 	int numLastMoves = 0;
@@ -142,18 +141,17 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 	}
 
 	// add special moves and return
-
 	*numReturnedMoves = numReachableLocs;
 
 	PlaceId *availableMoves = reachableLocs;
-	// if no double backs/hides, just return his reachableLocs
+	// if no double backs/hides, just return the reachableLocs
 	// and all available DOUBLE_BACKs and the hide
 	if (!foundDoubleBack && !foundHide && reachableLocs != NULL) {
 		// so numReturnedMoves is 5 moves short
 		// it includes the HIDE move, but not DOUBLE_BACK1
 		// but we still need to realloc space for HIDE
-		availableMoves = helperGetDoubleBacks(dv, reachableLocs,
-			numReachableLocs, lastLocs, numLastLocs, availableMoves,
+		availableMoves = helperGetDoubleBacks(dv, reachableLocs, 
+            numReachableLocs, lastLocs, numLastLocs, availableMoves,
 			numReturnedMoves);
 
 		// add HIDE move if not at sea
@@ -342,7 +340,7 @@ static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
 		timesOuterLooped++;
 	}
 
-	// now we can ADD our double backs??
+	// now we add our double backs
 	int newNumMoves = *currentNumMoves + numDoubleBacks;
 	availableMoves = realloc(availableMoves, newNumMoves * sizeof(PlaceId));
 
