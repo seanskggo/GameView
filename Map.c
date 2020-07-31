@@ -30,7 +30,9 @@ static void addConnections(Map m);
 static void addConnection(Map m, PlaceId v, PlaceId w, TransportType type);
 static inline bool isSentinelEdge(Connection c);
 static bool connListContains(ConnList l, PlaceId v, TransportType type);
-// Our static functions
+
+// Our static functions:
+
 static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 	int added[NUM_REAL_PLACES]);
 
@@ -283,4 +285,3 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 		return connsToCheck;
 	}
 }
-
