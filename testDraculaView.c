@@ -17,17 +17,99 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "DraculaView.h"
 #include "Game.h"
 #include "Places.h"
 #include "testUtils.h"
 
+#define GRN   "\x1B[32m"
+#define RESET "\x1B[0m"
+#define YEL   "\x1B[33m"
+#define RED   "\x1B[31m"	
+
+static void delay(int i, bool speed) {
+	if (speed) return;
+	long long int time = i*CLOCKS_PER_SEC;
+	while (clock() < time);
+}
+
 int main(void)
-{	
-	// start tests we wrote
+{
+	int i = 1;
+	char b;
+	bool speed = false;
+	printf("*** Starting tests ***\n\n");
+	printf("Would you like to speed test? (y or n)?\nType here: ");
+	scanf("%c", &b);
+	printf("\n");
+	if (b == 'y') {
+		speed = true;
+
+	} else if (b == 'n') {
+		speed = false;	
+		printf(RED "This testing process has been time delayed\n\n" RESET);
+	}
+	else {
+		printf("Invalid answer. Terminating...\n");
+		exit(EXIT_FAILURE);
+	}
+	
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing DvGetValidMoves No.1\n");
+
+		printf(YEL "Checking DvWhereCanTheyGoByType if no moves made\n" RESET);
+
+		char *trail ="";
+
+		Message messages[1] = {};
+		DraculaView dv = DvNew(trail, messages);
+
+		int numLocs = -1;
+		PlaceId *dracLocs = DvWhereCanTheyGoByType(dv, PLAYER_DRACULA,
+		                                       true, false, false, &numLocs);
+		PlaceId *helsingLocs = DvWhereCanTheyGoByType(dv, PLAYER_VAN_HELSING,
+												true, false, false, &numLocs);
+		assert(dracLocs == 0);
+		assert(helsingLocs == 0);
+		free(dracLocs);
+		free(helsingLocs);
+
+		DvFree(dv);
+		
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
+	}
+	
+	{///////////////////////////////////////////////////////////////////
+
+		printf(YEL "Checking DvGetValidMoves if no moves made\n" RESET);
+
+		char *trail ="";
+
+		Message messages[1] = {};
+		DraculaView dv = DvNew(trail, messages);
+
+		int numLocs = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numLocs);
+		assert(moves == 0);
+		free(moves);
+		
+
+		DvFree(dv);
+		
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
+	}
+
+	{///////////////////////////////////////////////////////////////////
+		printf(YEL "Testing DvGetValidMoves No.1\n" RESET);
 
 		char *trail =
 			"GCD.... SCD.... HCD.... MCD.... DHA.... "
@@ -35,7 +117,7 @@ int main(void)
 			"GCD.... SCD.... HCD.... MCD.... DCO.... "
 			"GGA.... SGA.... HGA.... MGA.... DFR.... "
 			"GCD.... SCD.... HCD.... MCD.... DLI.... "
-			"GGA.... SGA.... HGA.... MGA.... DD1.... ";
+			"GGA.... SGA.... HGA.... MGA.... DD1....";
 		Message messages[] = {};
 		DraculaView dv = DvNew(trail, messages);
 
@@ -47,20 +129,24 @@ int main(void)
 		assert(moves[1] == NUREMBURG);
 		free(moves);
 		
-		printf("Test passed!\n");
 		DvFree(dv);
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 	
 	{///////////////////////////////////////////////////////////////////
 	
-		printf("Testing DvGetValidMoves No.2\n");
+		printf(YEL "Testing DvGetValidMoves No.2\n" RESET);
 		
 		char *trail =
 			"GCD.... SCD.... HCD.... MCD.... DSR.... "
 			"GGA.... SGA.... HGA.... MGA.... DBA.... "
 			"GCD.... SCD.... HCD.... MCD.... DHI.... "
 			"GGA.... SGA.... HGA.... MGA.... DAL.... "
-			"GCD.... SCD.... HCD.... MCD.... DMA.... ";
+			"GCD.... SCD.... HCD.... MCD.... DMA....";
 		Message messages[] = {};
 		DraculaView dv = DvNew(trail, messages);
 		
@@ -77,18 +163,22 @@ int main(void)
 		assert(moves[6] == DOUBLE_BACK_5);
 		free(moves);
 		
-		printf("Test passed!\n");
 		DvFree(dv);
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 	
 	{///////////////////////////////////////////////////////////////////
 	
-		printf("Testing DvGetValidMoves No.3\n");
+		printf(YEL "Testing DvGetValidMoves No.3\n" RESET);
 		
 		char *trail =
 			"GCD.... SCD.... HCD.... MCD.... DPA.... "
 			"GGA.... SGA.... HGA.... MGA.... DLE.... "
-			"GCD.... SCD.... HCD.... MCD.... DNA.... ";
+			"GCD.... SCD.... HCD.... MCD.... DNA....";
 		Message messages[] = {};
 		DraculaView dv = DvNew(trail, messages);
 		
@@ -105,16 +195,135 @@ int main(void)
 		assert(moves[6] == DOUBLE_BACK_3);
 		free(moves);
 		
-		printf("Test passed!\n");
 		DvFree(dv);
-	} // end tests we've written
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
+	} 
+	
+	{///////////////////////////////////////////////////////////////////
+	
+		printf(YEL "Testing DvGetValidMoves No.4 "
+			"(can't move to hospital)\n" RESET);
+		
+		char *trail =
+			"GCD.... SCD.... HCD.... MCD.... DSZ....";
+		Message messages[] = {};
+		DraculaView dv = DvNew(trail, messages);
+		
+		int numMoves = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numMoves);
+		assert(numMoves == 6);
+		sortPlaces(moves, numMoves);
+		assert(moves[0] == BELGRADE);
+		assert(moves[1] == BUDAPEST);
+		assert(moves[2] == KLAUSENBURG);
+		assert(moves[3] == ZAGREB);
+		assert(moves[4] == HIDE);
+		assert(moves[5] == DOUBLE_BACK_1);
+		free(moves);
+		
+		DvFree(dv);
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
+	} 
+	
+	{///////////////////////////////////////////////////////////////////
+		printf(YEL "Testing DvGetValidMoves No.5 (can't HIDE at sea)\n" RESET);
+		
+		char *trail =
+			"GCD.... SCD.... HCD.... MCD.... DEC....";
+		Message messages[] = {};
+		DraculaView dv = DvNew(trail, messages);
+		
+		int numMoves = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numMoves);
+		assert(numMoves == 6);
+		sortPlaces(moves, numMoves);
+		assert(moves[0] == ATLANTIC_OCEAN);
+		assert(moves[1] == LE_HAVRE);
+		assert(moves[2] == LONDON);
+		assert(moves[3] == NORTH_SEA);
+		assert(moves[4] == PLYMOUTH);
+		assert(moves[5] == DOUBLE_BACK_1);
+		free(moves);
+		
+		DvFree(dv);
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
+	} 
+	
+	{///////////////////////////////////////////////////////////////////
+		printf(YEL "Testing DvGetValidMoves No.6 (can't double back/hide)\n" RESET);
+		
+		char *trail =
+			"GCD.... SCD.... HCD.... MCD.... DEC.... "
+			"GCD.... SCD.... HCD.... MCD.... DD1.... "
+			"GCD.... SCD.... HCD.... MCD.... DLE.... "
+			"GCD.... SCD.... HCD.... MCD.... DHI....";
+		Message messages[] = {};
+		DraculaView dv = DvNew(trail, messages);
+		
+		int numMoves = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numMoves);
+		assert(numMoves == 3);
+		sortPlaces(moves, numMoves);
+		assert(moves[0] == BRUSSELS);
+		assert(moves[1] == NANTES);
+		assert(moves[2] == PARIS);
+		free(moves);
+		
+		DvFree(dv);
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
+	} 
+	
+	{///////////////////////////////////////////////////////////////////
+		printf(YEL "Testing DvGetValidMoves No.7 (can't hide)\n" RESET);
+		
+		char *trail =
+			"GCD.... SCD.... HCD.... MCD.... DEC.... "
+			"GCD.... SCD.... HCD.... MCD.... DLE.... "
+			"GCD.... SCD.... HCD.... MCD.... DHI....";
+		Message messages[] = {};
+		DraculaView dv = DvNew(trail, messages);
+		
+		int numMoves = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numMoves);
+		assert(numMoves == 5);
+		sortPlaces(moves, numMoves);
+		assert(moves[0] == BRUSSELS);
+		assert(moves[1] == NANTES);
+		assert(moves[2] == PARIS);
+		assert(moves[3] == DOUBLE_BACK_1);
+		assert(moves[4] == DOUBLE_BACK_3);
+		free(moves);
+		
+		DvFree(dv);
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
+	} 
 
 
 	
 	{///////////////////////////////////////////////////////////////////
 	
-		printf("Test for basic functions, "
-			   "just before Dracula's first move\n");
+		printf(YEL "Test for basic functions, "
+			   "just before Dracula's first move\n" RESET);
 
 		char *trail =
 			"GST.... SAO.... HZU.... MBB....";
@@ -139,13 +348,17 @@ int main(void)
 		assert(numTraps == 0);
 		free(traps);
 
-		printf("Test passed!\n");
 		DvFree(dv);
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
 	
-		printf("Test for encountering Dracula\n");
+		printf(YEL "Test for encountering Dracula\n" RESET);
 
 		char *trail =
 			"GST.... SAO.... HCD.... MAO.... DGE.V.. "
@@ -166,13 +379,17 @@ int main(void)
 		assert(DvGetPlayerLocation(dv, PLAYER_DRACULA) == GENEVA);
 		assert(DvGetVampireLocation(dv) == NOWHERE);
 
-		printf("Test passed!\n");
 		DvFree(dv);
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 
 	{///////////////////////////////////////////////////////////////////
 	
-		printf("Test for Dracula leaving minions 1\n");
+		printf(YEL "Test for Dracula leaving minions 1\n" RESET);
 
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DED.V.. "
@@ -195,13 +412,17 @@ int main(void)
 		assert(traps[2] == MANCHESTER);
 		free(traps);
 		
-		printf("Test passed!\n");
 		DvFree(dv);
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 	
 	{///////////////////////////////////////////////////////////////////
 	
-		printf("Test for Dracula's valid moves 1\n");
+		printf(YEL "Test for Dracula's valid moves 1\n" RESET);
 		
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DCD.V.. "
@@ -220,13 +441,17 @@ int main(void)
 		assert(moves[3] == DOUBLE_BACK_1);
 		free(moves);
 		
-		printf("Test passed!\n");
 		DvFree(dv);
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 	
 	{///////////////////////////////////////////////////////////////////
 	
-		printf("Test for DvWhereCanIGo 1\n");
+		printf(YEL "Test for DvWhereCanIGo 1\n" RESET);
 		
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DKL.V.. "
@@ -248,9 +473,14 @@ int main(void)
 		assert(locs[3] == SOFIA);
 		free(locs);
 		
-		printf("Test passed!\n");
 		DvFree(dv);
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
-
+	printf("\nTotal test time: %ld seconds", clock()/CLOCKS_PER_SEC);
+	printf("\nVerdict: " GRN "Passed\n\n" RESET);
 	return EXIT_SUCCESS;
 }

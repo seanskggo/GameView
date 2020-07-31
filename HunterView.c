@@ -137,6 +137,11 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
     int *pathLength)
 {
+	if (hv->hunter[hunter].location == NOWHERE) {
+		*pathLength = 0;
+		return NULL;
+	}
+	
 	// we have an added array to check if we've already realised
 	// we can access that location
 	int *visited = malloc(NUM_REAL_PLACES * sizeof(int));
@@ -233,6 +238,11 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 
 PlaceId *HvWhereCanIGo(HunterView hv, int *numReturnedLocs)
 {
+	if (hv->hunter[PLAYER_DRACULA].location == NOWHERE) {
+		*numReturnedLocs = 0;
+		return NULL;
+	}
+	
 	return GvGetReachable(hv->gv, hv->current, hv->round,
         hv->hunter[hv->current].location, numReturnedLocs);
 }
@@ -240,6 +250,11 @@ PlaceId *HvWhereCanIGo(HunterView hv, int *numReturnedLocs)
 PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail,
     bool boat, int *numReturnedLocs)
 {
+	if (hv->hunter[PLAYER_DRACULA].location == NOWHERE) {
+		*numReturnedLocs = 0;
+		return NULL;
+	}
+	
 	return GvGetReachableByType(hv->gv, hv->current, hv->round,
         hv->hunter[hv->current].location,
         road, rail, boat, numReturnedLocs);
@@ -248,6 +263,10 @@ PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail,
 PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
     int *numReturnedLocs)
 {
+	if (hv->hunter[player].location == NOWHERE) {
+		*numReturnedLocs = 0;
+		return NULL;
+	}
 	switch(player) {
 		PlaceId dracCurrentLoc;
 		case PLAYER_LORD_GODALMING:
@@ -265,11 +284,8 @@ PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
 			return GvGetReachable(hv->gv, player, hv->round,
                 dracCurrentLoc, numReturnedLocs);
 		}
-		break;
+		
 			break;
-		default:
-			*numReturnedLocs = 0;
-			return NULL;
 	}
 	*numReturnedLocs = 0;
 	return NULL;
@@ -279,6 +295,11 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
     bool road, bool rail, bool boat,
     int *numReturnedLocs)
 {
+	if (hv->hunter[player].location == NOWHERE) {
+		*numReturnedLocs = 0;
+		return NULL;
+	}
+	
 	switch(player) {
 		PlaceId dracCurrentLoc;
 		case PLAYER_LORD_GODALMING:
@@ -298,9 +319,6 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
                     boat, numReturnedLocs);
 			}
 			break;
-		default:
-			*numReturnedLocs = 0;
-			return NULL;
 	}
 	*numReturnedLocs = 0;
 	return NULL;

@@ -1065,7 +1065,7 @@ int main(void)
         PlaceId *HMH = GvGetLastMoves(gv, PLAYER_MINA_HARKER,
             HMHnumMoves, &HMHtotal, &HMHcanFree);
         assert(HMHtotal == 0);
-        assert(HMHcanFree == true);
+        assert(HMHcanFree == false);
         assert(HMH == NULL);
         free(HMH);
 
@@ -1305,7 +1305,7 @@ int main(void)
         PlaceId *HMH = GvGetLastLocations(gv, PLAYER_MINA_HARKER,
             HMHnumMoves, &HMHtotal, &HMHcanFree);
         assert(HMHtotal == 0);
-        assert(HMHcanFree == true);
+        assert(HMHcanFree == false);
         assert(HMH == NULL);
         free(HMH);
 

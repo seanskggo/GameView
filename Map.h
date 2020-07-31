@@ -58,7 +58,7 @@ ConnList MapNewEmptyConnList(void);
  *	Used to be a static function provided by "Team Dracula" in Map.c,
  *  But is useful as an interface function
  */
-ConnList connListInsert(ConnList l, PlaceId p, TransportType type);
+ConnList MapConnListInsert(ConnList l, PlaceId p, TransportType type);
 
 /** Return the length of a connList. */
 int MapConnListLength(ConnList l);

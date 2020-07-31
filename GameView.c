@@ -25,7 +25,7 @@
 #define MAX_PLAY_LENGTH 8 // Extra Space for Null Terminator
 #define MAX_TRAIL_LENGTH 6
 
-// TODO: ADD YOUR OWN STRUCTS HERE
+// Structs we added
 
 // Linked list for storing history. NOTE: When storing history,
 // the most recent history is added to the front of the list
@@ -48,7 +48,6 @@ typedef struct location {
 
 // Gameview struct
 struct gameView {
-	// TODO: ADD FIELDS HERE
 	int round;
 	int score;
 	Player current;
@@ -96,7 +95,6 @@ static void helperConvertPlay2(char *currMove, History *curr, int count);
 
 GameView GvNew(char *pastPlays, Message messages[])
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	GameView new = malloc(sizeof(*new));
 	if (new == NULL) {
 		fprintf(stderr, "Couldn't allocate GameView!\n");
@@ -279,11 +277,9 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 	    current = current->next;
 	}
 	if (total == 0) {
-	    PlaceId *MoveHistory = malloc(sizeof(*MoveHistory)*1);
-	    MoveHistory = NULL;
-	    *canFree = true;
+	    *canFree = false;
 	    *numReturnedMoves = total;
-	    return MoveHistory;
+	    return NULL;
 	} else {
 	    PlaceId *MoveHistory = malloc((total)*sizeof(*MoveHistory));
 	    History *curr = gv->player[player].moves;
@@ -350,11 +346,9 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 	    current = current->next;
 	}
     if (total == 0) {
-        PlaceId *LocsHistory = malloc(sizeof(*LocsHistory)*1);
-        LocsHistory = NULL;
-        *canFree = true;
+        *canFree = false;
         *numReturnedLocs = total;
-        return LocsHistory;
+        return NULL;
     } else {
         // create dynamically allocated array where there are more than 1 moves
         PlaceId *LocsHistory = malloc((total)*sizeof(*LocsHistory));
@@ -429,7 +423,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 		case PLAYER_MINA_HARKER:
 			// hunters can always stay in the same city
 			added[from] = 1;
-			reachableLocs = connListInsert(reachableLocs, from, ROAD);
+			reachableLocs = MapConnListInsert(reachableLocs, from, ROAD);
 			*numReturnedLocs += 1;
 			break;
 		case PLAYER_DRACULA:
@@ -471,7 +465,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 				added[from] = 1;
 			} else {
 				// we should be able to hide/doubleBack to current loc
-				reachableLocs = connListInsert(reachableLocs, from, ROAD);
+				reachableLocs = MapConnListInsert(reachableLocs, from, ROAD);
 				*numReturnedLocs += 1;
 			}
 			// If we haven't double backed yet, we can actually
@@ -507,7 +501,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
                     && curr->p == ST_JOSEPH_AND_ST_MARY) {
 					continue;
 				}
-				reachableLocs = connListInsert(reachableLocs,
+				reachableLocs = MapConnListInsert(reachableLocs,
 					curr->p, curr->type);
 				added[curr->p] = 1;
 				*numReturnedLocs += 1;
@@ -518,15 +512,13 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 	if (boat == true) {
 		for(; curr != NULL; curr = curr->next) {
 			if (curr->type == BOAT && added[curr->p] != 1) {
-				reachableLocs = connListInsert(reachableLocs,
+				reachableLocs = MapConnListInsert(reachableLocs,
 					curr->p, curr->type);
 				added[curr->p] = 1;
 				*numReturnedLocs += 1;
 			}
 		}
 	}
-	// this has to come after the previous two ifs...
-	// MapGetRailReachable behaves badly otherwise
 	if (rail == true) {
 		int canTravelDist = (round + player) % 4;
 		reachableLocs = MapGetRailReachable(gv->map, from,
@@ -536,8 +528,10 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 	PlaceId *reachableLocsArray = malloc(rLocsLength * sizeof(PlaceId));
 	// populate the reachableLocsArray
 	for (int i = 0; i < rLocsLength; i++) {
+	    ConnList tempList = reachableLocs;
 		reachableLocsArray[i] = reachableLocs->p;
 		reachableLocs = reachableLocs->next;
+		free(tempList);
 	}
     free(added);
 	return reachableLocsArray;
