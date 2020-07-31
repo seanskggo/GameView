@@ -134,7 +134,6 @@ GameView GvNew(char *pastPlays, Message messages[])
 
 void GvFree(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	// Free the characters
 	for (int i = 0; i < 5; i++) {
 	   // Free the history of players
@@ -154,7 +153,7 @@ void GvFree(GameView gv)
 	      prev = curr;
 	   }
 	}
-	free(gv->map);
+	MapFree(gv->map);
 	free(gv->player);
 	free(gv->places);
 	free(gv);
