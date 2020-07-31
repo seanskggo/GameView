@@ -17,17 +17,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "Game.h"
 #include "HunterView.h"
 #include "Places.h"
 #include "testUtils.h"
 
+#define GRN   "\x1B[32m"
+#define RESET "\x1B[0m"
+#define YEL   "\x1B[33m"
+#define RED   "\x1B[31m"
+
+static void delay(int i, bool speed) {
+	if (speed) return;
+	long long int time = i*CLOCKS_PER_SEC;
+	while (clock() < time);
+}
+
 int main(void)
 {
+	int i = 1;
+	char b;
+	bool speed = false;
+	printf("*** Starting tests ***\n\n");
+	printf("Would you like to speed test? (y or n)?\nType here: ");
+	scanf("%c", &b);
+	printf("\n");
+	if (b == 'y') {
+		speed = true;
+
+	} else if (b == 'n') {
+		speed = false;	
+		printf(RED "This testing process has been time delayed\n\n" RESET);
+	}
+	else {
+		printf("Invalid answer. Terminating...\n");
+		exit(EXIT_FAILURE);
+	}
+
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Checking HvWhereCanTheyGoByType if no moves made)\n");
+		printf(YEL "Checking HvWhereCanTheyGoByType if no moves made)\n" RESET);
 
 		char *trail ="";
 
@@ -45,12 +76,16 @@ int main(void)
 		free(helsingLocs);
 
 		HvFree(hv);
-		printf("Test passed!\n");
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 	
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Checking HvWhereCanTheyGoif no moves made)\n");
+		printf(YEL "Checking HvWhereCanTheyGoif no moves made)\n" RESET);
 
 		char *trail ="";
 
@@ -68,18 +103,21 @@ int main(void)
 		free(helsingLocs);
 
 		HvFree(hv);
-		printf("Test passed!\n");
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 	
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Checking HvGetShortestPathTo if no moves made)\n");
+		printf(YEL "Checking HvGetShortestPathTo if no moves made)\n" RESET);
 
 		char *trail ="";
-
 		Message messages[1] = {};
+		
 		HunterView hv = HvNew(trail, messages);
-
 		int pathLength = -1;
 		PlaceId *path = HvGetShortestPathTo(hv, PLAYER_VAN_HELSING,
 			ROME, &pathLength);
@@ -88,13 +126,20 @@ int main(void)
 		free(path);
 
 		HvFree(hv);
-		printf("Test passed!\n");
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
 	
 	{///////////////////////////////////////////////////////////////////
-		printf("Basic initialisation\n");
+		
+		printf(YEL "Basic initialisation\n" RESET);
+
 		char *trail = "";
 		Message messages[] = {};
+
 		HunterView hv = HvNew(trail, messages);
 		assert(HvGetRound(hv) == 0);
 		assert(HvGetPlayer(hv) == PLAYER_LORD_GODALMING);
@@ -102,30 +147,45 @@ int main(void)
 		assert(HvGetHealth(hv, PLAYER_LORD_GODALMING) == GAME_START_HUNTER_LIFE_POINTS);
 		assert(HvGetHealth(hv, PLAYER_DRACULA) == GAME_START_BLOOD_POINTS);
 		assert(HvGetVampireLocation(hv) == NOWHERE);
+		
 		HvFree(hv);
-		printf("Test passed\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
 
 	{///////////////////////////////////////////////////////////////////
-		printf("After Lord Godalming's turn\n");
+		
+		printf(YEL "After Lord Godalming's turn\n" RESET);
+		
 		char *trail =
 			"GST....";
 		Message messages[1] = {};
+
 		HunterView hv = HvNew(trail, messages);
 		assert(HvGetRound(hv) == 0);
 		assert(HvGetPlayer(hv) == PLAYER_DR_SEWARD);
 		assert(HvGetScore(hv) == GAME_START_SCORE);
 		assert(HvGetPlayerLocation(hv, PLAYER_LORD_GODALMING) == STRASBOURG);
 		assert(HvGetPlayerLocation(hv, PLAYER_DR_SEWARD) == NOWHERE);
+		
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
+
 	{///////////////////////////////////////////////////////////////////
-		printf("After Van Helsing's turn\n");
+		
+		printf(YEL "After Van Helsing's turn\n" RESET);
+		
 		char *trail =
 			"GST.... SAO.... HZU....";
 		Message messages[3] = {};
 		HunterView hv = HvNew(trail, messages);
+		
 		assert(HvGetRound(hv) == 0);
 		assert(HvGetPlayer(hv) == PLAYER_MINA_HARKER);
 		assert(HvGetScore(hv) == GAME_START_SCORE);
@@ -134,16 +194,24 @@ int main(void)
 		assert(HvGetPlayerLocation(hv, PLAYER_VAN_HELSING) == ZURICH);
 		assert(HvGetPlayerLocation(hv, PLAYER_MINA_HARKER) == NOWHERE);
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == NOWHERE);
+		
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
+
 	{///////////////////////////////////////////////////////////////////
-		printf("After Dracula's turn\n");
+		
+		printf(YEL "After Dracula's turn\n" RESET);
+		
 		char *trail =
 			"GST.... SAO.... HZU.... MBB.... DC?.V..";
 		Message messages[] = {
 			"Hello", "Goodbye", "Stuff", "...", "Mwahahahaha"
 		};
+		
 		HunterView hv = HvNew(trail, messages);
 		assert(HvGetRound(hv) == 1);
 		assert(HvGetPlayer(hv) == PLAYER_LORD_GODALMING);
@@ -157,11 +225,18 @@ int main(void)
 		assert(HvGetVampireLocation(hv) == CITY_UNKNOWN);
 		Round round = -1;
 		assert(HvGetLastKnownDraculaLocation(hv, &round) == NOWHERE);
+		
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
+
 	{///////////////////////////////////////////////////////////////////
-		printf("Encountering Dracula\n");
+		
+		printf(YEL "Encountering Dracula\n" RESET);
+		
 		char *trail =
 			"GST.... SAO.... HCD.... MAO.... DGE.V.. "
 			"GGEVD..";
@@ -169,6 +244,7 @@ int main(void)
 			"Hello", "Goodbye", "Stuff", "...", "Mwahahahaha",
 			"Aha!"
 		};
+
 		HunterView hv = HvNew(trail, messages);
 		assert(HvGetHealth(hv, PLAYER_LORD_GODALMING) ==
 				GAME_START_HUNTER_LIFE_POINTS - LIFE_LOSS_DRACULA_ENCOUNTER);
@@ -180,12 +256,19 @@ int main(void)
 		Round round = -1;
 		assert(HvGetLastKnownDraculaLocation(hv, &round) == GENEVA);
 		assert(round == 0);
+
 		HvFree(hv);
-		printf("Test passed\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
+
 	{///////////////////////////////////////////////////////////////////
-		printf("Test for Dracula doubling back at sea, "
-			   "and losing blood points\n");
+		
+		printf(YEL "Test for Dracula doubling back at sea, "
+			   "and losing blood points\n" RESET);
+		
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DS?.... "
 			"GST.... SST.... HST.... MST.... DD1....";
@@ -193,6 +276,7 @@ int main(void)
 			"Party at Geneva", "Okay", "Sure", "Let's go", "Mwahahahaha",
 			"", "", "", "", "Back I go"
 		};
+
 		HunterView hv = HvNew(trail, messages);
 		assert(HvGetRound(hv) == 2);
 		assert(HvGetPlayer(hv) == PLAYER_LORD_GODALMING);
@@ -200,11 +284,18 @@ int main(void)
 		assert(HvGetHealth(hv, PLAYER_DRACULA) ==
 				GAME_START_BLOOD_POINTS - (2 * LIFE_LOSS_SEA));
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == SEA_UNKNOWN);
+		
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
+
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing a hunter 'dying'\n");
+		
+		printf(YEL "Testing a hunter 'dying'\n" RESET);
+		
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DC?.V.. "
 			"GGE.... SGE.... HGE.... MGE.... DSTT... "
@@ -212,6 +303,7 @@ int main(void)
 			"GGE.... SGE.... HGE.... MGE.... DD1T... "
 			"GSTTTTD";
 		Message messages[21] = {};
+
 		HunterView hv = HvNew(trail, messages);
 		assert(HvGetScore(hv) == GAME_START_SCORE
 		                         - 4 * SCORE_LOSS_DRACULA_TURN
@@ -219,38 +311,60 @@ int main(void)
 		assert(HvGetHealth(hv, PLAYER_LORD_GODALMING) == 0);
 		assert(HvGetPlayerLocation(hv, PLAYER_LORD_GODALMING) == HOSPITAL_PLACE);
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == STRASBOURG);
+		
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
+
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing Dracula doubling back to Castle Dracula\n");
+		
+		printf(YEL "Testing Dracula doubling back to Castle Dracula\n" RESET);
+		
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DCD.V.. "
 			"GGE.... SGE.... HGE.... MGE.... DD1T...";
 		Message messages[10] = {};
+
 		HunterView hv = HvNew(trail, messages);
 		assert(HvGetHealth(hv, PLAYER_DRACULA) ==
 				GAME_START_BLOOD_POINTS + (2 * LIFE_GAIN_CASTLE_DRACULA));
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == CASTLE_DRACULA);
+		
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
+
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing vampire location\n");
+		
+		printf(YEL "Testing vampire location\n" RESET);
+		
 		char *trail =
 			"GVI.... SGE.... HGE.... MGE.... DCD.V.. "
 			"GBD.... SGE.... HGE.... MGE.... DC?T... "
 			"GSZ.... SGE.... HGE.... MGE.... DC?T... "
 			"GSZ.... SGE.... HGE....";
 		Message messages[18] = {};
+
 		HunterView hv = HvNew(trail, messages);
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == CITY_UNKNOWN);
 		assert(HvGetVampireLocation(hv) == CASTLE_DRACULA);
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
+
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing a vampire maturing\n");
+		
+		printf(YEL "Testing a vampire maturing\n" RESET);
+		
 		char *trail =
 			"GGE.... SGE.... HGE.... MGE.... DC?.V.. "
 			"GGE.... SGE.... HGE.... MGE.... DC?T... "
@@ -260,17 +374,25 @@ int main(void)
 			"GGE.... SGE.... HGE.... MGE.... DC?T... "
 			"GGE.... SGE.... HGE.... MGE.... DC?T.V.";
 		Message messages[35] = {};
+		
 		HunterView hv = HvNew(trail, messages);
 		assert(HvGetScore(hv) == GAME_START_SCORE
 		                         - 7 * SCORE_LOSS_DRACULA_TURN
 		                         - SCORE_LOSS_VAMPIRE_MATURES);
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == CITY_UNKNOWN);
 		assert(HvGetVampireLocation(hv) == NOWHERE);
+		
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
+	
 	{///////////////////////////////////////////////////////////////////
-		printf("Testing Dracula's last known location 1\n");
+		
+		printf(YEL "Testing Dracula's last known location 1\n" RESET);
+		
 		char *trail =
 			"GGE.... SGE.... HVI.... MGE.... DCD.V.. "
 			"GGE.... SGE.... HBD.... MGE.... DKLT... "
@@ -278,18 +400,23 @@ int main(void)
 			"GGE.... SGE.... HKLT... MGE.... DC?T... "
 			"GGE.... SGE.... HCDV... MGE.... DD1T...";
 		Message messages[25] = {};
+
 		HunterView hv = HvNew(trail, messages);
 		assert(HvGetPlayerLocation(hv, PLAYER_DRACULA) == CITY_UNKNOWN);
 		Round round = -1;
 		assert(HvGetLastKnownDraculaLocation(hv, &round) == KLAUSENBURG);
 		assert(round == 1);
+		
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
 
 	{///////////////////////////////////////////////////////////////////
 	
-		printf("Testing Dracula's last known location CITY_UNKNOWN\n");
+		printf(YEL "Testing Dracula's last known location CITY_UNKNOWN\n" RESET);
 		
 		char *trail =
 			"GGE.... SGE.... HVI.... MGE.... DC?.V.. "
@@ -307,12 +434,15 @@ int main(void)
 		assert(round == -1);
 		
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
 
 	{///////////////////////////////////////////////////////////////////
 	
-		printf("Testing Dracula's last known location no moves\n");
+		printf(YEL "Testing Dracula's last known location no moves\n" RESET);
 		
 		char *trail =
 			"GGE.... SGE.... HVI.... MGE....";
@@ -326,11 +456,15 @@ int main(void)
 		assert(round == -1);
 		
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
+
 	{///////////////////////////////////////////////////////////////////
 		
-		printf("Testing shortest path 1\n");
+		printf(YEL "Testing shortest path 1\n" RESET);
 
 		char *trail =
 			"GLS.... SLS.... HSW.... MMR.... DCD.V..";
@@ -339,7 +473,7 @@ int main(void)
 		HunterView hv = HvNew(trail, messages);
 
 		{
-			printf("\tLisbon -> Barcelona (Lord Godalming, Round 1)\n");
+			printf("\tLisbon -> Barcelona (Lord Godalming, Round 1)");
 			int pathLength = -1;
 			PlaceId *path = HvGetShortestPathTo(hv, PLAYER_LORD_GODALMING,
 			                                    BARCELONA, &pathLength);
@@ -347,10 +481,11 @@ int main(void)
 			assert(path[0] == MADRID);
 			assert(path[1] == BARCELONA);
 			free(path);
+			printf(GRN "\t passed\n" RESET);
 		}
 
 		{
-			printf("\tLisbon -> Cologne (Lord Godalming, Round 1)\n");
+			printf("\tLisbon -> Cologne (Lord Godalming, Round 1)");
 			int pathLength = -1;
 			PlaceId *path = HvGetShortestPathTo(hv, PLAYER_LORD_GODALMING,
 			                                    COLOGNE, &pathLength);
@@ -360,10 +495,11 @@ int main(void)
 			assert(path[1] == BORDEAUX);
 			assert(path[2] == COLOGNE);
 			free(path);
+			printf(GRN "\t passed\n" RESET);
 		}
 
 		{
-			printf("\tSwansea -> Hamburg (Van Helsing, Round 1)\n");
+			printf("\tSwansea -> Hamburg (Van Helsing, Round 1)");
 			int pathLength = -1;
 			PlaceId *path = HvGetShortestPathTo(hv, PLAYER_VAN_HELSING,
 			                                    HAMBURG, &pathLength); 
@@ -372,10 +508,11 @@ int main(void)
 			assert(path[1] == NORTH_SEA);
 			assert(path[2] == HAMBURG);
 			free(path);
+			printf(GRN "\t passed\n" RESET);
 		}
 
 		{
-			printf("\tMarseilles -> Constanta (Mina Harker, Round 1)\n");
+			printf("\tMarseilles -> Constanta (Mina Harker, Round 1)");
 			int pathLength = -1;
 			PlaceId *path = HvGetShortestPathTo(hv, PLAYER_MINA_HARKER,
 			                                    CONSTANTA, &pathLength);
@@ -385,10 +522,11 @@ int main(void)
 			assert(path[2] == BUDAPEST);
 			assert(path[3] == CONSTANTA);
 			free(path);
+			printf(GRN "\t passed\n" RESET);
 		}
 
 		{
-			printf("\tLisbon -> Castle Dracula (Dr. Seward, Round 1)\n");
+			printf("\tLisbon -> Castle Dracula (Dr. Seward, Round 1)");
 			int pathLength = -1;
 			PlaceId *path = HvGetShortestPathTo(hv, PLAYER_DR_SEWARD,
 			                                    CASTLE_DRACULA, &pathLength);
@@ -401,16 +539,20 @@ int main(void)
 			assert(path[5] == GALATZ || path[5] == KLAUSENBURG);
 			assert(path[6] == CASTLE_DRACULA);
 			free(path);
+			printf(GRN "\t passed\n" RESET);
 		}
 
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Checking Galatz road connections "
-		       "(Lord Godalming, Round 1)\n");
+		printf(YEL "Checking Galatz road connections "
+		       "(Lord Godalming, Round 1)\n" RESET);
 
 		char *trail = "GGA....";
 		Message messages[1] = {};
@@ -430,13 +572,16 @@ int main(void)
 		free(locs);
 
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Checking Paris rail connections "
-		       "(Lord Godalming, Round 1)\n");
+		printf(YEL "Checking Paris rail connections "
+		       "(Lord Godalming, Round 1)\n" RESET);
 
 		char *trail = "GPA....";
 		Message messages[1] = {};
@@ -456,13 +601,16 @@ int main(void)
 		free(locs);
 
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Checking Adriatic Sea boat connections "
-		       "(Lord Godalming, Round 1)\n");
+		printf(YEL "Checking Adriatic Sea boat connections "
+		       "(Lord Godalming, Round 1)\n" RESET);
 
 		char *trail = "GAS....";
 		Message messages[1] = {};
@@ -481,13 +629,16 @@ int main(void)
 		free(locs);
 
 		HvFree(hv);
-		printf("Test passed!\n");
-	}
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;	}
 
 	{///////////////////////////////////////////////////////////////////
 
-		printf("Checking Szeged road connections "
-		       "(Dracula, Round 1)\n");
+		printf(YEL "Checking Szeged road connections "
+		       "(Dracula, Round 1)\n" RESET);
 
 		char *trail =
 			"GSZ.... SGE.... HGE.... MGE.... DSZ.V..";
@@ -508,8 +659,13 @@ int main(void)
 		free(locs);
 
 		HvFree(hv);
-		printf("Test passed!\n");
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
 	}
-
+	printf("\nTotal test time: %ld seconds", clock()/CLOCKS_PER_SEC);
+	printf("\nVerdict: " GRN "Passed\n\n" RESET);
 	return EXIT_SUCCESS;
 }
