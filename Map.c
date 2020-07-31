@@ -36,7 +36,7 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 
 ////////////////////////////////////////////////////////////////////////
 
-/** Creates a new map. */
+// Creates a new map. 
 // #vertices always same as NUM_REAL_PLACES
 Map MapNew(void)
 {
@@ -56,7 +56,7 @@ Map MapNew(void)
 	return m;
 }
 
-/** Frees all memory allocated for the given map. */
+// Frees all memory allocated for the given map. 
 void MapFree(Map m)
 {
 	assert (m != NULL);
@@ -74,18 +74,19 @@ void MapFree(Map m)
 
 ////////////////////////////////////////////////////////////////////////
 
-/** Prints a map to `stdout`. */
+// Prints a map to `stdout`. 
 void MapShow(Map m)
 {
 	assert(m != NULL);
 
 	printf("V = %d, E = %d\n", m->nV, m->nE);
 	for (int i = 0; i < m->nV; i++) {
-		for (ConnList curr = m->connections[i]; curr != NULL; curr = curr->next) {
+		for (ConnList curr = m->connections[i]; curr != NULL; 
+            curr = curr->next) {
 			printf("%s connects to %s by %s\n",
-			       placeIdToName((PlaceId) i),
-			       placeIdToName(curr->p),
-			       transportTypeToString(curr->type)
+                placeIdToName((PlaceId) i),
+                placeIdToName(curr->p),
+                transportTypeToString(curr->type)
 			);
 		}
 	}
@@ -93,14 +94,14 @@ void MapShow(Map m)
 
 ////////////////////////////////////////////////////////////////////////
 
-/** Gets the number of places in the map. */
+// Gets the number of places in the map. 
 int MapNumPlaces(Map m)
 {
 	assert(m != NULL);
 	return m->nV;
 }
 
-/** Gets the number of connections of a particular type. */
+// Gets the number of connections of a particular type. 
 int MapNumConnections(Map m, TransportType type)
 {
 	assert(m != NULL);
@@ -108,17 +109,17 @@ int MapNumConnections(Map m, TransportType type)
 
 	int nE = 0;
 	for (int i = 0; i < m->nV; i++) {
-		for (ConnList curr = m->connections[i]; curr != NULL; curr = curr->next) {
+		for (ConnList curr = m->connections[i]; curr != NULL; 
+            curr = curr->next) {
 			if (curr->type == type || type == ANY) {
 				nE++;
 			}
 		}
 	}
-
 	return nE;
 }
 
-/// Insert a node into an adjacency list.
+// Insert a node into an adjacency list.
 ConnList connListInsert(ConnList l, PlaceId p, TransportType type)
 {
 	assert(placeIsReal(p));
@@ -138,7 +139,7 @@ ConnList connListInsert(ConnList l, PlaceId p, TransportType type)
 
 ////////////////////////////////////////////////////////////////////////
 
-/// Add edges to Graph representing map of Europe
+// Add edges to Graph representing map of Europe
 static void addConnections(Map m)
 {
 	assert(m != NULL);
@@ -148,7 +149,7 @@ static void addConnections(Map m)
 	}
 }
 
-/// Add a new edge to the Map/Graph
+// Add a new edge to the Map/Graph
 static void addConnection(Map m, PlaceId start, PlaceId end, TransportType type)
 {
 	assert(m != NULL);
@@ -165,13 +166,13 @@ static void addConnection(Map m, PlaceId start, PlaceId end, TransportType type)
 	m->nE++;
 }
 
-/// Is this the magic 'sentinel' edge?
+// Is this the magic 'sentinel' edge?
 static inline bool isSentinelEdge(Connection c)
 {
 	return c.v == -1 && c.w == -1 && c.t == ANY;
 }
 
-/// Does this adjacency list contain a particular value?
+// Does this adjacency list contain a particular value?
 static bool connListContains(ConnList l, PlaceId p, TransportType type)
 {
 	assert(placeIsReal(p));
@@ -295,3 +296,4 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 		return connsToCheck;
 	}
 }
+
