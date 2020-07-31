@@ -151,7 +151,7 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round);
  *       be less expensive.
  */
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
-                             int *pathLength);
+    int *pathLength);
 
 ////////////////////////////////////////////////////////////////////////
 // Making a Move
@@ -176,7 +176,7 @@ PlaceId *HvWhereCanIGo(HunterView hv, int *numReturnedLocs);
  * boat is false, boat connections will be ignored.
  */
 PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail,
-                             bool boat, int *numReturnedLocs);
+    bool boat, int *numReturnedLocs);
 
 /**
  * Gets  all  the  locations  that the given player can move to in their
@@ -201,7 +201,7 @@ PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail,
  * and return NULL.
  */
 PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
-                          int *numReturnedLocs);
+    int *numReturnedLocs);
 
 /**
  * Similar to HvWhereCanTheyGo but the caller can restrict the transport
@@ -209,8 +209,8 @@ PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
  * boat is false, boat connections will be ignored.
  */
 PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
-                                bool road, bool rail, bool boat,
-                                int *numReturnedLocs);
+    bool road, bool rail, bool boat,
+    int *numReturnedLocs);
 
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
