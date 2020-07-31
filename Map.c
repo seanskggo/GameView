@@ -217,13 +217,15 @@ ConnList MapGetRailReachable(Map m, PlaceId src, int dist,
 	added[src] = 1;
 
 	ConnList connsToCheck =  m->connections[src];
+	ConnList curr = NULL;
+	ConnList prev = NULL;
 	for(int i = 0; i < dist; i++) {
 		// getConnectionsToCheck relies upon connsToCheck, which is why
 		// we need to separate it from curr
-		connsToCheck = getConnectionsToCheck(m, connsToCheck, i, added);
-		ConnList curr = connsToCheck;
-
-		for (; curr != NULL; curr = curr->next) {
+	    connsToCheck = getConnectionsToCheck(m, connsToCheck, i, added);
+	    curr = connsToCheck;
+	    
+		while (curr != NULL) {
 			// if we haven't added the element, and the connection type
 			// if rail, then we can add it!!
 			if (curr->type == RAIL && added[curr->p] == -1) {
@@ -233,9 +235,18 @@ ConnList MapGetRailReachable(Map m, PlaceId src, int dist,
 				added[curr->p] = 1;
 				*numReturnedLocs += 1;
 			}
+			curr = curr->next;
 		}
+		if (i > 1) {
+		    ConnList tempList;
+		    while (prev != NULL) {
+		        tempList = prev;
+		        prev = prev->next;
+		        free(tempList);
+		    }
+		}
+		prev = connsToCheck;
 	}
-
 	return reachableLocs;
 }
 
