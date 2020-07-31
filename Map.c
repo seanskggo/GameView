@@ -119,7 +119,7 @@ int MapNumConnections(Map m, TransportType type)
 }
 
 /// Insert a node into an adjacency list.
-ConnList connListInsert(ConnList l, PlaceId p, TransportType type)
+ConnList MapConnListInsert(ConnList l, PlaceId p, TransportType type)
 {
 	assert(placeIsReal(p));
 	assert(transportTypeIsValid(type));
@@ -160,8 +160,8 @@ static void addConnection(Map m, PlaceId start, PlaceId end, TransportType type)
 	// don't add edges twice
 	if (connListContains(m->connections[start], end, type)) return;
 
-	m->connections[start] = connListInsert(m->connections[start], end, type);
-	m->connections[end]   = connListInsert(m->connections[end], start, type);
+	m->connections[start] = MapConnListInsert(m->connections[start], end, type);
+	m->connections[end]   = MapConnListInsert(m->connections[end], start, type);
 	m->nE++;
 }
 
@@ -198,20 +198,6 @@ ConnList MapGetConnections(Map m, PlaceId p)
 
 /// Functions we added
 
-// Pretty sure this function is useless and needs to be burned!
-ConnList MapNewEmptyConnList(void)
-{
-	ConnList new = malloc(sizeof(*new));
-	if (new == NULL) {
-		fprintf(stderr, "Couldn't allocate ConnNode");
-		exit(EXIT_FAILURE);
-	}
-
-	new->next = NULL;
-
-	return NULL;
-}
-
 int MapConnListLength(ConnList l)
 {
 	ConnList curr = l;
@@ -240,7 +226,7 @@ ConnList MapGetRailReachable(Map m, PlaceId src, int dist,
 			// if rail, then we can add it!!
 			if (curr->type == RAIL && added[curr->p] == -1) {
 				// add the location to our reachableLocs array!
-				reachableLocs = connListInsert(reachableLocs, curr->p,
+				reachableLocs = MapConnListInsert(reachableLocs, curr->p,
 					curr->type);
 				added[curr->p] = 1;
 				*numReturnedLocs += 1;
@@ -286,7 +272,7 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 			for (; connecs != NULL; connecs = connecs->next) {
 				if (curr->type == RAIL && connecs->type == RAIL && 
 					added[connecs->p] != 1) {
-					connsToCheck = connListInsert(connsToCheck, connecs->p,
+					connsToCheck = MapConnListInsert(connsToCheck, connecs->p,
 						connecs->type);
 				}
 			}

@@ -109,6 +109,11 @@ PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps)
 
 PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 {
+	if (dv->player[PLAYER_DRACULA].location == NOWHERE) {
+		*numReturnedMoves = 0;
+		return NULL;
+	}
+	
 	int numReachableLocs;
 	PlaceId *reachableLocs = GvGetReachable(dv->gv, PLAYER_DRACULA, dv->round,
 							dv->player[PLAYER_DRACULA].location,
@@ -240,8 +245,6 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 	if (canFreeLastMoves) {
 		free(lastMoves);
 	}
-	
-	// bunch of other memory to be freed here!!!
 
 	*numReturnedMoves = 0;
 	return NULL;
@@ -249,6 +252,11 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 
 PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs)
 {
+	if (dv->player[PLAYER_DRACULA].location == NOWHERE) {
+		*numReturnedLocs = 0;
+		return NULL;
+	}
+	
 	return GvGetReachable(dv->gv, PLAYER_DRACULA, dv->round,
 							dv->player[PLAYER_DRACULA].location,
 							numReturnedLocs);
@@ -257,6 +265,10 @@ PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs)
 PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
                              int *numReturnedLocs)
 {
+	if (dv->player[PLAYER_DRACULA].location == NOWHERE) {
+		*numReturnedLocs = 0;
+		return NULL;
+	}
 	return GvGetReachableByType(dv->gv, PLAYER_DRACULA, dv->round,
 								dv->player[PLAYER_DRACULA].location, road,
 								false, boat, numReturnedLocs);
@@ -265,6 +277,10 @@ PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
 PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player,
                           int *numReturnedLocs)
 {
+	if (dv->player[player].location == NOWHERE) {
+		*numReturnedLocs = 0;
+		return NULL;
+	}
 	return GvGetReachable(dv->gv, player, dv->round,
 						dv->player[player].location, numReturnedLocs);
 }
@@ -273,6 +289,10 @@ PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
                                 bool road, bool rail, bool boat,
                                 int *numReturnedLocs)
 {
+	if (dv->player[player].location == NOWHERE) {
+		*numReturnedLocs = 0;
+		return NULL;
+	}
 	return GvGetReachableByType(dv->gv, player, dv->round,
 								dv->player[player].location, road, rail,
 								boat, numReturnedLocs);
@@ -313,22 +333,6 @@ static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
 	// we also need to store which "number" DOUBLE_BACK we need to do
 	bool canDoDoubleBack[MAX_DOUBLE_BACKS] = {false};
 	int numDoubleBacks = 0;
-	/*for (int i = 0; i <	numReachableLocs; i++) {
-		bool alreadyFound = false;
-		int timesLooped = 0;
-		for (int j = (numLastLocs - 1); j >= 0; j--) {
-			if (!alreadyFound && reachableLocs[i] == lastLocs[j]) {
-				alreadyFound = true;
-				canDoDoubleBack[timesLooped] = true;
-				numDoubleBacks++;
-				// Remove the loc the doubleback refers to 
-				// from available moves
-				// tired when writing this, hope it solves the McBug
-				helperRemoveLoc(availableMoves, i, currentNumMoves);
-				timesLooped++;
-			}
-		}
-	}*/
 	
 	int timesOuterLooped = 0;
 	for (int i = (numLastLocs - 1); i >= 0; i--) {
@@ -362,9 +366,6 @@ static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
 			}
 		}
 	}
-
-
-	// assuming, of course, that currentNumMoves - 1 was the OLD last element of availableMoves
 
 	*currentNumMoves = newNumMoves;
 	return availableMoves;

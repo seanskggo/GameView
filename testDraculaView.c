@@ -55,6 +55,58 @@ int main(void)
 		printf("Invalid answer. Terminating...\n");
 		exit(EXIT_FAILURE);
 	}
+	
+	{///////////////////////////////////////////////////////////////////
+
+		printf(YEL "Checking DvWhereCanTheyGoByType if no moves made\n" RESET);
+
+		char *trail ="";
+
+		Message messages[1] = {};
+		DraculaView dv = DvNew(trail, messages);
+
+		int numLocs = -1;
+		PlaceId *dracLocs = DvWhereCanTheyGoByType(dv, PLAYER_DRACULA,
+		                                       true, false, false, &numLocs);
+		PlaceId *helsingLocs = DvWhereCanTheyGoByType(dv, PLAYER_VAN_HELSING,
+												true, false, false, &numLocs);
+		assert(dracLocs == 0);
+		assert(helsingLocs == 0);
+		free(dracLocs);
+		free(helsingLocs);
+
+		DvFree(dv);
+		
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
+	}
+	
+	{///////////////////////////////////////////////////////////////////
+
+		printf(YEL "Checking DvGetValidMoves if no moves made\n" RESET);
+
+		char *trail ="";
+
+		Message messages[1] = {};
+		DraculaView dv = DvNew(trail, messages);
+
+		int numLocs = -1;
+		PlaceId *moves = DvGetValidMoves(dv, &numLocs);
+		assert(moves == 0);
+		free(moves);
+		
+
+		DvFree(dv);
+		
+		delay(i, speed);
+		i++;
+		printf(GRN "Test passed!\n" RESET);
+		delay(i, speed);
+		i++;
+	}
 
 	{///////////////////////////////////////////////////////////////////
 		printf(YEL "Testing DvGetValidMoves No.1\n" RESET);
