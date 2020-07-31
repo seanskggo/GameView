@@ -33,6 +33,7 @@ static bool connListContains(ConnList l, PlaceId v, TransportType type);
 // Our static functions
 static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 	int added[NUM_REAL_PLACES]);
+static void freeConnList(ConnList list);
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -278,6 +279,7 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 		// only need to add it if it's a rail conneciton.
 		ConnList connsToCheck = NULL;
 		int i = 0;
+		ConnList oldListHead = list;
 		for(ConnList curr = list; curr != NULL; curr = curr->next) {
 			// loop through all the connections of the outer curr,
 			// and add them to our connsToCheck if their type is RAIL
@@ -291,7 +293,23 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 			}
 			i++;
 		}
+		
+		if (iteration > 1) {
+			freeConnList(oldListHead);
+		}
 		return connsToCheck;
 	}
+}
+
+static void freeConnList(ConnList list) 
+{
+	ConnList curr = list;
+	ConnList prev = NULL;
+	for(; curr != NULL; curr = curr->next) {
+		prev = curr;
+        curr = curr->next;
+        free(prev);
+	}
+	return;
 }
 
