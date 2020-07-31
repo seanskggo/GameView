@@ -281,11 +281,9 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 	}
 
 	if (total == 0) {
-	    PlaceId *MoveHistory = malloc(sizeof(*MoveHistory)*1);
-	    MoveHistory = NULL;
-	    *canFree = true;
+	    *canFree = false;
 	    *numReturnedMoves = total;
-	    return MoveHistory;
+	    return NULL;
 	} else {
 	    PlaceId *MoveHistory = malloc((total)*sizeof(*MoveHistory));
 
@@ -353,11 +351,9 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 	    current = current->next;
 	}
     if (total == 0) {
-        PlaceId *LocsHistory = malloc(sizeof(*LocsHistory)*1);
-        LocsHistory = NULL;
-        *canFree = true;
+        *canFree = false;
         *numReturnedLocs = total;
-        return LocsHistory;
+        return NULL;
     } else {
         // create dynamically allocated array where there are more than 1 moves
         PlaceId *LocsHistory = malloc((total)*sizeof(*LocsHistory));
@@ -540,8 +536,10 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 	PlaceId *reachableLocsArray = malloc(rLocsLength * sizeof(PlaceId));
 	// populate the reachableLocsArray
 	for (int i = 0; i < rLocsLength; i++) {
+	    ConnList tempList = reachableLocs;
 		reachableLocsArray[i] = reachableLocs->p;
 		reachableLocs = reachableLocs->next;
+		free(tempList);
 	}
     free(added);
 	return reachableLocsArray;
