@@ -373,7 +373,7 @@ static PlaceId *helperGetDoubleBacks(DraculaView dv, PlaceId *reachableLocs,
 
 static PlaceId *helperRemoveLoc(PlaceId *availableMoves, int index, int *size) {
 	
-	for (int i = index; i < *size - 1; i++) {
+	for (int i = index; i < *size - 2; i++) {
 		availableMoves[i] = availableMoves[i + 1];
 	}
 	availableMoves = realloc(availableMoves, (*size - 1) * sizeof(PlaceId));
