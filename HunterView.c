@@ -209,7 +209,7 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 
 	free(tempPathArray);
 	free(visited);
-
+	dropQueue(q);
 	return (*pathLength != 0) ? path : NULL;
 }
 
