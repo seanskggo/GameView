@@ -46,7 +46,6 @@ int helperComparePlaceIds(const void *a, const void *b);
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
-
 HunterView HvNew(char *pastPlays, Message messages[])
 {
 	HunterView new = malloc(sizeof(*new));
@@ -77,7 +76,6 @@ void HvFree(HunterView hv)
 
 ////////////////////////////////////////////////////////////////////////
 // Game State Information
-
 Round HvGetRound(HunterView hv)
 {
 	return GvGetRound(hv->gv);
@@ -110,7 +108,6 @@ PlaceId HvGetVampireLocation(HunterView hv)
 
 ////////////////////////////////////////////////////////////////////////
 // Utility Functions
-
 PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 {
 	int numReturnedLocs = 0;
@@ -123,7 +120,7 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 	while (roundNum >= 0) {
 	    // Dracula has a last known location
 	    if (DracRevealedLocations[roundNum] != CITY_UNKNOWN && 
-	        DracRevealedLocations[roundNum] != SEA_UNKNOWN) {
+	            DracRevealedLocations[roundNum] != SEA_UNKNOWN) {
 	        *round = roundNum;
 	        PlaceId LastKnownLocation = DracRevealedLocations[roundNum];
 	        free(DracRevealedLocations);
@@ -137,9 +134,8 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 	return NOWHERE;
 }
 
-
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
-                             int *pathLength)
+    int *pathLength)
 {
 	// we have an added array to check if we've already realised
 	// we can access that location
@@ -175,14 +171,13 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 		// but multiple times every other time
 		for(int i = 0; i < numBFSStageLocs; i++) {
 			PlaceId p = QueueLeave(q);
-
 			if (p == dest) {
 				found = true;
 			}
 
 			int numPlaces = 0;
 			PlaceId *reachable = GvGetReachable(hv->gv, hunter, round,
-				                    p, &numPlaces);
+                p, &numPlaces);
 
 			for (int i = 0; i < numPlaces; i++) {
 				if (visited[reachable[i]] == -1) {
@@ -239,19 +234,19 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 PlaceId *HvWhereCanIGo(HunterView hv, int *numReturnedLocs)
 {
 	return GvGetReachable(hv->gv, hv->current, hv->round,
-							hv->hunter[hv->current].location, numReturnedLocs);
+        hv->hunter[hv->current].location, numReturnedLocs);
 }
 
 PlaceId *HvWhereCanIGoByType(HunterView hv, bool road, bool rail,
-                             bool boat, int *numReturnedLocs)
+    bool boat, int *numReturnedLocs)
 {
 	return GvGetReachableByType(hv->gv, hv->current, hv->round,
-									hv->hunter[hv->current].location,
-									road, rail, boat, numReturnedLocs);
+        hv->hunter[hv->current].location,
+        road, rail, boat, numReturnedLocs);
 }
 
 PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
-                          int *numReturnedLocs)
+    int *numReturnedLocs)
 {
 	switch(player) {
 		PlaceId dracCurrentLoc;
@@ -260,15 +255,15 @@ PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
 		case PLAYER_VAN_HELSING:
 		case PLAYER_DR_SEWARD:
 			return GvGetReachable(hv->gv, player, hv->round,
-									hv->hunter[player].location,
-									numReturnedLocs);
+                hv->hunter[player].location,
+                numReturnedLocs);
 			break;
 		case PLAYER_DRACULA:
 		// need to check whether Drac's current loc is revealed
 		dracCurrentLoc = GvGetPlayerLocation(hv->gv, player);
 		if (placeIsReal(dracCurrentLoc)) {
 			return GvGetReachable(hv->gv, player, hv->round,
-									dracCurrentLoc, numReturnedLocs);
+                dracCurrentLoc, numReturnedLocs);
 		}
 		break;
 			break;
@@ -281,8 +276,8 @@ PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
 }
 
 PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
-                                bool road, bool rail, bool boat,
-                                int *numReturnedLocs)
+    bool road, bool rail, bool boat,
+    int *numReturnedLocs)
 {
 	switch(player) {
 		PlaceId dracCurrentLoc;
@@ -291,16 +286,16 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
 		case PLAYER_VAN_HELSING:
 		case PLAYER_DR_SEWARD:
 			return GvGetReachableByType(hv->gv, player, hv->round,
-									hv->hunter[player].location, road, rail,
-									boat, numReturnedLocs);
+                hv->hunter[player].location, road, rail,
+                boat, numReturnedLocs);
 			break;
 		case PLAYER_DRACULA:
 			// need to check whether Drac's current loc is revealed
 			dracCurrentLoc = GvGetPlayerLocation(hv->gv, player);
 			if (placeIsReal(dracCurrentLoc)) {
 				return GvGetReachableByType(hv->gv, player, hv->round,
-												dracCurrentLoc, road, rail,
-												boat, numReturnedLocs);
+                    dracCurrentLoc, road, rail,
+                    boat, numReturnedLocs);
 			}
 			break;
 		default:
