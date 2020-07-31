@@ -1,4 +1,3 @@
-
 //////////////////////////////////////////////////////////////////////////
 // COMP2521 20T2 ... the Fury of Dracula
 // Map.c: an implementation of a Map type
@@ -285,7 +284,7 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 			// and add them to our connsToCheck if their type is RAIL
 			ConnList connecs = m->connections[curr->p];
 			for (; connecs != NULL; connecs = connecs->next) {
-				if (curr->type == RAIL && connecs->type == RAIL &&
+				if (curr->type == RAIL && connecs->type == RAIL && 
 					added[connecs->p] != 1) {
 					connsToCheck = connListInsert(connsToCheck, connecs->p,
 						connecs->type);
