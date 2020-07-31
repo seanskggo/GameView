@@ -97,7 +97,6 @@ int main(void)
 		PlaceId *moves = DvGetValidMoves(dv, &numLocs);
 		assert(moves == 0);
 		free(moves);
-		
 
 		DvFree(dv);
 		
@@ -317,8 +316,6 @@ int main(void)
 		delay(i, speed);
 		i++;
 	} 
-
-
 	
 	{///////////////////////////////////////////////////////////////////
 	
