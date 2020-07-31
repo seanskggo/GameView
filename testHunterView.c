@@ -67,9 +67,9 @@ int main(void)
 
 		int numLocs = -1;
 		PlaceId *dracLocs = HvWhereCanTheyGoByType(hv, PLAYER_DRACULA,
-		                                       true, false, false, &numLocs);
+            true, false, false, &numLocs);
 		PlaceId *helsingLocs = HvWhereCanTheyGoByType(hv, PLAYER_VAN_HELSING,
-												true, false, false, &numLocs);
+            true, false, false, &numLocs);
 		assert(dracLocs == 0);
 		assert(helsingLocs == 0);
 		free(dracLocs);
