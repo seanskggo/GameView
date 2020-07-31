@@ -45,7 +45,7 @@ struct hunterView {
 int helperComparePlaceIds(const void *a, const void *b);
 
 ////////////////////////////////////////////////////////////////////////
-// Constructor/Destructor
+// Constructor
 HunterView HvNew(char *pastPlays, Message messages[])
 {
 	HunterView new = malloc(sizeof(*new));
@@ -68,6 +68,7 @@ HunterView HvNew(char *pastPlays, Message messages[])
 	return new;
 }
 
+// Deconstructor
 void HvFree(HunterView hv)
 {
 	GvFree(hv->gv);
@@ -179,7 +180,6 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 			if (p == dest) {
 				found = true;
 			}
-
 			int numPlaces = 0;
 			PlaceId *reachable = GvGetReachable(hv->gv, hunter, round,
                 p, &numPlaces);
@@ -196,20 +196,16 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 		numBFSStageLocs = nextStageLocs;
 		nextStageLocs = 0;
 		round++;
-
 	}
-
 	*pathLength = 0;
 	int *tempPathArray = malloc(NUM_REAL_PLACES * sizeof(int));
 	PlaceId* path = malloc(NUM_REAL_PLACES * sizeof(int));
 	if (found) {
-
 		tempPathArray[0] = dest;
 		*pathLength += 1;
 		int tempPathIndex = 1;
-
 		for (int i = dest; visited[i] != hv->hunter[hunter].location;
-			i = visited[i]) {
+            i = visited[i]) {
 			tempPathArray[tempPathIndex] = visited[i];
 			*pathLength += 1;
 			tempPathIndex++;
@@ -222,14 +218,11 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 		}
 
 	}
-
 	if (*pathLength == 0) {
 		free(path);
 	}
-
 	free(tempPathArray);
 	free(visited);
-
 	return (*pathLength != 0) ? path : NULL;
 }
 
@@ -278,7 +271,7 @@ PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
                 numReturnedLocs);
 			break;
 		case PLAYER_DRACULA:
-		// need to check whether Drac's current loc is revealed
+		// check whether Drac's current location is revealed
 		dracCurrentLoc = GvGetPlayerLocation(hv->gv, player);
 		if (placeIsReal(dracCurrentLoc)) {
 			return GvGetReachable(hv->gv, player, hv->round,
@@ -292,14 +285,12 @@ PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
 }
 
 PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
-    bool road, bool rail, bool boat,
-    int *numReturnedLocs)
+    bool road, bool rail, bool boat, int *numReturnedLocs)
 {
 	if (hv->hunter[player].location == NOWHERE) {
 		*numReturnedLocs = 0;
 		return NULL;
 	}
-	
 	switch(player) {
 		PlaceId dracCurrentLoc;
 		case PLAYER_LORD_GODALMING:
