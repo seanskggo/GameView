@@ -245,17 +245,12 @@ ConnList MapGetRailReachable(Map m, PlaceId src, int dist,
 			curr = curr->next;
 		}
 		if (i > 1) {
-		    ConnList tempList;
-		    while (prev != NULL) {
-		        tempList = prev;
-		        prev = prev->next;
-		        free(tempList);
-		    }
+		    freeConnList(prev);
 		}
 		prev = connsToCheck;
 	}
 	
-	if (i == 2) {
+	if (i >= 2) {
 		freeConnList(connsToCheck);
 	}
 	return reachableLocs;
@@ -288,7 +283,6 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 
 		// only need to add it if it's a rail conneciton.
 		ConnList connsToCheck = NULL;
-		int i = 0;
 		for(ConnList curr = list; curr != NULL; curr = curr->next) {
 			// loop through all the connections of the outer curr,
 			// and add them to our connsToCheck if their type is RAIL
@@ -300,7 +294,6 @@ static ConnList getConnectionsToCheck(Map m, ConnList list, int iteration,
 						connecs->type);
 				}
 			}
-			i++;
 		}
 		return connsToCheck;
 	}

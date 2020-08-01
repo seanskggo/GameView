@@ -18,7 +18,6 @@
 #include "Game.h"
 #include "GameView.h"
 #include "Map.h"
-// add your own #includes here
 
 typedef struct character {
 	PlaceId location;
