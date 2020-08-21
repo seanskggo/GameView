@@ -42,5 +42,7 @@ we can review the code before it is added to this master.
 We have deleted and replaced this repository with a restructured and optimised verison. Previous commit history is retained with a rebase. 
 \
 The back up repository where this restructuring <strong>initially</strong> happened is available here: https://github.com/seanskggo72/Backup-Dracula.git
+\
+The Hunt AIs can be found here: https://github.com/seanskggo72/TheHuntAIs.git
 
 Thank you!
