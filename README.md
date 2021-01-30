@@ -1,5 +1,10 @@
 # FuryOfDracula
 
+## Archive Comments
+
+Group assignment for COMP2521 (2020)
+
+----------------------------------------------------------------------------------------
 
 Group Name: Codepocalypse
 
@@ -39,7 +44,7 @@ Finalised code will be pushed from the work branch to this master branch. Before
 we can review the code before it is added to this master.
 
 <strong>Note to marker:</strong> \
-We have deleted and replaced this repository with a restructured and optimised verison. Previous commit history is retained with a rebase. 
+We have deleted and replaced this repository with a restructured and optimised verison.
 \
 The back up repository where this restructuring <strong>initially</strong> happened is available here: https://github.com/seanskggo72/Backup-Dracula.git
 \
